@@ -4,14 +4,31 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CheckCircle, Zap, Newspaper, Rocket, Calendar, Package, Gift } from 'lucide-react';
 
+interface FormField {
+  id: string;
+  type: 'text' | 'email' | 'phone' | 'select' | 'textarea';
+  label: string;
+  placeholder: string;
+  required: boolean;
+}
+
 interface ThemeSettings {
   primaryColor?: string;
+  secondaryColor?: string;
   backgroundColor?: string;
   backgroundStyle?: string;
   fontStyle?: string;
+  showSocialProof?: boolean;
+  socialProofText?: string;
+  showBadge?: boolean;
+  badgeText?: string;
+  thankYouTitle?: string;
+  thankYouMessage?: string;
+  formFields?: FormField[];
 }
 
 interface Page {
@@ -42,6 +59,18 @@ const templateTitles: Record<string, string> = {
   free_resource: 'Download Now',
 };
 
+const defaultFormFields: FormField[] = [
+  { id: 'name', type: 'text', label: 'Name', placeholder: 'Your name', required: true },
+  { id: 'email', type: 'email', label: 'Email', placeholder: 'your@email.com', required: true },
+];
+
+const fontFamilies: Record<string, string> = {
+  'inter': '"Inter", system-ui, sans-serif',
+  'playfair': '"Playfair Display", serif',
+  'space-grotesk': '"Space Grotesk", sans-serif',
+  'dm-sans': '"DM Sans", sans-serif',
+};
+
 export default function PublicSignupPage() {
   const { slug } = useParams();
   const { toast } = useToast();
@@ -49,7 +78,7 @@ export default function PublicSignupPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [formData, setFormData] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchPage = async () => {
@@ -65,7 +94,6 @@ export default function PublicSignupPage() {
       if (error || !data) {
         setPage(null);
       } else {
-        // Cast with proper type handling
         const pageData: Page = {
           id: data.id,
           title: data.title,
@@ -78,6 +106,14 @@ export default function PublicSignupPage() {
           is_active: data.is_active,
         };
         setPage(pageData);
+        
+        // Initialize form data with field IDs
+        const fields = pageData.theme_settings?.formFields || defaultFormFields;
+        const initialData: Record<string, string> = {};
+        fields.forEach(field => {
+          initialData[field.id] = '';
+        });
+        setFormData(initialData);
       }
       setIsLoading(false);
     };
@@ -92,10 +128,23 @@ export default function PublicSignupPage() {
     setIsSubmitting(true);
 
     try {
+      // Extract name and email from form data
+      const name = formData.name || formData[Object.keys(formData).find(k => k !== 'email') || 'name'] || '';
+      const email = formData.email || '';
+      
+      // Store additional fields in metadata
+      const metadata: Record<string, string> = {};
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key !== 'name' && key !== 'email') {
+          metadata[key] = value;
+        }
+      });
+
       const { error } = await supabase.from('subscribers').insert({
         page_id: page.id,
-        name: formData.name,
-        email: formData.email,
+        name,
+        email,
+        metadata: Object.keys(metadata).length > 0 ? metadata : null,
       });
 
       if (error) {
@@ -123,6 +172,33 @@ export default function PublicSignupPage() {
     }
   };
 
+  const getBackgroundStyle = (theme: ThemeSettings | null) => {
+    const primaryColor = theme?.primaryColor || '#4F46E5';
+    const backgroundColor = theme?.backgroundColor || '#ffffff';
+    const style = theme?.backgroundStyle || 'solid';
+
+    switch (style) {
+      case 'gradient':
+        return {
+          background: `linear-gradient(135deg, ${backgroundColor} 0%, ${primaryColor}15 50%, ${backgroundColor} 100%)`,
+        };
+      case 'dots':
+        return {
+          backgroundColor,
+          backgroundImage: `radial-gradient(${primaryColor}25 1.5px, transparent 1.5px)`,
+          backgroundSize: '24px 24px',
+        };
+      case 'grid':
+        return {
+          backgroundColor,
+          backgroundImage: `linear-gradient(${primaryColor}12 1px, transparent 1px), linear-gradient(90deg, ${primaryColor}12 1px, transparent 1px)`,
+          backgroundSize: '48px 48px',
+        };
+      default:
+        return { backgroundColor };
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -143,19 +219,32 @@ export default function PublicSignupPage() {
   }
 
   const Icon = templateIcons[page.template] || Newspaper;
-  const primaryColor = page.theme_settings?.primaryColor || '#4F46E5';
+  const theme = page.theme_settings;
+  const primaryColor = theme?.primaryColor || '#4F46E5';
+  const fontFamily = fontFamilies[theme?.fontStyle || 'inter'] || fontFamilies.inter;
+  const formFields = theme?.formFields || defaultFormFields;
+  const showBadge = theme?.showBadge !== false;
+  const badgeText = theme?.badgeText || '✨ Free forever';
+  const showSocialProof = theme?.showSocialProof !== false;
+  const socialProofText = theme?.socialProofText || 'Join 10,000+ subscribers';
+  const thankYouTitle = theme?.thankYouTitle || "You're In!";
+  const thankYouMessage = theme?.thankYouMessage || "Thank you for signing up. We'll be in touch soon!";
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background px-4">
-        <div className="absolute inset-0 -z-10">
+      <div 
+        className="min-h-screen flex items-center justify-center px-4"
+        style={{ ...getBackgroundStyle(theme), fontFamily }}
+      >
+        {/* Ambient background blobs */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
           <div 
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse-slow"
             style={{ backgroundColor: primaryColor }}
           />
           <div 
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
-            style={{ backgroundColor: primaryColor }}
+            className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse-slow"
+            style={{ backgroundColor: primaryColor, animationDelay: '2s' }}
           />
         </div>
 
@@ -166,9 +255,11 @@ export default function PublicSignupPage() {
           >
             <CheckCircle className="h-10 w-10" style={{ color: primaryColor }} />
           </div>
-          <h1 className="text-3xl font-bold mb-4">You're In!</h1>
+          <h1 className="text-3xl font-bold mb-4" style={{ color: primaryColor }}>
+            {thankYouTitle}
+          </h1>
           <p className="text-muted-foreground mb-8">
-            Thank you for signing up. We'll be in touch soon!
+            {thankYouMessage}
           </p>
           <p className="text-sm text-muted-foreground">
             Powered by <span className="font-semibold">LeadCapture</span>
@@ -179,28 +270,56 @@ export default function PublicSignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
-      {/* Background */}
-      <div className="absolute inset-0 -z-10">
+    <div 
+      className="min-h-screen flex items-center justify-center px-4 py-12"
+      style={{ ...getBackgroundStyle(theme), fontFamily }}
+    >
+      {/* Ambient background blobs */}
+      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <div 
-          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
+          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse-slow"
           style={{ backgroundColor: primaryColor }}
         />
         <div 
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
-          style={{ backgroundColor: primaryColor }}
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse-slow"
+          style={{ backgroundColor: primaryColor, animationDelay: '2s' }}
         />
       </div>
 
       <div className="max-w-md w-full">
         <div className="text-center mb-8 animate-fade-up">
-          {/* Icon */}
-          <div 
-            className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center"
-            style={{ backgroundColor: primaryColor }}
-          >
-            <Icon className="h-8 w-8 text-white" />
-          </div>
+          {/* Logo */}
+          {page.logo_url && (
+            <img 
+              src={page.logo_url} 
+              alt="Logo" 
+              className="h-14 w-auto mx-auto mb-6 object-contain"
+              onError={(e) => e.currentTarget.style.display = 'none'}
+            />
+          )}
+
+          {/* Badge */}
+          {showBadge && badgeText && (
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6"
+              style={{ 
+                backgroundColor: `${primaryColor}15`,
+                color: primaryColor 
+              }}
+            >
+              {badgeText}
+            </div>
+          )}
+
+          {/* Icon (only show if no logo) */}
+          {!page.logo_url && (
+            <div 
+              className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg"
+              style={{ backgroundColor: primaryColor }}
+            >
+              <Icon className="h-8 w-8 text-white" />
+            </div>
+          )}
 
           {/* Title */}
           <h1 
@@ -218,59 +337,72 @@ export default function PublicSignupPage() {
           )}
         </div>
 
-        {/* Form */}
-        <form 
-          onSubmit={handleSubmit} 
-          className="space-y-4 animate-fade-up"
+        {/* Form Card */}
+        <div 
+          className="bg-white/80 backdrop-blur-sm rounded-2xl border border-border/50 p-6 shadow-lg animate-fade-up"
           style={{ animationDelay: '0.1s' }}
         >
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              placeholder="Your name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              required
-              className="h-12"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {formFields.map((field) => (
+              <div key={field.id} className="space-y-2">
+                <Label htmlFor={field.id} className="text-sm font-medium">
+                  {field.label}
+                  {field.required && <span className="text-destructive ml-1">*</span>}
+                </Label>
+                {field.type === 'textarea' ? (
+                  <Textarea
+                    id={field.id}
+                    placeholder={field.placeholder}
+                    value={formData[field.id] || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, [field.id]: e.target.value }))}
+                    required={field.required}
+                    rows={3}
+                    className="resize-none"
+                  />
+                ) : (
+                  <Input
+                    id={field.id}
+                    type={field.type === 'phone' ? 'tel' : field.type}
+                    placeholder={field.placeholder}
+                    value={formData[field.id] || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, [field.id]: e.target.value }))}
+                    required={field.required}
+                    className="h-12"
+                  />
+                )}
+              </div>
+            ))}
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="your@email.com"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              required
-              className="h-12"
-            />
-          </div>
+            <Button 
+              type="submit" 
+              className="w-full h-12 text-lg font-semibold shadow-md hover:shadow-lg transition-shadow"
+              style={{ backgroundColor: primaryColor }}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                page.button_text || 'Subscribe'
+              )}
+            </Button>
+          </form>
 
-          <Button 
-            type="submit" 
-            className="w-full h-12 text-lg font-semibold"
-            style={{ backgroundColor: primaryColor }}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Subscribing...
-              </>
-            ) : (
-              page.button_text || 'Subscribe'
-            )}
-          </Button>
-        </form>
+          {/* Social Proof */}
+          {showSocialProof && socialProofText && (
+            <p className="text-center text-sm text-muted-foreground mt-4">
+              {socialProofText}
+            </p>
+          )}
+        </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-muted-foreground mt-8">
+        <p className="text-center text-sm text-muted-foreground mt-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>
           Powered by{' '}
-          <a href="/" className="font-semibold hover:underline">
-            <Zap className="inline h-4 w-4" /> LeadCapture
+          <a href="/" className="font-semibold hover:underline inline-flex items-center gap-1">
+            <Zap className="h-3.5 w-3.5" /> LeadCapture
           </a>
         </p>
       </div>
