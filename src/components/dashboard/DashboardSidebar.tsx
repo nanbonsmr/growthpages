@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -12,112 +13,226 @@ import {
   Zap,
   Plus,
   Shield,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
-  { icon: FileText, label: 'My Pages', href: '/dashboard/pages' },
+  { icon: FileText, label: 'Pages', href: '/dashboard/pages' },
   { icon: Users, label: 'Subscribers', href: '/dashboard/subscribers' },
-  { icon: MessageSquare, label: 'Contact Forms', href: '/dashboard/contacts' },
+  { icon: MessageSquare, label: 'Contacts', href: '/dashboard/contacts' },
   { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
+];
+
+const bottomNavItems = [
   { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
 ];
 
-export function DashboardSidebar() {
+interface DashboardSidebarProps {
+  collapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
+}
+
+export function DashboardSidebar({ collapsed = false, onCollapsedChange }: DashboardSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut, profile, isAdmin } = useAuth();
+  const [isCollapsed, setIsCollapsed] = useState(collapsed);
+
+  const handleCollapse = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    onCollapsedChange?.(newState);
+  };
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
 
+  const NavLink = ({ item, isActive }: { item: typeof navItems[0]; isActive: boolean }) => {
+    const content = (
+      <Link
+        to={item.href}
+        className={cn(
+          'group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium',
+          'transition-all duration-200 ease-out',
+          isActive
+            ? 'bg-primary/10 text-primary'
+            : 'text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent'
+        )}
+      >
+        {/* Active indicator */}
+        {isActive && (
+          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full bg-primary" />
+        )}
+        <item.icon className={cn('h-[18px] w-[18px] flex-shrink-0', isCollapsed && 'mx-auto')} />
+        {!isCollapsed && <span>{item.label}</span>}
+      </Link>
+    );
+
+    if (isCollapsed) {
+      return (
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>{content}</TooltipTrigger>
+          <TooltipContent side="right" className="font-medium">
+            {item.label}
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+
+    return content;
+  };
+
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 border-r border-sidebar-border bg-sidebar flex flex-col">
+    <aside
+      className={cn(
+        'fixed left-0 top-0 h-screen bg-sidebar border-r border-sidebar-border',
+        'flex flex-col transition-all duration-300 ease-out-expo z-40',
+        isCollapsed ? 'w-[72px]' : 'w-64'
+      )}
+    >
       {/* Logo */}
-      <div className="p-6 border-b border-sidebar-border">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
+      <div className={cn(
+        'flex items-center h-16 border-b border-sidebar-border',
+        isCollapsed ? 'justify-center px-2' : 'px-5'
+      )}>
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-primary shadow-sm">
             <Zap className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold">LeadCapture</span>
+          {!isCollapsed && (
+            <span className="text-lg font-bold tracking-tight">LeadCapture</span>
+          )}
         </Link>
       </div>
 
       {/* Create Button */}
-      <div className="p-4">
-        <Button 
-          className="w-full gradient-primary"
-          onClick={() => navigate('/dashboard/pages/new')}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Create Page
-        </Button>
+      <div className={cn('p-3', isCollapsed ? 'px-2' : 'px-4')}>
+        {isCollapsed ? (
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                className="w-full h-10 gradient-primary btn-lift rounded-xl"
+                onClick={() => navigate('/dashboard/pages/new')}
+              >
+                <Plus className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Create Page</TooltipContent>
+          </Tooltip>
+        ) : (
+          <Button
+            className="w-full gradient-primary btn-lift rounded-xl h-10"
+            onClick={() => navigate('/dashboard/pages/new')}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Create Page
+          </Button>
+        )}
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
+      {/* Main Navigation */}
+      <nav className={cn('flex-1 py-2 space-y-1', isCollapsed ? 'px-2' : 'px-3')}>
         {navItems.map((item) => {
-          const isActive = location.pathname === item.href || 
+          const isActive =
+            location.pathname === item.href ||
             (item.href !== '/dashboard' && location.pathname.startsWith(item.href));
-          
-          return (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
-              )}
-            >
-              <item.icon className="h-5 w-5" />
-              {item.label}
-            </Link>
-          );
+
+          return <NavLink key={item.href} item={item} isActive={isActive} />;
         })}
 
         {/* Admin Link */}
         {isAdmin && (
-          <Link
-            to="/admin"
-            className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-              location.pathname.startsWith('/admin')
-                ? 'bg-sidebar-accent text-sidebar-primary'
-                : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
-            )}
-          >
-            <Shield className="h-5 w-5" />
-            Admin Panel
-          </Link>
+          <NavLink
+            item={{ icon: Shield, label: 'Admin', href: '/admin' }}
+            isActive={location.pathname.startsWith('/admin')}
+          />
         )}
       </nav>
 
-      {/* User Section */}
-      <div className="p-4 border-t border-sidebar-border">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-medium text-sm">
-            {profile?.full_name?.charAt(0).toUpperCase() || profile?.email?.charAt(0).toUpperCase() || 'U'}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{profile?.full_name || 'User'}</p>
-            <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
-          </div>
-        </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="w-full justify-start text-muted-foreground"
-          onClick={handleSignOut}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign Out
-        </Button>
+      {/* Bottom Navigation */}
+      <div className={cn('py-2 space-y-1 border-t border-sidebar-border', isCollapsed ? 'px-2' : 'px-3')}>
+        {bottomNavItems.map((item) => {
+          const isActive = location.pathname === item.href;
+          return <NavLink key={item.href} item={item} isActive={isActive} />;
+        })}
       </div>
+
+      {/* User Section */}
+      <div className={cn(
+        'border-t border-sidebar-border',
+        isCollapsed ? 'p-2' : 'p-4'
+      )}>
+        {isCollapsed ? (
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleSignOut}
+                className="w-full flex items-center justify-center p-2.5 rounded-xl hover:bg-sidebar-accent transition-colors"
+              >
+                <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-medium text-sm">
+                  {profile?.full_name?.charAt(0).toUpperCase() || profile?.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="flex flex-col gap-1">
+              <p className="font-medium">{profile?.full_name || 'User'}</p>
+              <p className="text-xs text-muted-foreground">{profile?.email}</p>
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-medium text-sm flex-shrink-0">
+              {profile?.full_name?.charAt(0).toUpperCase() || profile?.email?.charAt(0).toUpperCase() || 'U'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{profile?.full_name || 'User'}</p>
+              <p className="text-xs text-sidebar-muted truncate">{profile?.email}</p>
+            </div>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-sidebar-muted hover:text-sidebar-foreground flex-shrink-0"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Sign Out</TooltipContent>
+            </Tooltip>
+          </div>
+        )}
+      </div>
+
+      {/* Collapse Toggle */}
+      <button
+        onClick={handleCollapse}
+        className={cn(
+          'absolute -right-3 top-20 z-50',
+          'flex h-6 w-6 items-center justify-center rounded-full',
+          'bg-card border border-border shadow-sm',
+          'text-muted-foreground hover:text-foreground',
+          'transition-all duration-200 hover:scale-110'
+        )}
+      >
+        {isCollapsed ? (
+          <ChevronRight className="h-3.5 w-3.5" />
+        ) : (
+          <ChevronLeft className="h-3.5 w-3.5" />
+        )}
+      </button>
     </aside>
   );
 }

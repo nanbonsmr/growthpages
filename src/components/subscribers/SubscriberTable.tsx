@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -20,6 +19,7 @@ import {
 import { MoreHorizontal, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Subscriber } from '@/hooks/useSubscribers';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface SubscriberTableProps {
   subscribers: Subscriber[];
@@ -83,11 +83,14 @@ export function SubscriberTable({
     <Button
       variant="ghost"
       size="sm"
-      className="-ml-3 h-8 font-medium"
+      className="-ml-3 h-8 font-medium text-muted-foreground hover:text-foreground"
       onClick={() => onSort(field)}
     >
       {children}
-      <ArrowUpDown className="ml-2 h-3.5 w-3.5 text-muted-foreground" />
+      <ArrowUpDown className={cn(
+        "ml-2 h-3.5 w-3.5 transition-colors",
+        sortField === field ? "text-foreground" : "text-muted-foreground/50"
+      )} />
     </Button>
   );
 
@@ -96,10 +99,10 @@ export function SubscriberTable({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-border bg-card overflow-hidden">
+      <div className="rounded-2xl border border-border/50 bg-card overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/30 hover:bg-muted/30">
+            <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border/50">
               <TableHead className="w-[50px]">
                 <Checkbox
                   checked={allSelected}
@@ -118,20 +121,24 @@ export function SubscriberTable({
               <TableHead>
                 <SortHeader field="email">Email</SortHeader>
               </TableHead>
-              <TableHead>Source Page</TableHead>
-              <TableHead>
-                <SortHeader field="created_at">Signup Date</SortHeader>
+              <TableHead className="hidden md:table-cell">Source</TableHead>
+              <TableHead className="hidden sm:table-cell">
+                <SortHeader field="created_at">Date</SortHeader>
               </TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Tags</TableHead>
+              <TableHead className="hidden lg:table-cell">Tags</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {subscribers.map((subscriber) => (
+            {subscribers.map((subscriber, index) => (
               <TableRow 
                 key={subscriber.id}
-                className="cursor-pointer"
+                className={cn(
+                  "cursor-pointer transition-colors table-row-hover",
+                  "animate-fade-in"
+                )}
+                style={{ animationDelay: `${index * 0.02}s` }}
                 onClick={() => onViewSubscriber(subscriber)}
               >
                 <TableCell onClick={(e) => e.stopPropagation()}>
@@ -141,36 +148,47 @@ export function SubscriberTable({
                     aria-label={`Select ${subscriber.name}`}
                   />
                 </TableCell>
-                <TableCell className="font-medium">{subscriber.name}</TableCell>
-                <TableCell className="text-muted-foreground">{subscriber.email}</TableCell>
                 <TableCell>
-                  <span className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-xs font-medium flex-shrink-0">
+                      {subscriber.name.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="font-medium truncate">{subscriber.name}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-muted-foreground truncate max-w-[200px]">
+                  {subscriber.email}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  <span className="text-sm text-muted-foreground truncate">
                     {subscriber.page?.title || 'Unknown'}
                   </span>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="hidden sm:table-cell text-muted-foreground text-sm">
                   {format(new Date(subscriber.created_at), 'MMM dd, yyyy')}
                 </TableCell>
                 <TableCell>
                   <Badge 
-                    variant={subscriber.status === 'active' ? 'default' : 'secondary'}
-                    className={subscriber.status === 'active' 
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-100'
-                      : 'bg-muted text-muted-foreground'
-                    }
+                    variant="outline"
+                    className={cn(
+                      "rounded-lg font-medium",
+                      subscriber.status === 'active' 
+                        ? 'bg-success/10 text-success border-success/20'
+                        : 'bg-muted text-muted-foreground border-border'
+                    )}
                   >
                     {subscriber.status === 'active' ? 'Active' : 'Unsubscribed'}
                   </Badge>
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden lg:table-cell">
                   <div className="flex gap-1 flex-wrap">
                     {subscriber.tags?.slice(0, 2).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
+                      <Badge key={tag} variant="outline" className="text-xs rounded-md">
                         {tag}
                       </Badge>
                     ))}
                     {subscriber.tags && subscriber.tags.length > 2 && (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs rounded-md">
                         +{subscriber.tags.length - 2}
                       </Badge>
                     )}
@@ -179,12 +197,15 @@ export function SubscriberTable({
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onViewSubscriber(subscriber)}>
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl p-1">
+                      <DropdownMenuItem 
+                        onClick={() => onViewSubscriber(subscriber)}
+                        className="rounded-lg cursor-pointer"
+                      >
                         View Details
                       </DropdownMenuItem>
                       <DropdownMenuItem 
@@ -192,12 +213,13 @@ export function SubscriberTable({
                           subscriber.id, 
                           subscriber.status === 'active' ? 'unsubscribed' : 'active'
                         )}
+                        className="rounded-lg cursor-pointer"
                       >
                         Mark as {subscriber.status === 'active' ? 'Unsubscribed' : 'Active'}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
-                        className="text-destructive focus:text-destructive"
+                        className="rounded-lg cursor-pointer text-destructive focus:text-destructive"
                         onClick={() => onDeleteSubscriber(subscriber.id)}
                       >
                         Delete
@@ -212,16 +234,19 @@ export function SubscriberTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-2">
         <p className="text-sm text-muted-foreground">
-          Showing {startIndex} to {endIndex} of {totalCount} subscribers
+          Showing <span className="font-medium text-foreground">{startIndex}</span> to{' '}
+          <span className="font-medium text-foreground">{endIndex}</span> of{' '}
+          <span className="font-medium text-foreground">{totalCount}</span>
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
+            className="h-9 w-9 p-0 rounded-lg"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -240,9 +265,12 @@ export function SubscriberTable({
               return (
                 <Button
                   key={pageNum}
-                  variant={currentPage === pageNum ? 'default' : 'outline'}
+                  variant={currentPage === pageNum ? 'default' : 'ghost'}
                   size="sm"
-                  className="w-8"
+                  className={cn(
+                    "h-9 w-9 p-0 rounded-lg",
+                    currentPage === pageNum && "gradient-primary"
+                  )}
                   onClick={() => onPageChange(pageNum)}
                 >
                   {pageNum}
@@ -255,6 +283,7 @@ export function SubscriberTable({
             size="sm"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
+            className="h-9 w-9 p-0 rounded-lg"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
