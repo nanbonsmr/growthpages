@@ -233,7 +233,12 @@ export default function Subscribers() {
       title="Subscribers"
       description="Manage and organize your collected leads."
       actions={
-        <Button onClick={exportToCSV} variant="outline" disabled={subscribers.length === 0}>
+        <Button 
+          onClick={exportToCSV} 
+          variant="outline" 
+          disabled={subscribers.length === 0}
+          className="rounded-xl h-10"
+        >
           <Download className="mr-2 h-4 w-4" />
           Export All
         </Button>
@@ -241,7 +246,10 @@ export default function Subscribers() {
     >
       {isLoading ? (
         <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Loading subscribers...</p>
+          </div>
         </div>
       ) : (
         <>
@@ -268,19 +276,17 @@ export default function Subscribers() {
 
               {/* Table or Empty State */}
               {filteredSubscribers.length === 0 ? (
-                <Card>
-                  <CardContent className="flex flex-col items-center justify-center py-16">
-                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                      <Users className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">No subscribers yet</h3>
-                    <p className="text-muted-foreground text-center max-w-sm">
-                      {hasActiveFilters
-                        ? 'No subscribers match your filters. Try adjusting your search criteria.'
-                        : 'Share your signup pages to start collecting subscribers.'}
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border border-border/50 bg-card">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                    <Users className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No subscribers yet</h3>
+                  <p className="text-muted-foreground text-center max-w-sm">
+                    {hasActiveFilters
+                      ? 'No subscribers match your filters. Try adjusting your search criteria.'
+                      : 'Share your signup pages to start collecting subscribers.'}
+                  </p>
+                </div>
               ) : (
                 <SubscriberTable
                   subscribers={paginatedSubscribers}

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface StatsCardProps {
   title: string;
@@ -10,32 +10,57 @@ interface StatsCardProps {
     value: number;
     positive: boolean;
   };
+  subtitle?: string;
   className?: string;
 }
 
-export function StatsCard({ title, value, icon, trend, className }: StatsCardProps) {
+export function StatsCard({ title, value, icon, trend, subtitle, className }: StatsCardProps) {
   return (
-    <Card className={cn('relative overflow-hidden', className)}>
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-3xl font-bold mt-2">{value}</p>
+    <div
+      className={cn(
+        'relative overflow-hidden rounded-2xl bg-card border border-border/50 p-6',
+        'transition-all duration-300 ease-out card-hover',
+        className
+      )}
+    >
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent pointer-events-none" />
+
+      <div className="relative flex items-start justify-between">
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <div className="flex items-baseline gap-2">
+            <p className="text-3xl font-bold tracking-tight">{value}</p>
             {trend && (
-              <div className={cn(
-                'flex items-center gap-1 mt-2 text-sm font-medium',
-                trend.positive ? 'text-success' : 'text-destructive'
-              )}>
-                <span>{trend.positive ? '+' : ''}{trend.value}%</span>
-                <span className="text-muted-foreground font-normal">vs last week</span>
-              </div>
+              <span
+                className={cn(
+                  'inline-flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-md',
+                  trend.positive
+                    ? 'text-success bg-success/10'
+                    : 'text-destructive bg-destructive/10'
+                )}
+              >
+                {trend.positive ? (
+                  <TrendingUp className="h-3 w-3" />
+                ) : (
+                  <TrendingDown className="h-3 w-3" />
+                )}
+                {trend.positive ? '+' : ''}
+                {trend.value}%
+              </span>
             )}
           </div>
-          <div className="p-3 rounded-lg bg-primary/10">
-            {icon}
-          </div>
+          {subtitle && (
+            <p className="text-xs text-muted-foreground">{subtitle}</p>
+          )}
+          {trend && !subtitle && (
+            <p className="text-xs text-muted-foreground">vs last period</p>
+          )}
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary flex-shrink-0">
+          {icon}
+        </div>
+      </div>
+    </div>
   );
 }
