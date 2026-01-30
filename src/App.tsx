@@ -24,6 +24,7 @@ import Subscribers from "./pages/dashboard/Subscribers";
 import ContactSubmissions from "./pages/dashboard/ContactSubmissions";
 import Analytics from "./pages/dashboard/Analytics";
 import Settings from "./pages/dashboard/Settings";
+import Billing from "./pages/dashboard/Billing";
 
 // Admin
 import Admin from "./pages/Admin";
@@ -109,6 +110,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Settings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/billing"
+                element={
+                  <ProtectedRoute>
+                    <Billing />
                   </ProtectedRoute>
                 }
               />
