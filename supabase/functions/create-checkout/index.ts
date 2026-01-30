@@ -62,25 +62,25 @@ serve(async (req) => {
     const baseUrl = returnUrl || `${req.headers.get('origin')}/dashboard/settings`;
 
     // Determine if we're in test mode
+    // Default to test mode unless explicitly set to 'live' or key starts with 'sk_live_'
     const isTestMode =
-      DODO_MODE === 'test'
-        ? true
-        : DODO_MODE === 'live'
-          ? false
-          : DODO_API_KEY.startsWith('sk_test_');
+      DODO_MODE === 'live'
+        ? false
+        : DODO_MODE === 'test'
+          ? true
+          : !DODO_API_KEY.startsWith('sk_live_'); // default to test if unsure
 
     // Safe diagnostic (does not log the secret)
     console.log(
-      `Dodo mode: ${isTestMode ? 'test' : 'live'} (override=${DODO_MODE || 'none'})`
+      `Dodo mode: ${isTestMode ? 'test' : 'live'} (override=${DODO_MODE || 'none'}, key prefix: ${DODO_API_KEY.slice(0, 8)}...)`
     );
 
     const apiBase = isTestMode
       ? 'https://test.dodopayments.com'
       : 'https://live.dodopayments.com';
 
-    // Create Dodo checkout session
-    // Dodo docs refer to "checkout sessions"; the REST path is typically /checkout-sessions.
-    const checkoutResponse = await fetch(`${apiBase}/checkout-sessions`, {
+    // Create Dodo checkout session (endpoint is /checkouts per Dodo API)
+    const checkoutResponse = await fetch(`${apiBase}/checkouts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
