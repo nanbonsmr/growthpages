@@ -120,22 +120,40 @@ export default function PublicSignupPage() {
         }
       });
 
-      const { error } = await supabase.from('subscribers').insert({
-        page_id: page.id,
-        name,
-        email,
-        metadata: Object.keys(metadata).length > 0 ? metadata : null,
-      });
+      // Use edge function to handle subscriber limits
+      const response = await fetch(
+        'https://zbshmgxrcpwqvcgdtkch.supabase.co/functions/v1/subscribe',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            page_id: page.id,
+            name,
+            email,
+            metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+          }),
+        }
+      );
 
-      if (error) {
-        if (error.code === '23505') {
+      const result = await response.json();
+
+      if (!result.success) {
+        if (result.error === 'already_subscribed') {
           toast({
             variant: 'destructive',
             title: 'Already subscribed',
             description: 'This email is already registered.',
           });
+        } else if (result.error === 'subscriber_limit_reached') {
+          toast({
+            variant: 'destructive',
+            title: 'Signup unavailable',
+            description: result.message || 'This page is not accepting new signups at this time.',
+          });
         } else {
-          throw error;
+          throw new Error(result.message || 'Failed to subscribe');
         }
         return;
       }

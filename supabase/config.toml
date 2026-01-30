@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.cancel-subscription]
 verify_jwt = false
+
+[functions.subscribe]
+verify_jwt = false
