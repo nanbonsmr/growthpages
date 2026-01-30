@@ -13,6 +13,7 @@ import { VideoBlock } from './VideoBlock';
 import { AccordionBlock } from './AccordionBlock';
 import { PricingBlock } from './PricingBlock';
 import { FeatureGridBlock } from './FeatureGridBlock';
+import { HeroBlock } from './HeroBlock';
 
 interface BlockRendererProps {
   block: Block;
@@ -57,6 +58,8 @@ export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate }
       return <PricingBlock props={block.props as any} {...commonProps} />;
     case 'feature-grid':
       return <FeatureGridBlock props={block.props as any} {...commonProps} />;
+    case 'hero':
+      return <HeroBlock block={block} isSelected={isSelected} isPreview={isPreview} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
     default:
       return (
         <div className="p-4 bg-muted rounded text-muted-foreground text-sm">

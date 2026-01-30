@@ -12,7 +12,8 @@ export type BlockType =
   | 'video'
   | 'accordion'
   | 'pricing'
-  | 'feature-grid';
+  | 'feature-grid'
+  | 'hero';
 
 export type BlockCategory = 'basic' | 'forms' | 'marketing' | 'layout';
 
@@ -172,6 +173,18 @@ export interface FeatureGridProps {
   style: 'cards' | 'minimal' | 'icons-left';
   iconColor: string;
   showIcons: boolean;
+}
+
+export interface HeroProps {
+  headline: string;
+  subheadline: string;
+  buttonText: string;
+  buttonLink: string;
+  backgroundImage: string;
+  backgroundOverlay: number;
+  height: 'small' | 'medium' | 'large' | 'full';
+  alignment: 'left' | 'center' | 'right';
+  textColor: 'light' | 'dark';
 }
 
 export interface PageSettings {
@@ -426,6 +439,23 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       iconColor: '#7c3aed',
       showIcons: true,
     } as FeatureGridProps,
+  },
+  {
+    type: 'hero',
+    label: 'Hero Section',
+    icon: 'Sparkles',
+    category: 'marketing',
+    defaultProps: {
+      headline: 'Build Something Amazing',
+      subheadline: 'Create stunning landing pages in minutes with our drag-and-drop editor. No coding required.',
+      buttonText: 'Get Started Free',
+      buttonLink: '#signup',
+      backgroundImage: '',
+      backgroundOverlay: 50,
+      height: 'medium',
+      alignment: 'center',
+      textColor: 'light',
+    } as HeroProps,
   },
 ];
 
