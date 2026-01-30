@@ -1614,6 +1614,159 @@ function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
         </div>
       );
 
+    case 'contact-form':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Layout</Label>
+            <Select value={props.layout || 'stacked'} onValueChange={(v) => onUpdate({ layout: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="stacked">Stacked</SelectItem>
+                <SelectItem value="two-column">Two Column</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Field Toggles */}
+          <div className="space-y-3 pt-4 border-t">
+            <Label className="text-muted-foreground">Fields</Label>
+            
+            <div className="flex items-center justify-between">
+              <Label>Name Field</Label>
+              <Switch
+                checked={props.showName ?? true}
+                onCheckedChange={(v) => onUpdate({ showName: v })}
+              />
+            </div>
+            {props.showName && (
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  value={props.nameLabel}
+                  onChange={(e) => onUpdate({ nameLabel: e.target.value })}
+                  placeholder="Label"
+                />
+                <Input
+                  value={props.namePlaceholder}
+                  onChange={(e) => onUpdate({ namePlaceholder: e.target.value })}
+                  placeholder="Placeholder"
+                />
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <Label>Email Field</Label>
+              <Switch
+                checked={props.showEmail ?? true}
+                onCheckedChange={(v) => onUpdate({ showEmail: v })}
+              />
+            </div>
+            {props.showEmail && (
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  value={props.emailLabel}
+                  onChange={(e) => onUpdate({ emailLabel: e.target.value })}
+                  placeholder="Label"
+                />
+                <Input
+                  value={props.emailPlaceholder}
+                  onChange={(e) => onUpdate({ emailPlaceholder: e.target.value })}
+                  placeholder="Placeholder"
+                />
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <Label>Phone Field</Label>
+              <Switch
+                checked={props.showPhone ?? true}
+                onCheckedChange={(v) => onUpdate({ showPhone: v })}
+              />
+            </div>
+            {props.showPhone && (
+              <>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    value={props.phoneLabel}
+                    onChange={(e) => onUpdate({ phoneLabel: e.target.value })}
+                    placeholder="Label"
+                  />
+                  <Input
+                    value={props.phonePlaceholder}
+                    onChange={(e) => onUpdate({ phonePlaceholder: e.target.value })}
+                    placeholder="Placeholder"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Require Phone</Label>
+                  <Switch
+                    checked={props.requirePhone ?? false}
+                    onCheckedChange={(v) => onUpdate({ requirePhone: v })}
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="flex items-center justify-between">
+              <Label>Message Field</Label>
+              <Switch
+                checked={props.showMessage ?? true}
+                onCheckedChange={(v) => onUpdate({ showMessage: v })}
+              />
+            </div>
+            {props.showMessage && (
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  value={props.messageLabel}
+                  onChange={(e) => onUpdate({ messageLabel: e.target.value })}
+                  placeholder="Label"
+                />
+                <Input
+                  value={props.messagePlaceholder}
+                  onChange={(e) => onUpdate({ messagePlaceholder: e.target.value })}
+                  placeholder="Placeholder"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Button Settings */}
+          <div className="space-y-3 pt-4 border-t">
+            <Label className="text-muted-foreground">Button</Label>
+            <div>
+              <Label>Button Text</Label>
+              <Input
+                value={props.buttonText}
+                onChange={(e) => onUpdate({ buttonText: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Button Color</Label>
+              <Input
+                type="color"
+                value={props.buttonColor || '#7c3aed'}
+                onChange={(e) => onUpdate({ buttonColor: e.target.value })}
+                className="mt-1 h-10 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          {/* Success Message */}
+          <div className="pt-4 border-t">
+            <Label>Success Message</Label>
+            <Textarea
+              value={props.successMessage}
+              onChange={(e) => onUpdate({ successMessage: e.target.value })}
+              placeholder="Thank you! We'll be in touch soon."
+              className="mt-1"
+            />
+          </div>
+        </div>
+      );
+
     default:
       return (
         <p className="text-muted-foreground text-sm">

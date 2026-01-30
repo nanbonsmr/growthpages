@@ -15,7 +15,8 @@ export type BlockType =
   | 'feature-grid'
   | 'hero'
   | 'nav'
-  | 'footer';
+  | 'footer'
+  | 'contact-form';
 
 export type BlockCategory = 'basic' | 'forms' | 'marketing' | 'layout';
 
@@ -238,6 +239,26 @@ export interface FooterProps {
   backgroundColor: string;
   textColor: string;
   showSocials: boolean;
+}
+
+export interface ContactFormProps {
+  showName: boolean;
+  showEmail: boolean;
+  showPhone: boolean;
+  showMessage: boolean;
+  nameLabel: string;
+  emailLabel: string;
+  phoneLabel: string;
+  messageLabel: string;
+  namePlaceholder: string;
+  emailPlaceholder: string;
+  phonePlaceholder: string;
+  messagePlaceholder: string;
+  buttonText: string;
+  buttonColor: string;
+  successMessage: string;
+  requirePhone: boolean;
+  layout: 'stacked' | 'two-column';
 }
 
 export interface PageSettings {
@@ -586,6 +607,31 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       textColor: '#ffffff',
       showSocials: true,
     } as FooterProps,
+  },
+  {
+    type: 'contact-form',
+    label: 'Contact Form',
+    icon: 'MessageSquare',
+    category: 'forms',
+    defaultProps: {
+      showName: true,
+      showEmail: true,
+      showPhone: true,
+      showMessage: true,
+      nameLabel: 'Name',
+      emailLabel: 'Email',
+      phoneLabel: 'Phone',
+      messageLabel: 'Message',
+      namePlaceholder: 'Your name',
+      emailPlaceholder: 'your@email.com',
+      phonePlaceholder: '+1 (555) 000-0000',
+      messagePlaceholder: 'How can we help you?',
+      buttonText: 'Send Message',
+      buttonColor: '#7c3aed',
+      successMessage: 'Thank you! We\'ll be in touch soon.',
+      requirePhone: false,
+      layout: 'stacked',
+    } as ContactFormProps,
   },
 ];
 
