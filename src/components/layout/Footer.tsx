@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { Zap, Twitter, Github, Linkedin, Mail } from 'lucide-react';
+import { Twitter, Github, Linkedin, Mail } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import logo from '@/assets/logo.png';
 
 const footerLinks = {
   product: [
@@ -34,9 +35,7 @@ export function Footer() {
           {/* Brand Column */}
           <div className="col-span-2">
             <Link to="/" className="inline-flex items-center gap-2.5 mb-5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-primary">
-                <Zap className="h-5 w-5 text-primary-foreground" />
-              </div>
+              <img src={logo} alt="LeadCapture" className="h-9 w-9 object-contain" />
               <span className="text-xl font-bold tracking-tight">LeadCapture</span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-xs">

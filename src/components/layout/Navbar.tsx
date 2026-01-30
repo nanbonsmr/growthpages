@@ -1,9 +1,10 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Zap, Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import logo from '@/assets/logo.png';
 
 const navLinks = [
   { name: 'Features', href: '/features' },
@@ -45,9 +46,7 @@ export function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-primary transition-transform group-hover:scale-105">
-              <Zap className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <img src={logo} alt="LeadCapture" className="h-9 w-9 object-contain transition-transform group-hover:scale-105" />
             <span className="text-xl font-bold tracking-tight">LeadCapture</span>
           </Link>
 
