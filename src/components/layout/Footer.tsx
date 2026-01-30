@@ -35,8 +35,8 @@ export function Footer() {
           {/* Brand Column */}
           <div className="col-span-2">
             <Link to="/" className="inline-flex items-center gap-2.5 mb-5">
-              <img src={logo} alt="LeadCapture" className="h-9 w-9 object-contain" />
-              <span className="text-xl font-bold tracking-tight">LeadCapture</span>
+              <img src={logo} alt="GrowthPages" className="h-9 w-9 object-contain" />
+              <span className="text-xl font-bold tracking-tight">GrowthPages</span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-xs">
               Create beautiful signup pages and grow your audience with the most intuitive lead capture platform.

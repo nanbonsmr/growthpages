@@ -46,8 +46,8 @@ export function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <img src={logo} alt="LeadCapture" className="h-9 w-9 object-contain transition-transform group-hover:scale-105" />
-            <span className="text-xl font-bold tracking-tight">LeadCapture</span>
+            <img src={logo} alt="GrowthPages" className="h-9 w-9 object-contain transition-transform group-hover:scale-105" />
+            <span className="text-xl font-bold tracking-tight">GrowthPages</span>
           </Link>
 
           {/* Desktop Navigation */}
