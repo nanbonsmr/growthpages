@@ -1,4 +1,4 @@
-import { Block, PageSettings, BLOCK_DEFINITIONS, AccordionItemData, PricingTier, FeatureItem, NavMenuItem } from './types';
+import { Block, PageSettings, BLOCK_DEFINITIONS, AccordionItemData, PricingTier, FeatureItem, NavMenuItem, FooterColumn, FooterLink, FooterSocial } from './types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -1351,6 +1351,266 @@ function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
               </>
             )}
           </div>
+        </div>
+      );
+
+    case 'footer':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Style</Label>
+            <Select value={props.style || 'columns'} onValueChange={(v) => onUpdate({ style: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="simple">Simple (One Row)</SelectItem>
+                <SelectItem value="columns">Columns</SelectItem>
+                <SelectItem value="centered">Centered</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label>Logo Type</Label>
+            <Select value={props.logoType || 'text'} onValueChange={(v) => onUpdate({ logoType: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="text">Text</SelectItem>
+                <SelectItem value="image">Image</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {props.logoType === 'image' ? (
+            <ImageUpload
+              value={props.logoImage}
+              onChange={(url) => onUpdate({ logoImage: url })}
+              label="Logo Image"
+              aspectRatio="square"
+            />
+          ) : (
+            <div>
+              <Label>Logo Text</Label>
+              <Input
+                value={props.logoText}
+                onChange={(e) => onUpdate({ logoText: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+          )}
+
+          <div>
+            <Label>Tagline</Label>
+            <Input
+              value={props.tagline}
+              onChange={(e) => onUpdate({ tagline: e.target.value })}
+              placeholder="Your company tagline"
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label>Copyright Text</Label>
+            <Input
+              value={props.copyrightText}
+              onChange={(e) => onUpdate({ copyrightText: e.target.value })}
+              placeholder="© {year} Company"
+              className="mt-1"
+            />
+            <p className="text-xs text-muted-foreground mt-1">Use {'{year}'} for current year</p>
+          </div>
+
+          <div>
+            <Label>Background Color</Label>
+            <Input
+              type="color"
+              value={props.backgroundColor || '#1a1a2e'}
+              onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
+              className="mt-1 h-10 cursor-pointer"
+            />
+          </div>
+          <div>
+            <Label>Text Color</Label>
+            <Input
+              type="color"
+              value={props.textColor || '#ffffff'}
+              onChange={(e) => onUpdate({ textColor: e.target.value })}
+              className="mt-1 h-10 cursor-pointer"
+            />
+          </div>
+
+          {/* Social Links */}
+          <div className="space-y-3 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <Label>Show Social Icons</Label>
+              <Switch
+                checked={props.showSocials ?? true}
+                onCheckedChange={(v) => onUpdate({ showSocials: v })}
+              />
+            </div>
+            {props.showSocials && (
+              <div className="space-y-2">
+                {props.socials?.map((social: FooterSocial, idx: number) => (
+                  <div key={social.platform} className="flex items-center gap-2">
+                    <Switch
+                      checked={social.enabled}
+                      onCheckedChange={(v) => {
+                        const newSocials = props.socials.map((s: FooterSocial, i: number) =>
+                          i === idx ? { ...s, enabled: v } : s
+                        );
+                        onUpdate({ socials: newSocials });
+                      }}
+                    />
+                    <span className="text-sm capitalize w-20">{social.platform}</span>
+                    {social.enabled && (
+                      <Input
+                        value={social.url}
+                        onChange={(e) => {
+                          const newSocials = props.socials.map((s: FooterSocial, i: number) =>
+                            i === idx ? { ...s, url: e.target.value } : s
+                          );
+                          onUpdate({ socials: newSocials });
+                        }}
+                        placeholder="https://..."
+                        className="flex-1"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Link Columns - Only show for columns/centered style */}
+          {(props.style === 'columns' || props.style === 'centered') && (
+            <div className="space-y-3 pt-4 border-t">
+              <div className="flex items-center justify-between">
+                <Label>Link Columns</Label>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const newColumn: FooterColumn = {
+                      id: Math.random().toString(36).substr(2, 9),
+                      title: 'New Column',
+                      links: [{ id: '1', label: 'Link', url: '#' }],
+                    };
+                    onUpdate({ columns: [...(props.columns || []), newColumn] });
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-1" /> Add
+                </Button>
+              </div>
+              {props.columns?.map((column: FooterColumn, colIdx: number) => (
+                <div key={column.id} className="p-3 border rounded-lg space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Input
+                      value={column.title}
+                      onChange={(e) => {
+                        const newColumns = props.columns.map((c: FooterColumn, i: number) =>
+                          i === colIdx ? { ...c, title: e.target.value } : c
+                        );
+                        onUpdate({ columns: newColumns });
+                      }}
+                      placeholder="Column title"
+                      className="font-medium"
+                    />
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6 ml-2"
+                      onClick={() => {
+                        const newColumns = props.columns.filter((_: FooterColumn, i: number) => i !== colIdx);
+                        onUpdate({ columns: newColumns });
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div className="space-y-1">
+                    {column.links.map((link: FooterLink, linkIdx: number) => (
+                      <div key={link.id} className="flex gap-1">
+                        <Input
+                          value={link.label}
+                          onChange={(e) => {
+                            const newColumns = props.columns.map((c: FooterColumn, ci: number) =>
+                              ci === colIdx
+                                ? {
+                                    ...c,
+                                    links: c.links.map((l: FooterLink, li: number) =>
+                                      li === linkIdx ? { ...l, label: e.target.value } : l
+                                    ),
+                                  }
+                                : c
+                            );
+                            onUpdate({ columns: newColumns });
+                          }}
+                          placeholder="Label"
+                          className="text-sm"
+                        />
+                        <Input
+                          value={link.url}
+                          onChange={(e) => {
+                            const newColumns = props.columns.map((c: FooterColumn, ci: number) =>
+                              ci === colIdx
+                                ? {
+                                    ...c,
+                                    links: c.links.map((l: FooterLink, li: number) =>
+                                      li === linkIdx ? { ...l, url: e.target.value } : l
+                                    ),
+                                  }
+                                : c
+                            );
+                            onUpdate({ columns: newColumns });
+                          }}
+                          placeholder="#url"
+                          className="text-sm"
+                        />
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 shrink-0"
+                          onClick={() => {
+                            const newColumns = props.columns.map((c: FooterColumn, ci: number) =>
+                              ci === colIdx
+                                ? { ...c, links: c.links.filter((_: FooterLink, li: number) => li !== linkIdx) }
+                                : c
+                            );
+                            onUpdate({ columns: newColumns });
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="w-full mt-1"
+                      onClick={() => {
+                        const newColumns = props.columns.map((c: FooterColumn, ci: number) =>
+                          ci === colIdx
+                            ? {
+                                ...c,
+                                links: [
+                                  ...c.links,
+                                  { id: Math.random().toString(36).substr(2, 9), label: 'New Link', url: '#' },
+                                ],
+                              }
+                            : c
+                        );
+                        onUpdate({ columns: newColumns });
+                      }}
+                    >
+                      <Plus className="h-3 w-3 mr-1" /> Add Link
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       );
 
