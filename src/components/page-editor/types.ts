@@ -13,7 +13,8 @@ export type BlockType =
   | 'accordion'
   | 'pricing'
   | 'feature-grid'
-  | 'hero';
+  | 'hero'
+  | 'nav';
 
 export type BlockCategory = 'basic' | 'forms' | 'marketing' | 'layout';
 
@@ -185,6 +186,25 @@ export interface HeroProps {
   height: 'small' | 'medium' | 'large' | 'full';
   alignment: 'left' | 'center' | 'right';
   textColor: 'light' | 'dark';
+}
+
+export interface NavMenuItem {
+  id: string;
+  label: string;
+  url: string;
+}
+
+export interface NavProps {
+  logoType: 'text' | 'image';
+  logoText: string;
+  logoImage: string;
+  menuItems: NavMenuItem[];
+  ctaButton: { enabled: boolean; text: string; url: string };
+  style: 'transparent' | 'solid' | 'glass';
+  alignment: 'left' | 'center' | 'spread';
+  sticky: boolean;
+  backgroundColor: string;
+  textColor: string;
 }
 
 export interface PageSettings {
@@ -456,6 +476,29 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       alignment: 'center',
       textColor: 'light',
     } as HeroProps,
+  },
+  {
+    type: 'nav',
+    label: 'Navigation',
+    icon: 'PanelTop',
+    category: 'layout',
+    defaultProps: {
+      logoType: 'text',
+      logoText: 'YourBrand',
+      logoImage: '',
+      menuItems: [
+        { id: '1', label: 'Features', url: '#features' },
+        { id: '2', label: 'Pricing', url: '#pricing' },
+        { id: '3', label: 'About', url: '#about' },
+        { id: '4', label: 'Contact', url: '#contact' },
+      ],
+      ctaButton: { enabled: true, text: 'Get Started', url: '#signup' },
+      style: 'glass',
+      alignment: 'spread',
+      sticky: true,
+      backgroundColor: '#ffffff',
+      textColor: '#000000',
+    } as NavProps,
   },
 ];
 

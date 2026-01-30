@@ -14,6 +14,7 @@ import { AccordionBlock } from './AccordionBlock';
 import { PricingBlock } from './PricingBlock';
 import { FeatureGridBlock } from './FeatureGridBlock';
 import { HeroBlock } from './HeroBlock';
+import { NavBlock } from './NavBlock';
 
 interface BlockRendererProps {
   block: Block;
@@ -60,6 +61,8 @@ export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate }
       return <FeatureGridBlock props={block.props as any} {...commonProps} />;
     case 'hero':
       return <HeroBlock block={block} isSelected={isSelected} isPreview={isPreview} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
+    case 'nav':
+      return <NavBlock block={block} isSelected={isSelected} isPreview={isPreview} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
     default:
       return (
         <div className="p-4 bg-muted rounded text-muted-foreground text-sm">
