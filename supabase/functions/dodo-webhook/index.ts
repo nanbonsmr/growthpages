@@ -161,7 +161,40 @@ serve(async (req) => {
       }
 
       case 'payment.succeeded': {
-        console.log('Payment succeeded:', payload.data.id);
+        // Handle one-time payment or subscription payment
+        const { data } = payload;
+        const userId = data.metadata?.user_id;
+        const planId = data.metadata?.plan_id;
+
+        console.log('Payment succeeded:', data.id, { userId, planId });
+
+        if (userId && planId) {
+          // Check if subscription already exists for this user
+          const { data: existingSub } = await supabase
+            .from('subscriptions')
+            .select('id')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+          if (!existingSub) {
+            // Create subscription from payment
+            const { error: insertError } = await supabase
+              .from('subscriptions')
+              .insert({
+                user_id: userId,
+                dodo_customer_id: data.customer_id,
+                dodo_subscription_id: data.id,
+                plan_id: planId,
+                status: 'active',
+              });
+
+            if (insertError) {
+              console.error('Error creating subscription from payment:', insertError);
+            } else {
+              console.log(`Subscription created from payment for user ${userId}, plan: ${planId}`);
+            }
+          }
+        }
         break;
       }
 
