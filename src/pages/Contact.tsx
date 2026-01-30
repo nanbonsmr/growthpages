@@ -6,8 +6,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, MessageSquare, HelpCircle, Building } from 'lucide-react';
+import { 
+  Mail, 
+  MessageSquare, 
+  HelpCircle, 
+  Building, 
+  Send,
+  Clock,
+  ChevronDown
+} from 'lucide-react';
 import { z } from 'zod';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
@@ -20,20 +34,46 @@ const contactOptions = [
   {
     icon: HelpCircle,
     title: 'Support',
-    description: 'Get help with your account or technical issues',
+    description: 'Get help with your account',
     email: 'support@leadcapture.com',
+    gradient: 'from-blue-500 to-cyan-500',
   },
   {
     icon: MessageSquare,
     title: 'Sales',
-    description: 'Learn more about our plans and pricing',
+    description: 'Learn about our plans',
     email: 'sales@leadcapture.com',
+    gradient: 'from-violet-500 to-purple-500',
   },
   {
     icon: Building,
     title: 'Partnerships',
-    description: 'Explore partnership opportunities',
+    description: 'Explore opportunities',
     email: 'partners@leadcapture.com',
+    gradient: 'from-emerald-500 to-teal-500',
+  },
+];
+
+const faqs = [
+  {
+    question: "How quickly can I get started?",
+    answer: "You can create your first signup page in under 2 minutes. Just sign up, choose a template, customize it, and publish. No technical skills required."
+  },
+  {
+    question: "Can I use my own domain?",
+    answer: "Yes! Pro and Business plans include custom domain support. You can connect your own domain for a fully branded experience."
+  },
+  {
+    question: "What happens if I exceed my subscriber limit?",
+    answer: "We'll notify you when you're approaching your limit. You can upgrade your plan anytime to accommodate more subscribers without losing any data."
+  },
+  {
+    question: "Do you offer refunds?",
+    answer: "Yes, we offer a 14-day money-back guarantee on all paid plans. If you're not satisfied, contact us for a full refund."
+  },
+  {
+    question: "Can I export my subscribers?",
+    answer: "Absolutely! You can export your subscriber list to CSV anytime. Your data is always yours."
   },
 ];
 
@@ -51,7 +91,6 @@ export default function Contact() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -61,7 +100,6 @@ export default function Contact() {
     e.preventDefault();
     setErrors({});
 
-    // Validate form data
     const result = contactSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -75,8 +113,6 @@ export default function Contact() {
     }
 
     setIsSubmitting(true);
-
-    // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     toast({
@@ -89,128 +125,167 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-24 pb-16">
-        <div className="container mx-auto px-4">
-          {/* Hero Section */}
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Get in <span className="text-gradient">Touch</span>
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              Have a question or need help? We're here for you. Reach out and we'll respond as soon as we can.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            {/* Contact Form */}
-            <div className="order-2 lg:order-1">
-              <div className="p-8 rounded-xl border border-border bg-card">
-                <h2 className="text-2xl font-semibold mb-6">Send us a message</h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="Your name"
-                        className={errors.name ? 'border-destructive' : ''}
-                      />
-                      {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="you@example.com"
-                        className={errors.email ? 'border-destructive' : ''}
-                      />
-                      {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="subject">Subject</Label>
-                    <Input
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      placeholder="How can we help?"
-                      className={errors.subject ? 'border-destructive' : ''}
-                    />
-                    {errors.subject && <p className="text-sm text-destructive">{errors.subject}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="message">Message</Label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      placeholder="Tell us more about your inquiry..."
-                      rows={5}
-                      className={errors.message ? 'border-destructive' : ''}
-                    />
-                    {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
-                  </div>
-                  <Button type="submit" className="w-full gradient-primary" disabled={isSubmitting}>
-                    {isSubmitting ? 'Sending...' : 'Send Message'}
-                  </Button>
-                </form>
+      <main className="pt-24">
+        {/* Hero Section */}
+        <section className="section-padding relative overflow-hidden">
+          <div className="absolute inset-0 gradient-mesh opacity-40" />
+          <div className="absolute inset-0 grid-pattern" />
+          
+          <div className="container mx-auto px-4 relative">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+                <Mail className="h-4 w-4" />
+                Contact Us
               </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+                Get in <span className="text-gradient">touch</span>
+              </h1>
+              <p className="text-xl text-muted-foreground leading-relaxed">
+                Have a question or need help? We're here for you. Reach out and we'll respond as soon as we can.
+              </p>
             </div>
 
             {/* Contact Options */}
-            <div className="order-1 lg:order-2 space-y-6">
+            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-20">
+              {contactOptions.map((option) => (
+                <a
+                  key={option.title}
+                  href={`mailto:${option.email}`}
+                  className="group p-6 rounded-2xl border border-border/50 bg-card hover:border-border transition-all duration-300 card-hover text-center"
+                >
+                  <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br ${option.gradient} mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                    <option.icon className="h-7 w-7 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-1">{option.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-3">{option.description}</p>
+                  <span className="text-sm text-primary font-medium">{option.email}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Contact Form Section */}
+        <section className="section-padding bg-muted/30">
+          <div className="container mx-auto px-4">
+            <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+              {/* Contact Form */}
               <div>
-                <h2 className="text-2xl font-semibold mb-2">Contact Options</h2>
-                <p className="text-muted-foreground">
-                  Choose the best way to reach us based on your needs.
-                </p>
+                <div className="p-8 md:p-10 rounded-2xl border border-border/50 bg-card shadow-premium">
+                  <h2 className="text-2xl font-bold mb-2">Send us a message</h2>
+                  <p className="text-muted-foreground mb-8">Fill out the form and we'll get back to you within 24 hours.</p>
+                  
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Name</Label>
+                        <Input
+                          id="name"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          placeholder="Your name"
+                          className={`h-12 ${errors.name ? 'border-destructive' : ''}`}
+                        />
+                        {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          placeholder="you@example.com"
+                          className={`h-12 ${errors.email ? 'border-destructive' : ''}`}
+                        />
+                        {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="subject">Subject</Label>
+                      <Input
+                        id="subject"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        placeholder="How can we help?"
+                        className={`h-12 ${errors.subject ? 'border-destructive' : ''}`}
+                      />
+                      {errors.subject && <p className="text-sm text-destructive">{errors.subject}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="message">Message</Label>
+                      <Textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        placeholder="Tell us more about your inquiry..."
+                        rows={5}
+                        className={errors.message ? 'border-destructive' : ''}
+                      />
+                      {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full h-12 gradient-primary font-semibold btn-lift" 
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        'Sending...'
+                      ) : (
+                        <>
+                          Send Message
+                          <Send className="ml-2 h-4 w-4" />
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </div>
               </div>
 
-              <div className="space-y-4">
-                {contactOptions.map((option, index) => (
-                  <a
-                    key={index}
-                    href={`mailto:${option.email}`}
-                    className="flex items-start gap-4 p-6 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors"
-                  >
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <option.icon className="h-6 w-6" />
+              {/* FAQ Section */}
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Frequently asked questions</h2>
+                <p className="text-muted-foreground mb-8">Find quick answers to common questions.</p>
+                
+                <Accordion type="single" collapsible className="space-y-4">
+                  {faqs.map((faq, index) => (
+                    <AccordionItem 
+                      key={index} 
+                      value={`item-${index}`}
+                      className="rounded-xl border border-border/50 bg-card px-6 data-[state=open]:border-border"
+                    >
+                      <AccordionTrigger className="text-left font-semibold hover:no-underline py-5">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-muted-foreground pb-5">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+
+                {/* Response time badge */}
+                <div className="mt-8 p-6 rounded-xl border border-border/50 bg-card">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-success/10">
+                      <Clock className="h-6 w-6 text-success" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-1">{option.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-2">{option.description}</p>
-                      <span className="text-sm text-primary">{option.email}</span>
+                      <p className="font-semibold">Quick response time</p>
+                      <p className="text-sm text-muted-foreground">We typically respond within 24 hours</p>
                     </div>
-                  </a>
-                ))}
-              </div>
-
-              <div className="p-6 rounded-xl border border-border bg-muted/50">
-                <div className="flex items-center gap-3 mb-3">
-                  <Mail className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">General Inquiries</h3>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground mb-2">
-                  For all other questions, reach out to us at:
-                </p>
-                <a href="mailto:hello@leadcapture.com" className="text-primary hover:underline">
-                  hello@leadcapture.com
-                </a>
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </main>
       <Footer />
     </div>
