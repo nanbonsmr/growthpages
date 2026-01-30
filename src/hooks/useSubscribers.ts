@@ -10,6 +10,8 @@ export interface Subscriber {
   tags: string[];
   metadata: Record<string, unknown>;
   created_at: string;
+  status: 'active' | 'unsubscribed';
+  notes: string | null;
   page?: {
     title: string;
     slug: string;
@@ -82,7 +84,7 @@ export function useSubscribers(pageId?: string) {
     await fetchSubscribers();
   };
 
-  const updateSubscriber = async (id: string, updateData: { name?: string; email?: string; tags?: string[] }) => {
+  const updateSubscriber = async (id: string, updateData: { name?: string; email?: string; tags?: string[]; notes?: string; status?: string }) => {
     const { error } = await supabase
       .from('subscribers')
       .update(updateData)
@@ -90,6 +92,58 @@ export function useSubscribers(pageId?: string) {
 
     if (error) throw error;
     await fetchSubscribers();
+  };
+
+  const bulkUpdateTags = async (ids: string[], tag: string) => {
+    for (const id of ids) {
+      const subscriber = subscribers.find(s => s.id === id);
+      if (subscriber) {
+        const newTags = subscriber.tags?.includes(tag) 
+          ? subscriber.tags 
+          : [...(subscriber.tags || []), tag];
+        await supabase
+          .from('subscribers')
+          .update({ tags: newTags })
+          .eq('id', id);
+      }
+    }
+    await fetchSubscribers();
+  };
+
+  const bulkDelete = async (ids: string[]) => {
+    const { error } = await supabase
+      .from('subscribers')
+      .delete()
+      .in('id', ids);
+
+    if (error) throw error;
+    await fetchSubscribers();
+  };
+
+  const exportSelectedToCSV = (ids: string[]) => {
+    const selectedSubscribers = subscribers.filter(s => ids.includes(s.id));
+    const headers = ['Name', 'Email', 'Page', 'Tags', 'Status', 'Signup Date'];
+    const rows = selectedSubscribers.map(s => [
+      s.name,
+      s.email,
+      s.page?.title || '',
+      s.tags?.join(', ') || '',
+      s.status || 'active',
+      new Date(s.created_at).toLocaleDateString(),
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `subscribers-selected-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const exportToCSV = () => {
@@ -128,5 +182,8 @@ export function useSubscribers(pageId?: string) {
     deleteSubscriber,
     updateSubscriber,
     exportToCSV,
+    bulkUpdateTags,
+    bulkDelete,
+    exportSelectedToCSV,
   };
 }
