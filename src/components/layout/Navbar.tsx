@@ -31,12 +31,12 @@ export function Navbar() {
             <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </Link>
-            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Features
-            </a>
-            <a href="#use-cases" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            </Link>
+            <Link to="/use-cases" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Use Cases
-            </a>
+            </Link>
           </div>
 
           {/* Auth Buttons */}
@@ -78,12 +78,12 @@ export function Navbar() {
               <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                 Pricing
               </Link>
-              <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+              <Link to="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                 Features
-              </a>
-              <a href="#use-cases" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+              </Link>
+              <Link to="/use-cases" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                 Use Cases
-              </a>
+              </Link>
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
                 {user ? (
                   <>
