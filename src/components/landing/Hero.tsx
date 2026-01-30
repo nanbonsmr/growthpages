@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Play, Check } from 'lucide-react';
+import dashboardMockup from '@/assets/dashboard-hero-mockup.png';
 
 const trustLogos = [
   'ProductHunt',
@@ -130,18 +131,12 @@ export function Hero() {
                 </div>
               </div>
               
-              {/* Preview content */}
-              <div className="aspect-[16/9] bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center p-8">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl gradient-primary mb-6 shadow-lg shadow-primary/25">
-                    <svg className="w-10 h-10 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold mb-2">Your Dashboard</h3>
-                  <p className="text-muted-foreground">Track subscribers, analyze performance, and grow your audience</p>
-                </div>
-              </div>
+              {/* Preview content - actual mockup */}
+              <img 
+                src={dashboardMockup} 
+                alt="LeadCapture Dashboard - Track subscribers, analytics, and growth metrics"
+                className="w-full h-auto"
+              />
             </div>
           </div>
         </div>
