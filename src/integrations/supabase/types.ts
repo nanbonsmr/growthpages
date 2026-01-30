@@ -14,16 +14,161 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pages: {
+        Row: {
+          button_text: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          slug: string
+          template: Database["public"]["Enums"]["template_type"]
+          theme_settings: Json | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          button_text?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          slug: string
+          template?: Database["public"]["Enums"]["template_type"]
+          theme_settings?: Json | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          button_text?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          slug?: string
+          template?: Database["public"]["Enums"]["template_type"]
+          theme_settings?: Json | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          plan: Database["public"]["Enums"]["plan_type"]
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          plan?: Database["public"]["Enums"]["plan_type"]
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          plan?: Database["public"]["Enums"]["plan_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          metadata: Json | null
+          name: string
+          page_id: string
+          tags: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          metadata?: Json | null
+          name: string
+          page_id: string
+          tags?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          metadata?: Json | null
+          name?: string
+          page_id?: string
+          tags?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscribers_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
+      is_page_owner: { Args: { page_uuid: string }; Returns: boolean }
+      owns_subscriber_page: {
+        Args: { subscriber_uuid: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
+      plan_type: "free" | "pro" | "business"
+      template_type:
+        | "newsletter"
+        | "waitlist"
+        | "event"
+        | "product_launch"
+        | "free_resource"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +295,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+      plan_type: ["free", "pro", "business"],
+      template_type: [
+        "newsletter",
+        "waitlist",
+        "event",
+        "product_launch",
+        "free_resource",
+      ],
+    },
   },
 } as const
