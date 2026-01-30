@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { usePages, Page } from '@/hooks/usePages';
+import { usePages, Page, ThemeSettings } from '@/hooks/usePages';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Newspaper, Rocket, Calendar, Package, Gift, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -74,7 +74,7 @@ export default function EditPage() {
         return;
       }
 
-      const page = data as Page;
+      const page = { ...data, theme_settings: data.theme_settings as unknown as ThemeSettings };
       setFormData({
         title: page.title,
         description: page.description || '',

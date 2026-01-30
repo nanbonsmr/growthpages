@@ -2,6 +2,29 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+export interface FormField {
+  id: string;
+  type: 'text' | 'email' | 'phone' | 'select' | 'textarea';
+  label: string;
+  placeholder: string;
+  required: boolean;
+}
+
+export interface ThemeSettings {
+  primaryColor: string;
+  secondaryColor?: string;
+  backgroundColor: string;
+  backgroundStyle: string;
+  fontStyle: string;
+  showSocialProof?: boolean;
+  socialProofText?: string;
+  showBadge?: boolean;
+  badgeText?: string;
+  thankYouTitle?: string;
+  thankYouMessage?: string;
+  formFields?: FormField[];
+}
+
 export interface Page {
   id: string;
   user_id: string;
@@ -10,12 +33,7 @@ export interface Page {
   slug: string;
   template: 'newsletter' | 'waitlist' | 'event' | 'product_launch' | 'free_resource';
   button_text: string;
-  theme_settings: {
-    primaryColor: string;
-    backgroundColor: string;
-    backgroundStyle: string;
-    fontStyle: string;
-  };
+  theme_settings: ThemeSettings;
   logo_url: string | null;
   is_active: boolean;
   created_at: string;
@@ -27,6 +45,11 @@ export function usePages() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const { user } = useAuth();
+
+  const transformPage = (data: any): Page => ({
+    ...data,
+    theme_settings: data.theme_settings as ThemeSettings,
+  });
 
   const fetchPages = async () => {
     if (!user) {
@@ -44,7 +67,7 @@ export function usePages() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPages(data as Page[]);
+      setPages((data || []).map(transformPage));
     } catch (err) {
       setError(err as Error);
     } finally {
@@ -63,7 +86,7 @@ export function usePages() {
         description: pageData.description,
         template: pageData.template,
         button_text: pageData.button_text,
-        theme_settings: pageData.theme_settings,
+        theme_settings: pageData.theme_settings as any,
         logo_url: pageData.logo_url,
         is_active: pageData.is_active,
         user_id: user.id,
@@ -73,20 +96,25 @@ export function usePages() {
 
     if (error) throw error;
     await fetchPages();
-    return data as Page;
+    return transformPage(data);
   };
 
   const updatePage = async (id: string, pageData: Partial<Page>) => {
+    const updateData: any = { ...pageData };
+    if (pageData.theme_settings) {
+      updateData.theme_settings = pageData.theme_settings as any;
+    }
+
     const { data, error } = await supabase
       .from('pages')
-      .update(pageData)
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();
 
     if (error) throw error;
     await fetchPages();
-    return data as Page;
+    return transformPage(data);
   };
 
   const deletePage = async (id: string) => {
