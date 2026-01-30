@@ -79,7 +79,8 @@ serve(async (req) => {
       : 'https://live.dodopayments.com';
 
     // Create Dodo checkout session
-    const checkoutResponse = await fetch(`${apiBase}/checkouts`, {
+    // Dodo docs refer to "checkout sessions"; the REST path is typically /checkout-sessions.
+    const checkoutResponse = await fetch(`${apiBase}/checkout-sessions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -115,8 +116,13 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        checkoutUrl: checkoutData.checkout_url || checkoutData.url,
-        sessionId: checkoutData.id,
+        // Be liberal in what we accept; Dodo responses can differ between endpoints/versions.
+        checkoutUrl:
+          checkoutData.checkout_url ||
+          checkoutData.url ||
+          checkoutData.checkoutUrl ||
+          checkoutData.checkout_session_url,
+        sessionId: checkoutData.id || checkoutData.session_id || checkoutData.sessionId,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
