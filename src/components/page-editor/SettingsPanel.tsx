@@ -1,4 +1,4 @@
-import { Block, PageSettings, BLOCK_DEFINITIONS } from './types';
+import { Block, PageSettings, BLOCK_DEFINITIONS, AccordionItemData, PricingTier, FeatureItem } from './types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +7,8 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, Palette } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Settings, Palette, Plus, Trash2 } from 'lucide-react';
 
 interface SettingsPanelProps {
   selectedBlock: Block | null;
@@ -662,6 +663,420 @@ function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
                   }}
                 />
                 <span className="capitalize text-sm">{platform.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case 'video':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Video URL</Label>
+            <Input
+              value={props.url}
+              onChange={(e) => onUpdate({ url: e.target.value })}
+              placeholder="YouTube, Vimeo, or Loom URL"
+              className="mt-1"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Supports YouTube, Vimeo, and Loom
+            </p>
+          </div>
+          <div>
+            <Label>Aspect Ratio</Label>
+            <Select value={props.aspectRatio} onValueChange={(v) => onUpdate({ aspectRatio: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="16:9">16:9 (Widescreen)</SelectItem>
+                <SelectItem value="4:3">4:3 (Standard)</SelectItem>
+                <SelectItem value="1:1">1:1 (Square)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Alignment</Label>
+            <Select value={props.alignment} onValueChange={(v) => onUpdate({ alignment: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="left">Left</SelectItem>
+                <SelectItem value="center">Center</SelectItem>
+                <SelectItem value="right">Right</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Autoplay (muted)</Label>
+            <Switch checked={props.autoplay} onCheckedChange={(v) => onUpdate({ autoplay: v })} />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Show Controls</Label>
+            <Switch checked={props.controls} onCheckedChange={(v) => onUpdate({ controls: v })} />
+          </div>
+        </div>
+      );
+
+    case 'accordion':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Style</Label>
+            <Select value={props.style} onValueChange={(v) => onUpdate({ style: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">Default</SelectItem>
+                <SelectItem value="bordered">Bordered</SelectItem>
+                <SelectItem value="separated">Separated Cards</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Icon Position</Label>
+            <Select value={props.iconPosition} onValueChange={(v) => onUpdate({ iconPosition: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="right">Right</SelectItem>
+                <SelectItem value="left">Left</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Allow Multiple Open</Label>
+            <Switch checked={props.allowMultiple} onCheckedChange={(v) => onUpdate({ allowMultiple: v })} />
+          </div>
+          <div className="space-y-3 mt-4">
+            <div className="flex items-center justify-between">
+              <Label>FAQ Items</Label>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  const newItem: AccordionItemData = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    question: 'New question?',
+                    answer: 'Answer here...',
+                  };
+                  onUpdate({ items: [...(props.items || []), newItem] });
+                }}
+              >
+                <Plus className="h-4 w-4 mr-1" /> Add
+              </Button>
+            </div>
+            {props.items?.map((item: AccordionItemData, idx: number) => (
+              <div key={item.id} className="p-3 border rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Item {idx + 1}</span>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6"
+                    onClick={() => {
+                      const newItems = props.items.filter((i: AccordionItemData) => i.id !== item.id);
+                      onUpdate({ items: newItems });
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+                <Input
+                  value={item.question}
+                  onChange={(e) => {
+                    const newItems = props.items.map((i: AccordionItemData) =>
+                      i.id === item.id ? { ...i, question: e.target.value } : i
+                    );
+                    onUpdate({ items: newItems });
+                  }}
+                  placeholder="Question"
+                />
+                <Textarea
+                  value={item.answer}
+                  onChange={(e) => {
+                    const newItems = props.items.map((i: AccordionItemData) =>
+                      i.id === item.id ? { ...i, answer: e.target.value } : i
+                    );
+                    onUpdate({ items: newItems });
+                  }}
+                  placeholder="Answer"
+                  rows={2}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case 'pricing':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Columns</Label>
+            <Select value={String(props.columns)} onValueChange={(v) => onUpdate({ columns: Number(v) })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="2">2 Columns</SelectItem>
+                <SelectItem value="3">3 Columns</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Style</Label>
+            <Select value={props.style} onValueChange={(v) => onUpdate({ style: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cards">Cards</SelectItem>
+                <SelectItem value="minimal">Minimal</SelectItem>
+                <SelectItem value="gradient">Gradient</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Highlight Color</Label>
+            <Input
+              type="color"
+              value={props.highlightColor}
+              onChange={(e) => onUpdate({ highlightColor: e.target.value })}
+              className="mt-1 h-10 cursor-pointer"
+            />
+          </div>
+          <div className="space-y-3 mt-4">
+            <div className="flex items-center justify-between">
+              <Label>Pricing Tiers</Label>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  const newTier: PricingTier = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    name: 'New Plan',
+                    price: '$0',
+                    period: 'month',
+                    description: '',
+                    features: ['Feature 1'],
+                    buttonText: 'Get Started',
+                    buttonUrl: '#',
+                    highlighted: false,
+                  };
+                  onUpdate({ tiers: [...(props.tiers || []), newTier] });
+                }}
+              >
+                <Plus className="h-4 w-4 mr-1" /> Add
+              </Button>
+            </div>
+            {props.tiers?.map((tier: PricingTier, idx: number) => (
+              <div key={tier.id} className="p-3 border rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">{tier.name}</span>
+                  <div className="flex gap-1">
+                    <Switch
+                      checked={tier.highlighted}
+                      onCheckedChange={(v) => {
+                        const newTiers = props.tiers.map((t: PricingTier) =>
+                          t.id === tier.id ? { ...t, highlighted: v } : t
+                        );
+                        onUpdate({ tiers: newTiers });
+                      }}
+                    />
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6"
+                      onClick={() => {
+                        const newTiers = props.tiers.filter((t: PricingTier) => t.id !== tier.id);
+                        onUpdate({ tiers: newTiers });
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+                <Input
+                  value={tier.name}
+                  onChange={(e) => {
+                    const newTiers = props.tiers.map((t: PricingTier) =>
+                      t.id === tier.id ? { ...t, name: e.target.value } : t
+                    );
+                    onUpdate({ tiers: newTiers });
+                  }}
+                  placeholder="Plan name"
+                />
+                <div className="flex gap-2">
+                  <Input
+                    value={tier.price}
+                    onChange={(e) => {
+                      const newTiers = props.tiers.map((t: PricingTier) =>
+                        t.id === tier.id ? { ...t, price: e.target.value } : t
+                      );
+                      onUpdate({ tiers: newTiers });
+                    }}
+                    placeholder="$29"
+                    className="w-20"
+                  />
+                  <Input
+                    value={tier.period}
+                    onChange={(e) => {
+                      const newTiers = props.tiers.map((t: PricingTier) =>
+                        t.id === tier.id ? { ...t, period: e.target.value } : t
+                      );
+                      onUpdate({ tiers: newTiers });
+                    }}
+                    placeholder="month"
+                    className="flex-1"
+                  />
+                </div>
+                <Textarea
+                  value={tier.features.join('\n')}
+                  onChange={(e) => {
+                    const newTiers = props.tiers.map((t: PricingTier) =>
+                      t.id === tier.id ? { ...t, features: e.target.value.split('\n').filter(Boolean) } : t
+                    );
+                    onUpdate({ tiers: newTiers });
+                  }}
+                  placeholder="One feature per line"
+                  rows={3}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case 'feature-grid':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Columns</Label>
+            <Select value={String(props.columns)} onValueChange={(v) => onUpdate({ columns: Number(v) })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="2">2 Columns</SelectItem>
+                <SelectItem value="3">3 Columns</SelectItem>
+                <SelectItem value="4">4 Columns</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Style</Label>
+            <Select value={props.style} onValueChange={(v) => onUpdate({ style: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cards">Cards</SelectItem>
+                <SelectItem value="minimal">Minimal</SelectItem>
+                <SelectItem value="icons-left">Icons Left</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Show Icons</Label>
+            <Switch checked={props.showIcons} onCheckedChange={(v) => onUpdate({ showIcons: v })} />
+          </div>
+          {props.showIcons && (
+            <div>
+              <Label>Icon Color</Label>
+              <Input
+                type="color"
+                value={props.iconColor}
+                onChange={(e) => onUpdate({ iconColor: e.target.value })}
+                className="mt-1 h-10 cursor-pointer"
+              />
+            </div>
+          )}
+          <div className="space-y-3 mt-4">
+            <div className="flex items-center justify-between">
+              <Label>Features</Label>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  const newFeature: FeatureItem = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    icon: 'Star',
+                    title: 'New Feature',
+                    description: 'Description here',
+                  };
+                  onUpdate({ features: [...(props.features || []), newFeature] });
+                }}
+              >
+                <Plus className="h-4 w-4 mr-1" /> Add
+              </Button>
+            </div>
+            {props.features?.map((feature: FeatureItem, idx: number) => (
+              <div key={feature.id} className="p-3 border rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Feature {idx + 1}</span>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6"
+                    onClick={() => {
+                      const newFeatures = props.features.filter((f: FeatureItem) => f.id !== feature.id);
+                      onUpdate({ features: newFeatures });
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+                <Select
+                  value={feature.icon}
+                  onValueChange={(v) => {
+                    const newFeatures = props.features.map((f: FeatureItem) =>
+                      f.id === feature.id ? { ...f, icon: v } : f
+                    );
+                    onUpdate({ features: newFeatures });
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Star">Star</SelectItem>
+                    <SelectItem value="Zap">Zap</SelectItem>
+                    <SelectItem value="Shield">Shield</SelectItem>
+                    <SelectItem value="Smartphone">Smartphone</SelectItem>
+                    <SelectItem value="Globe">Globe</SelectItem>
+                    <SelectItem value="Lock">Lock</SelectItem>
+                    <SelectItem value="Cloud">Cloud</SelectItem>
+                    <SelectItem value="Heart">Heart</SelectItem>
+                    <SelectItem value="Rocket">Rocket</SelectItem>
+                    <SelectItem value="Check">Check</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  value={feature.title}
+                  onChange={(e) => {
+                    const newFeatures = props.features.map((f: FeatureItem) =>
+                      f.id === feature.id ? { ...f, title: e.target.value } : f
+                    );
+                    onUpdate({ features: newFeatures });
+                  }}
+                  placeholder="Title"
+                />
+                <Input
+                  value={feature.description}
+                  onChange={(e) => {
+                    const newFeatures = props.features.map((f: FeatureItem) =>
+                      f.id === feature.id ? { ...f, description: e.target.value } : f
+                    );
+                    onUpdate({ features: newFeatures });
+                  }}
+                  placeholder="Description"
+                />
               </div>
             ))}
           </div>

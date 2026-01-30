@@ -8,7 +8,11 @@ export type BlockType =
   | 'social'
   | 'testimonial'
   | 'countdown'
-  | 'spacer';
+  | 'spacer'
+  | 'video'
+  | 'accordion'
+  | 'pricing'
+  | 'feature-grid';
 
 export type BlockCategory = 'basic' | 'forms' | 'marketing' | 'layout';
 
@@ -113,6 +117,61 @@ export interface CountdownProps {
 
 export interface SpacerProps {
   height: number;
+}
+
+export interface VideoProps {
+  url: string;
+  aspectRatio: '16:9' | '4:3' | '1:1';
+  autoplay: boolean;
+  controls: boolean;
+  alignment: 'left' | 'center' | 'right';
+}
+
+export interface AccordionItemData {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+export interface AccordionProps {
+  items: AccordionItemData[];
+  allowMultiple: boolean;
+  style: 'default' | 'bordered' | 'separated';
+  iconPosition: 'left' | 'right';
+}
+
+export interface PricingTier {
+  id: string;
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  features: string[];
+  buttonText: string;
+  buttonUrl: string;
+  highlighted: boolean;
+}
+
+export interface PricingProps {
+  tiers: PricingTier[];
+  columns: 2 | 3;
+  style: 'cards' | 'minimal' | 'gradient';
+  highlightColor: string;
+}
+
+export interface FeatureItem {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export interface FeatureGridProps {
+  features: FeatureItem[];
+  columns: 2 | 3 | 4;
+  style: 'cards' | 'minimal' | 'icons-left';
+  iconColor: string;
+  showIcons: boolean;
 }
 
 export interface PageSettings {
@@ -274,6 +333,99 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       showSeconds: true,
       color: '#7c3aed',
     } as CountdownProps,
+  },
+  {
+    type: 'video',
+    label: 'Video',
+    icon: 'Play',
+    category: 'basic',
+    defaultProps: {
+      url: '',
+      aspectRatio: '16:9',
+      autoplay: false,
+      controls: true,
+      alignment: 'center',
+    } as VideoProps,
+  },
+  {
+    type: 'accordion',
+    label: 'FAQ / Accordion',
+    icon: 'ChevronDown',
+    category: 'marketing',
+    defaultProps: {
+      items: [
+        { id: '1', question: 'What is your refund policy?', answer: 'We offer a 30-day money-back guarantee on all plans.' },
+        { id: '2', question: 'How do I get started?', answer: 'Simply sign up for a free account and follow our onboarding guide.' },
+        { id: '3', question: 'Do you offer support?', answer: 'Yes! We provide 24/7 email support and live chat during business hours.' },
+      ],
+      allowMultiple: false,
+      style: 'default',
+      iconPosition: 'right',
+    } as AccordionProps,
+  },
+  {
+    type: 'pricing',
+    label: 'Pricing Table',
+    icon: 'CreditCard',
+    category: 'marketing',
+    defaultProps: {
+      tiers: [
+        {
+          id: '1',
+          name: 'Starter',
+          price: '$9',
+          period: 'month',
+          description: 'Perfect for individuals',
+          features: ['Up to 1,000 subscribers', 'Basic analytics', 'Email support'],
+          buttonText: 'Get Started',
+          buttonUrl: '#',
+          highlighted: false,
+        },
+        {
+          id: '2',
+          name: 'Pro',
+          price: '$29',
+          period: 'month',
+          description: 'For growing businesses',
+          features: ['Up to 10,000 subscribers', 'Advanced analytics', 'Priority support', 'Custom branding'],
+          buttonText: 'Start Free Trial',
+          buttonUrl: '#',
+          highlighted: true,
+        },
+        {
+          id: '3',
+          name: 'Enterprise',
+          price: '$99',
+          period: 'month',
+          description: 'For large teams',
+          features: ['Unlimited subscribers', 'Full analytics suite', 'Dedicated support', 'API access', 'SSO'],
+          buttonText: 'Contact Sales',
+          buttonUrl: '#',
+          highlighted: false,
+        },
+      ],
+      columns: 3,
+      style: 'cards',
+      highlightColor: '#7c3aed',
+    } as PricingProps,
+  },
+  {
+    type: 'feature-grid',
+    label: 'Feature Grid',
+    icon: 'LayoutGrid',
+    category: 'marketing',
+    defaultProps: {
+      features: [
+        { id: '1', icon: 'Zap', title: 'Lightning Fast', description: 'Built for speed and performance' },
+        { id: '2', icon: 'Shield', title: 'Secure', description: 'Enterprise-grade security' },
+        { id: '3', icon: 'Smartphone', title: 'Mobile Ready', description: 'Works on any device' },
+        { id: '4', icon: 'Globe', title: 'Global Scale', description: 'Deploy worldwide in seconds' },
+      ],
+      columns: 4,
+      style: 'cards',
+      iconColor: '#7c3aed',
+      showIcons: true,
+    } as FeatureGridProps,
   },
 ];
 
