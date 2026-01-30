@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   FileText,
   Users,
+  MessageSquare,
   BarChart3,
   Settings,
   LogOut,
@@ -18,6 +19,7 @@ const navItems = [
   { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
   { icon: FileText, label: 'My Pages', href: '/dashboard/pages' },
   { icon: Users, label: 'Subscribers', href: '/dashboard/subscribers' },
+  { icon: MessageSquare, label: 'Contact Forms', href: '/dashboard/contacts' },
   { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
   { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
 ];
