@@ -17,9 +17,10 @@ interface SortableBlockProps {
   onSelect: () => void;
   onDelete: () => void;
   onUpdate: (props: Record<string, any>) => void;
+  pageId?: string;
 }
 
-function SortableBlock({ block, isSelected, onSelect, onDelete, onUpdate }: SortableBlockProps) {
+function SortableBlock({ block, isSelected, onSelect, onDelete, onUpdate, pageId }: SortableBlockProps) {
   const {
     attributes,
     listeners,
@@ -89,6 +90,7 @@ function SortableBlock({ block, isSelected, onSelect, onDelete, onUpdate }: Sort
             block={block}
             isSelected={isSelected}
             onUpdate={onUpdate}
+            pageId={pageId}
           />
         </div>
       </div>
@@ -104,6 +106,7 @@ interface EditorCanvasProps {
   onSelectBlock: (id: string | null) => void;
   onDeleteBlock: (id: string) => void;
   onUpdateBlock: (id: string, props: Record<string, any>) => void;
+  pageId?: string;
 }
 
 export function EditorCanvas({
@@ -114,6 +117,7 @@ export function EditorCanvas({
   onSelectBlock,
   onDeleteBlock,
   onUpdateBlock,
+  pageId,
 }: EditorCanvasProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: 'canvas',
@@ -193,6 +197,7 @@ export function EditorCanvas({
                         onSelect={() => onSelectBlock(block.id)}
                         onDelete={() => onDeleteBlock(block.id)}
                         onUpdate={(props) => onUpdateBlock(block.id, props)}
+                        pageId={pageId}
                       />
                     ))}
                   </div>

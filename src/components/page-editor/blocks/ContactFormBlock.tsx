@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { CheckCircle, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ContactFormProps {
   showName: boolean;
@@ -32,6 +33,7 @@ interface ContactFormBlockProps {
   isSelected: boolean;
   isPreview?: boolean;
   onUpdate?: (props: Partial<ContactFormProps>) => void;
+  pageId?: string;
 }
 
 const createContactSchema = (props: ContactFormProps) => {
@@ -55,7 +57,7 @@ const createContactSchema = (props: ContactFormProps) => {
   });
 };
 
-export function ContactFormBlock({ props, isSelected, isPreview, onUpdate }: ContactFormBlockProps) {
+export function ContactFormBlock({ props, isSelected, isPreview, onUpdate, pageId }: ContactFormBlockProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -65,6 +67,7 @@ export function ContactFormBlock({ props, isSelected, isPreview, onUpdate }: Con
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -72,10 +75,12 @@ export function ContactFormBlock({ props, isSelected, isPreview, onUpdate }: Con
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: '' }));
     }
+    setSubmitError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
     
     if (isPreview) {
       // In preview mode, just show success state briefly
@@ -103,14 +108,43 @@ export function ContactFormBlock({ props, isSelected, isPreview, onUpdate }: Con
       return;
     }
 
+    if (!pageId) {
+      setSubmitError('Form configuration error. Please try again later.');
+      return;
+    }
+
     setIsSubmitting(true);
     
-    // Simulate submission for editor preview
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert({
+          page_id: pageId,
+          name: formData.name || null,
+          email: formData.email || null,
+          phone: formData.phone || null,
+          message: formData.message || null,
+          metadata: {
+            submitted_at: new Date().toISOString(),
+            form_config: {
+              showName: props.showName,
+              showEmail: props.showEmail,
+              showPhone: props.showPhone,
+              showMessage: props.showMessage,
+            },
+          },
+        });
+
+      if (error) throw error;
+
       setIsSubmitted(true);
       setFormData({ name: '', email: '', phone: '', message: '' });
-    }, 1500);
+    } catch (err) {
+      console.error('Contact form submission error:', err);
+      setSubmitError('Failed to submit form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
@@ -235,6 +269,10 @@ export function ContactFormBlock({ props, isSelected, isPreview, onUpdate }: Con
               {formData.message.length}/2000
             </p>
           </div>
+        )}
+
+        {submitError && (
+          <p className="text-sm text-destructive text-center">{submitError}</p>
         )}
 
         <Button
