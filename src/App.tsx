@@ -20,6 +20,7 @@ import Pages from "./pages/dashboard/Pages";
 import CreatePage from "./pages/dashboard/CreatePage";
 import EditPage from "./pages/dashboard/EditPage";
 import Subscribers from "./pages/dashboard/Subscribers";
+import ContactSubmissions from "./pages/dashboard/ContactSubmissions";
 import Analytics from "./pages/dashboard/Analytics";
 import Settings from "./pages/dashboard/Settings";
 
@@ -81,6 +82,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Subscribers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/contacts"
+              element={
+                <ProtectedRoute>
+                  <ContactSubmissions />
                 </ProtectedRoute>
               }
             />
