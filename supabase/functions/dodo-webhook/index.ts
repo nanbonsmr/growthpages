@@ -174,10 +174,28 @@ serve(async (req) => {
             .from('subscriptions')
             .select('id')
             .eq('user_id', userId)
+            .eq('status', 'active')
             .maybeSingle();
 
-          if (!existingSub) {
-            // Create subscription from payment
+          if (existingSub) {
+            // Update existing subscription (upgrade/downgrade)
+            const { error: updateError } = await supabase
+              .from('subscriptions')
+              .update({
+                plan_id: planId,
+                dodo_subscription_id: data.id,
+                dodo_customer_id: data.customer_id,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', existingSub.id);
+
+            if (updateError) {
+              console.error('Error updating subscription:', updateError);
+            } else {
+              console.log(`Subscription updated for user ${userId} to plan: ${planId}`);
+            }
+          } else {
+            // Create new subscription
             const { error: insertError } = await supabase
               .from('subscriptions')
               .insert({

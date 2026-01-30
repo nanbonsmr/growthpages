@@ -34,15 +34,19 @@ serve(async (req) => {
       throw new Error('Invalid authorization token');
     }
 
-    // Get user's subscription
-    const { data: subscription, error: subError } = await supabase
+    // Get user's most recent active subscription
+    const { data: subscriptions, error: subError } = await supabase
       .from('subscriptions')
       .select('*')
       .eq('user_id', user.id)
       .eq('status', 'active')
-      .single();
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    const subscription = subscriptions?.[0];
 
     if (subError || !subscription?.dodo_subscription_id) {
+      console.error('Subscription lookup error:', subError, 'Found:', subscriptions);
       throw new Error('No active subscription found');
     }
 
