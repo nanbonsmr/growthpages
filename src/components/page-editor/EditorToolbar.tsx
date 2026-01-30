@@ -19,9 +19,14 @@ import {
   ChevronDown,
   Loader2,
   ArrowLeft,
+  Share2,
+  Copy,
+  ExternalLink,
 } from 'lucide-react';
 import { PageTemplate } from './templates';
 import { cn } from '@/lib/utils';
+import { getPublicPageUrl } from '@/lib/config';
+import { useToast } from '@/hooks/use-toast';
 
 interface EditorToolbarProps {
   slug: string;
@@ -57,6 +62,20 @@ export function EditorToolbar({
   onLoadTemplate,
 }: EditorToolbarProps) {
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleCopyLink = () => {
+    const url = getPublicPageUrl(slug);
+    navigator.clipboard.writeText(url);
+    toast({
+      title: 'Link copied!',
+      description: 'The public page URL has been copied to your clipboard.',
+    });
+  };
+
+  const handleOpenPublicPage = () => {
+    window.open(getPublicPageUrl(slug), '_blank');
+  };
 
   return (
     <div className="h-14 border-b border-border bg-background flex items-center justify-between px-4">
@@ -171,6 +190,27 @@ export function EditorToolbar({
           <Eye className="h-4 w-4" />
           Preview
         </Button>
+        
+        {/* Share Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Share2 className="h-4 w-4" />
+              Share
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={handleCopyLink} className="cursor-pointer">
+              <Copy className="mr-2 h-4 w-4" />
+              Copy Link
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleOpenPublicPage} className="cursor-pointer">
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Open Public Page
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
         <Button variant="outline" size="sm" onClick={onSave} disabled={isSaving} className="gap-2">
           {isSaving ? (
             <Loader2 className="h-4 w-4 animate-spin" />
