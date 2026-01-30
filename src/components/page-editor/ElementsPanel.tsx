@@ -17,6 +17,7 @@ import {
   LayoutGrid,
   Sparkles,
   PanelTop,
+  PanelBottom,
 } from 'lucide-react';
 import { BLOCK_DEFINITIONS, BlockDefinition, BlockCategory } from './types';
 import { cn } from '@/lib/utils';
@@ -39,6 +40,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   LayoutGrid,
   Sparkles,
   PanelTop,
+  PanelBottom,
 };
 
 const categoryLabels: Record<BlockCategory, string> = {

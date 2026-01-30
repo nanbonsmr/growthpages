@@ -15,6 +15,7 @@ import { PricingBlock } from './PricingBlock';
 import { FeatureGridBlock } from './FeatureGridBlock';
 import { HeroBlock } from './HeroBlock';
 import { NavBlock } from './NavBlock';
+import { FooterBlock } from './FooterBlock';
 
 interface BlockRendererProps {
   block: Block;
@@ -63,6 +64,8 @@ export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate }
       return <HeroBlock block={block} isSelected={isSelected} isPreview={isPreview} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
     case 'nav':
       return <NavBlock block={block} isSelected={isSelected} isPreview={isPreview} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
+    case 'footer':
+      return <FooterBlock props={block.props as any} {...commonProps} />;
     default:
       return (
         <div className="p-4 bg-muted rounded text-muted-foreground text-sm">

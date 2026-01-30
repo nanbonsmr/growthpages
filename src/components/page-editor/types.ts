@@ -14,7 +14,8 @@ export type BlockType =
   | 'pricing'
   | 'feature-grid'
   | 'hero'
-  | 'nav';
+  | 'nav'
+  | 'footer';
 
 export type BlockCategory = 'basic' | 'forms' | 'marketing' | 'layout';
 
@@ -205,6 +206,38 @@ export interface NavProps {
   sticky: boolean;
   backgroundColor: string;
   textColor: string;
+}
+
+export interface FooterLink {
+  id: string;
+  label: string;
+  url: string;
+}
+
+export interface FooterColumn {
+  id: string;
+  title: string;
+  links: FooterLink[];
+}
+
+export interface FooterSocial {
+  platform: 'twitter' | 'facebook' | 'instagram' | 'linkedin' | 'youtube' | 'github';
+  url: string;
+  enabled: boolean;
+}
+
+export interface FooterProps {
+  logoType: 'text' | 'image';
+  logoText: string;
+  logoImage: string;
+  tagline: string;
+  columns: FooterColumn[];
+  socials: FooterSocial[];
+  copyrightText: string;
+  style: 'simple' | 'columns' | 'centered';
+  backgroundColor: string;
+  textColor: string;
+  showSocials: boolean;
 }
 
 export interface PageSettings {
@@ -499,6 +532,60 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       backgroundColor: '#ffffff',
       textColor: '#000000',
     } as NavProps,
+  },
+  {
+    type: 'footer',
+    label: 'Footer',
+    icon: 'PanelBottom',
+    category: 'layout',
+    defaultProps: {
+      logoType: 'text',
+      logoText: 'YourBrand',
+      logoImage: '',
+      tagline: 'Building the future, one step at a time.',
+      columns: [
+        {
+          id: '1',
+          title: 'Product',
+          links: [
+            { id: '1', label: 'Features', url: '#features' },
+            { id: '2', label: 'Pricing', url: '#pricing' },
+            { id: '3', label: 'Integrations', url: '#integrations' },
+          ],
+        },
+        {
+          id: '2',
+          title: 'Company',
+          links: [
+            { id: '1', label: 'About', url: '#about' },
+            { id: '2', label: 'Blog', url: '#blog' },
+            { id: '3', label: 'Careers', url: '#careers' },
+          ],
+        },
+        {
+          id: '3',
+          title: 'Support',
+          links: [
+            { id: '1', label: 'Help Center', url: '#help' },
+            { id: '2', label: 'Contact', url: '#contact' },
+            { id: '3', label: 'Privacy', url: '#privacy' },
+          ],
+        },
+      ],
+      socials: [
+        { platform: 'twitter', url: '#', enabled: true },
+        { platform: 'facebook', url: '#', enabled: true },
+        { platform: 'instagram', url: '#', enabled: true },
+        { platform: 'linkedin', url: '#', enabled: false },
+        { platform: 'youtube', url: '#', enabled: false },
+        { platform: 'github', url: '#', enabled: false },
+      ],
+      copyrightText: '© {year} YourBrand. All rights reserved.',
+      style: 'columns',
+      backgroundColor: '#1a1a2e',
+      textColor: '#ffffff',
+      showSocials: true,
+    } as FooterProps,
   },
 ];
 
