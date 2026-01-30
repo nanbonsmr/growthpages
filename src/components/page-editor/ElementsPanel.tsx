@@ -15,6 +15,7 @@ import {
   ChevronDown,
   CreditCard,
   LayoutGrid,
+  Sparkles,
 } from 'lucide-react';
 import { BLOCK_DEFINITIONS, BlockDefinition, BlockCategory } from './types';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   ChevronDown,
   CreditCard,
   LayoutGrid,
+  Sparkles,
 };
 
 const categoryLabels: Record<BlockCategory, string> = {

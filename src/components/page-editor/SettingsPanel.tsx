@@ -1083,6 +1083,108 @@ function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
         </div>
       );
 
+    case 'hero':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Headline</Label>
+            <Textarea
+              value={props.headline}
+              onChange={(e) => onUpdate({ headline: e.target.value })}
+              className="mt-1"
+              rows={2}
+            />
+          </div>
+          <div>
+            <Label>Subheadline</Label>
+            <Textarea
+              value={props.subheadline}
+              onChange={(e) => onUpdate({ subheadline: e.target.value })}
+              className="mt-1"
+              rows={3}
+            />
+          </div>
+          <div>
+            <Label>Button Text</Label>
+            <Input
+              value={props.buttonText}
+              onChange={(e) => onUpdate({ buttonText: e.target.value })}
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label>Button Link</Label>
+            <Input
+              value={props.buttonLink}
+              onChange={(e) => onUpdate({ buttonLink: e.target.value })}
+              placeholder="#signup or https://..."
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label>Background Image URL</Label>
+            <Input
+              value={props.backgroundImage}
+              onChange={(e) => onUpdate({ backgroundImage: e.target.value })}
+              placeholder="https://..."
+              className="mt-1"
+            />
+          </div>
+          {props.backgroundImage && (
+            <div>
+              <Label>Overlay Opacity: {props.backgroundOverlay}%</Label>
+              <Slider
+                value={[props.backgroundOverlay || 50]}
+                onValueChange={([v]) => onUpdate({ backgroundOverlay: v })}
+                min={0}
+                max={90}
+                step={5}
+                className="mt-2"
+              />
+            </div>
+          )}
+          <div>
+            <Label>Height</Label>
+            <Select value={props.height || 'medium'} onValueChange={(v) => onUpdate({ height: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="small">Small (300px)</SelectItem>
+                <SelectItem value="medium">Medium (450px)</SelectItem>
+                <SelectItem value="large">Large (600px)</SelectItem>
+                <SelectItem value="full">Full Screen</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Alignment</Label>
+            <Select value={props.alignment || 'center'} onValueChange={(v) => onUpdate({ alignment: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="left">Left</SelectItem>
+                <SelectItem value="center">Center</SelectItem>
+                <SelectItem value="right">Right</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Text Color</Label>
+            <Select value={props.textColor || 'light'} onValueChange={(v) => onUpdate({ textColor: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Light (for dark backgrounds)</SelectItem>
+                <SelectItem value="dark">Dark (for light backgrounds)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      );
+
     default:
       return (
         <p className="text-muted-foreground text-sm">
