@@ -1,17 +1,87 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Sparkles, Users, TrendingUp } from 'lucide-react';
+import { ArrowRight, Sparkles, Users, TrendingUp, Zap, Star, Circle, Triangle, Square } from 'lucide-react';
 
 export function Hero() {
   const navigate = useNavigate();
 
   return (
     <section className="relative pt-32 pb-20 overflow-hidden">
-      {/* Background gradient */}
+      {/* Gradient Mesh Background */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }} />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,hsl(var(--background))_70%)]" />
+        {/* Primary mesh gradients */}
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/30 rounded-full blur-[120px] animate-pulse-slow" />
+          <div className="absolute top-[10%] right-[-5%] w-[40%] h-[40%] bg-accent/25 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '1s' }} />
+          <div className="absolute bottom-[-10%] left-[20%] w-[45%] h-[45%] bg-primary/20 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
+          <div className="absolute bottom-[20%] right-[10%] w-[35%] h-[35%] bg-accent/20 rounded-full blur-[80px] animate-pulse-slow" style={{ animationDelay: '3s' }} />
+        </div>
+        
+        {/* Mesh grid overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.015]"
+          style={{
+            backgroundImage: `
+              linear-gradient(hsl(var(--foreground)) 1px, transparent 1px),
+              linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px'
+          }}
+        />
+        
+        {/* Radial fade */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_70%)]" />
+      </div>
+
+      {/* Floating Elements */}
+      <div className="absolute inset-0 -z-5 overflow-hidden pointer-events-none">
+        {/* Large floating shapes */}
+        <div className="absolute top-[15%] left-[10%] animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }}>
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm border border-primary/10 rotate-12" />
+        </div>
+        
+        <div className="absolute top-[25%] right-[15%] animate-float" style={{ animationDelay: '1s', animationDuration: '7s' }}>
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent/15 to-primary/15 backdrop-blur-sm border border-accent/10" />
+        </div>
+        
+        <div className="absolute bottom-[30%] left-[8%] animate-float" style={{ animationDelay: '2s', animationDuration: '9s' }}>
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/25 to-transparent backdrop-blur-sm border border-primary/15 -rotate-12" />
+        </div>
+        
+        <div className="absolute bottom-[20%] right-[12%] animate-float" style={{ animationDelay: '0.5s', animationDuration: '6s' }}>
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-primary/10 backdrop-blur-sm border border-accent/10 rotate-45" />
+        </div>
+
+        {/* Floating icons */}
+        <div className="absolute top-[20%] left-[25%] animate-float" style={{ animationDelay: '1.5s', animationDuration: '10s' }}>
+          <div className="p-3 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 shadow-soft">
+            <Zap className="w-5 h-5 text-warning" />
+          </div>
+        </div>
+        
+        <div className="absolute top-[35%] right-[25%] animate-float" style={{ animationDelay: '2.5s', animationDuration: '8s' }}>
+          <div className="p-3 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 shadow-soft">
+            <Star className="w-5 h-5 text-primary" />
+          </div>
+        </div>
+        
+        <div className="absolute bottom-[35%] left-[18%] animate-float" style={{ animationDelay: '0.8s', animationDuration: '11s' }}>
+          <div className="p-2.5 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 shadow-soft">
+            <Circle className="w-4 h-4 text-accent" />
+          </div>
+        </div>
+        
+        <div className="absolute bottom-[25%] right-[22%] animate-float" style={{ animationDelay: '3s', animationDuration: '7s' }}>
+          <div className="p-2.5 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 shadow-soft">
+            <Triangle className="w-4 h-4 text-success" />
+          </div>
+        </div>
+
+        {/* Small decorative dots */}
+        <div className="absolute top-[40%] left-[5%] w-2 h-2 rounded-full bg-primary/40 animate-pulse-slow" style={{ animationDelay: '0s' }} />
+        <div className="absolute top-[15%] right-[30%] w-3 h-3 rounded-full bg-accent/30 animate-pulse-slow" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-[40%] right-[5%] w-2.5 h-2.5 rounded-full bg-primary/35 animate-pulse-slow" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-[15%] left-[35%] w-2 h-2 rounded-full bg-accent/40 animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
       </div>
 
       <div className="container mx-auto px-4">
