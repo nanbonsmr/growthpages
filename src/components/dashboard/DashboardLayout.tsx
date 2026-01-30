@@ -15,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, Settings, LogOut, HelpCircle } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -91,6 +92,9 @@ export function DashboardLayout({ children, title, description, actions }: Dashb
                 <Bell className="h-5 w-5" />
                 <span className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 h-2 w-2 rounded-full bg-primary animate-pulse" />
               </Button>
+
+              {/* Theme Toggle */}
+              <ThemeToggle />
 
               {/* Help - hidden on small screens */}
               <Button
