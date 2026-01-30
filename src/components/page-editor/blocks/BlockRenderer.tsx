@@ -9,6 +9,10 @@ import { FormBlock } from './FormBlock';
 import { SocialBlock } from './SocialBlock';
 import { TestimonialBlock } from './TestimonialBlock';
 import { CountdownBlock } from './CountdownBlock';
+import { VideoBlock } from './VideoBlock';
+import { AccordionBlock } from './AccordionBlock';
+import { PricingBlock } from './PricingBlock';
+import { FeatureGridBlock } from './FeatureGridBlock';
 
 interface BlockRendererProps {
   block: Block;
@@ -45,6 +49,14 @@ export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate }
       return <TestimonialBlock props={block.props as any} {...commonProps} />;
     case 'countdown':
       return <CountdownBlock props={block.props as any} {...commonProps} />;
+    case 'video':
+      return <VideoBlock props={block.props as any} {...commonProps} />;
+    case 'accordion':
+      return <AccordionBlock props={block.props as any} {...commonProps} />;
+    case 'pricing':
+      return <PricingBlock props={block.props as any} {...commonProps} />;
+    case 'feature-grid':
+      return <FeatureGridBlock props={block.props as any} {...commonProps} />;
     default:
       return (
         <div className="p-4 bg-muted rounded text-muted-foreground text-sm">
