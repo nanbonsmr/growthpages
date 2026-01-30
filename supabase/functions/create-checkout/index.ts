@@ -14,8 +14,8 @@ interface CheckoutRequest {
 }
 
 const PLAN_PRODUCTS: Record<string, { productId: string; price: number }> = {
-  pro: { productId: 'prod_pro_monthly', price: 1200 }, // $12.00 in cents
-  business: { productId: 'prod_business_monthly', price: 3900 }, // $39.00 in cents
+  pro: { productId: 'pdt_0NXP1pEcmYc2ATMQNO3d9', price: 1200 }, // $12.00 in cents
+  business: { productId: 'pdt_0NXP1uNtddAfEnq89htmg', price: 3900 }, // $39.00 in cents
 };
 
 serve(async (req) => {
