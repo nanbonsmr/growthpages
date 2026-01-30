@@ -18,6 +18,9 @@ import {
   ArrowRight,
   Check
 } from 'lucide-react';
+import builderMockup from '@/assets/builder-mockup.png';
+import analyticsMockup from '@/assets/analytics-mockup.png';
+import subscribersMockup from '@/assets/subscribers-mockup.png';
 
 const features = [
   {
@@ -99,21 +102,24 @@ const detailSections = [
     title: 'Intuitive Page Builder',
     description: 'Create stunning signup pages without writing a single line of code. Our drag-and-drop editor makes it easy to customize every element.',
     features: ['Drag & drop interface', 'Real-time preview', '50+ UI components', 'Custom CSS support'],
-    image: 'builder',
+    image: builderMockup,
+    icon: Layout,
     reverse: false,
   },
   {
     title: 'Powerful Analytics Dashboard',
     description: 'Get actionable insights into your page performance. Track visitor behavior, conversion rates, and growth trends in real-time.',
     features: ['Conversion tracking', 'Traffic sources', 'Growth charts', 'A/B testing'],
-    image: 'analytics',
+    image: analyticsMockup,
+    icon: BarChart3,
     reverse: true,
   },
   {
     title: 'Complete Subscriber Management',
     description: 'Organize and manage your growing audience with powerful tools. Tag, segment, and export your subscribers with ease.',
     features: ['Smart tagging', 'Custom segments', 'Bulk actions', 'One-click export'],
-    image: 'subscribers',
+    image: subscribersMockup,
+    icon: Users,
     reverse: false,
   },
 ];
@@ -210,21 +216,16 @@ export default function FeaturesPage() {
                     </ul>
                   </div>
                   
-                  {/* Preview placeholder */}
+                  {/* Preview with actual mockup */}
                   <div className={section.reverse ? 'lg:order-1' : ''}>
                     <div className="relative">
                       <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-3xl blur-2xl" />
                       <div className="relative rounded-2xl border border-border/50 bg-card shadow-premium-lg overflow-hidden">
-                        <div className="aspect-[4/3] bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
-                          <div className="text-center p-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary mb-4">
-                              {index === 0 && <Layout className="h-8 w-8 text-primary-foreground" />}
-                              {index === 1 && <BarChart3 className="h-8 w-8 text-primary-foreground" />}
-                              {index === 2 && <Users className="h-8 w-8 text-primary-foreground" />}
-                            </div>
-                            <p className="text-muted-foreground">{section.title} Preview</p>
-                          </div>
-                        </div>
+                        <img 
+                          src={section.image} 
+                          alt={`${section.title} - Feature preview`}
+                          className="w-full h-auto"
+                        />
                       </div>
                     </div>
                   </div>
