@@ -1,4 +1,4 @@
-import { Block, PageSettings, BLOCK_DEFINITIONS, AccordionItemData, PricingTier, FeatureItem } from './types';
+import { Block, PageSettings, BLOCK_DEFINITIONS, AccordionItemData, PricingTier, FeatureItem, NavMenuItem } from './types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -1181,6 +1181,183 @@ function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
                 <SelectItem value="dark">Dark (for light backgrounds)</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+        </div>
+      );
+
+    case 'nav':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Logo Type</Label>
+            <Select value={props.logoType || 'text'} onValueChange={(v) => onUpdate({ logoType: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="text">Text</SelectItem>
+                <SelectItem value="image">Image</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {props.logoType === 'image' ? (
+            <div>
+              <Label>Logo Image URL</Label>
+              <Input
+                value={props.logoImage}
+                onChange={(e) => onUpdate({ logoImage: e.target.value })}
+                placeholder="https://..."
+                className="mt-1"
+              />
+            </div>
+          ) : (
+            <div>
+              <Label>Logo Text</Label>
+              <Input
+                value={props.logoText}
+                onChange={(e) => onUpdate({ logoText: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+          )}
+          <div>
+            <Label>Style</Label>
+            <Select value={props.style || 'glass'} onValueChange={(v) => onUpdate({ style: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="transparent">Transparent</SelectItem>
+                <SelectItem value="solid">Solid</SelectItem>
+                <SelectItem value="glass">Glass (Blur)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {props.style === 'solid' && (
+            <>
+              <div>
+                <Label>Background Color</Label>
+                <Input
+                  type="color"
+                  value={props.backgroundColor}
+                  onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
+                  className="mt-1 h-10 cursor-pointer"
+                />
+              </div>
+              <div>
+                <Label>Text Color</Label>
+                <Input
+                  type="color"
+                  value={props.textColor}
+                  onChange={(e) => onUpdate({ textColor: e.target.value })}
+                  className="mt-1 h-10 cursor-pointer"
+                />
+              </div>
+            </>
+          )}
+          <div>
+            <Label>Alignment</Label>
+            <Select value={props.alignment || 'spread'} onValueChange={(v) => onUpdate({ alignment: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="left">Left</SelectItem>
+                <SelectItem value="center">Center</SelectItem>
+                <SelectItem value="spread">Spread (Logo left, menu right)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* Menu Items */}
+          <div className="space-y-3 mt-4">
+            <div className="flex items-center justify-between">
+              <Label>Menu Items</Label>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  const newItem: NavMenuItem = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    label: 'New Link',
+                    url: '#',
+                  };
+                  onUpdate({ menuItems: [...(props.menuItems || []), newItem] });
+                }}
+              >
+                <Plus className="h-4 w-4 mr-1" /> Add
+              </Button>
+            </div>
+            {props.menuItems?.map((item: NavMenuItem, idx: number) => (
+              <div key={item.id} className="p-3 border rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-muted-foreground">Item {idx + 1}</span>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6"
+                    onClick={() => {
+                      const newItems = props.menuItems.filter((i: NavMenuItem) => i.id !== item.id);
+                      onUpdate({ menuItems: newItems });
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+                <Input
+                  value={item.label}
+                  onChange={(e) => {
+                    const newItems = props.menuItems.map((i: NavMenuItem) =>
+                      i.id === item.id ? { ...i, label: e.target.value } : i
+                    );
+                    onUpdate({ menuItems: newItems });
+                  }}
+                  placeholder="Label"
+                />
+                <Input
+                  value={item.url}
+                  onChange={(e) => {
+                    const newItems = props.menuItems.map((i: NavMenuItem) =>
+                      i.id === item.id ? { ...i, url: e.target.value } : i
+                    );
+                    onUpdate({ menuItems: newItems });
+                  }}
+                  placeholder="#section or https://..."
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* CTA Button */}
+          <div className="space-y-3 mt-4 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <Label>CTA Button</Label>
+              <Switch
+                checked={props.ctaButton?.enabled ?? true}
+                onCheckedChange={(v) => onUpdate({ ctaButton: { ...props.ctaButton, enabled: v } })}
+              />
+            </div>
+            {props.ctaButton?.enabled && (
+              <>
+                <div>
+                  <Label>Button Text</Label>
+                  <Input
+                    value={props.ctaButton?.text || ''}
+                    onChange={(e) => onUpdate({ ctaButton: { ...props.ctaButton, text: e.target.value } })}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Button URL</Label>
+                  <Input
+                    value={props.ctaButton?.url || ''}
+                    onChange={(e) => onUpdate({ ctaButton: { ...props.ctaButton, url: e.target.value } })}
+                    placeholder="#signup or https://..."
+                    className="mt-1"
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
       );
