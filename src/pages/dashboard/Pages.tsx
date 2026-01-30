@@ -90,58 +90,59 @@ export default function Pages() {
       actions={
         <Button
           onClick={() => navigate('/dashboard/pages/new')}
-          className="gradient-primary btn-lift rounded-xl h-10"
+          className="gradient-primary btn-lift rounded-xl h-9 sm:h-10 text-sm"
         >
-          <Plus className="mr-2 h-4 w-4" />
-          Create Page
+          <Plus className="mr-1.5 sm:mr-2 h-4 w-4" />
+          <span className="hidden xs:inline">Create Page</span>
+          <span className="xs:hidden">New</span>
         </Button>
       }
     >
       {isLoading ? (
-        <div className="flex items-center justify-center py-20">
+        <div className="flex items-center justify-center py-16 sm:py-20">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-primary" />
             <p className="text-sm text-muted-foreground">Loading pages...</p>
           </div>
         </div>
       ) : pages.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
-            <FileText className="h-10 w-10 text-primary" />
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center px-4">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 sm:mb-6">
+            <FileText className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
           </div>
-          <h3 className="text-xl font-semibold mb-2">No pages yet</h3>
-          <p className="text-muted-foreground mb-6 max-w-sm">
+          <h3 className="text-lg sm:text-xl font-semibold mb-2">No pages yet</h3>
+          <p className="text-muted-foreground mb-4 sm:mb-6 max-w-sm text-sm">
             Create your first signup page to start capturing leads from your audience.
           </p>
           <Button
             onClick={() => navigate('/dashboard/pages/new')}
-            className="gradient-primary btn-lift rounded-xl h-11 px-6"
+            className="gradient-primary btn-lift rounded-xl h-10 sm:h-11 px-5 sm:px-6"
           >
             <Plus className="mr-2 h-4 w-4" />
             Create Your First Page
           </Button>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {pages.map((page, index) => (
             <div
               key={page.id}
               className={cn(
-                'group relative rounded-2xl bg-card border border-border/50 p-6',
+                'group relative rounded-xl sm:rounded-2xl bg-card border border-border/50 p-4 sm:p-6',
                 'transition-all duration-300 ease-out card-hover',
                 'animate-fade-in'
               )}
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
               <div className="relative">
                 {/* Header */}
-                <div className="flex items-start justify-between mb-4">
+                <div className="flex items-start justify-between mb-3 sm:mb-4">
                   <div className="flex-1 min-w-0 pr-2">
-                    <h3 className="font-semibold text-lg truncate mb-1">{page.title}</h3>
-                    <p className="text-sm text-muted-foreground truncate">/p/{page.slug}</p>
+                    <h3 className="font-semibold text-base sm:text-lg truncate mb-0.5 sm:mb-1">{page.title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">/p/{page.slug}</p>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -188,7 +189,7 @@ export default function Pages() {
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-muted-foreground mb-5 line-clamp-2 min-h-[40px]">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-5 line-clamp-2 min-h-[32px] sm:min-h-[40px]">
                   {page.description || 'No description added'}
                 </p>
 

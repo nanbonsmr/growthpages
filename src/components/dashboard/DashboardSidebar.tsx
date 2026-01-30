@@ -15,6 +15,7 @@ import {
   Shield,
   ChevronLeft,
   ChevronRight,
+  Menu,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,6 +23,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
@@ -38,13 +46,21 @@ const bottomNavItems = [
 interface DashboardSidebarProps {
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
+  mobileOpen?: boolean;
+  onMobileOpenChange?: (open: boolean) => void;
 }
 
-export function DashboardSidebar({ collapsed = false, onCollapsedChange }: DashboardSidebarProps) {
+export function DashboardSidebar({ 
+  collapsed = false, 
+  onCollapsedChange,
+  mobileOpen = false,
+  onMobileOpenChange,
+}: DashboardSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut, profile, isAdmin } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(collapsed);
+  const isMobile = useIsMobile();
 
   const handleCollapse = () => {
     const newState = !isCollapsed;
@@ -57,12 +73,19 @@ export function DashboardSidebar({ collapsed = false, onCollapsedChange }: Dashb
     navigate('/');
   };
 
+  const handleNavigation = (href: string) => {
+    navigate(href);
+    if (isMobile) {
+      onMobileOpenChange?.(false);
+    }
+  };
+
   const NavLink = ({ item, isActive }: { item: typeof navItems[0]; isActive: boolean }) => {
     const content = (
-      <Link
-        to={item.href}
+      <button
+        onClick={() => handleNavigation(item.href)}
         className={cn(
-          'group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium',
+          'group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium w-full',
           'transition-all duration-200 ease-out',
           isActive
             ? 'bg-primary/10 text-primary'
@@ -73,12 +96,12 @@ export function DashboardSidebar({ collapsed = false, onCollapsedChange }: Dashb
         {isActive && (
           <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full bg-primary" />
         )}
-        <item.icon className={cn('h-[18px] w-[18px] flex-shrink-0', isCollapsed && 'mx-auto')} />
-        {!isCollapsed && <span>{item.label}</span>}
-      </Link>
+        <item.icon className={cn('h-[18px] w-[18px] flex-shrink-0', isCollapsed && !isMobile && 'mx-auto')} />
+        {(!isCollapsed || isMobile) && <span>{item.label}</span>}
+      </button>
     );
 
-    if (isCollapsed) {
+    if (isCollapsed && !isMobile) {
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
@@ -92,38 +115,32 @@ export function DashboardSidebar({ collapsed = false, onCollapsedChange }: Dashb
     return content;
   };
 
-  return (
-    <aside
-      className={cn(
-        'fixed left-0 top-0 h-screen bg-sidebar border-r border-sidebar-border',
-        'flex flex-col transition-all duration-300 ease-out-expo z-40',
-        isCollapsed ? 'w-[72px]' : 'w-64'
-      )}
-    >
+  const SidebarContent = () => (
+    <>
       {/* Logo */}
       <div className={cn(
         'flex items-center h-16 border-b border-sidebar-border',
-        isCollapsed ? 'justify-center px-2' : 'px-5'
+        isCollapsed && !isMobile ? 'justify-center px-2' : 'px-5'
       )}>
-        <Link to="/" className="flex items-center gap-2.5">
+        <Link to="/" className="flex items-center gap-2.5" onClick={() => onMobileOpenChange?.(false)}>
           <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-primary shadow-sm">
             <Zap className="h-5 w-5 text-primary-foreground" />
           </div>
-          {!isCollapsed && (
+          {(!isCollapsed || isMobile) && (
             <span className="text-lg font-bold tracking-tight">LeadCapture</span>
           )}
         </Link>
       </div>
 
       {/* Create Button */}
-      <div className={cn('p-3', isCollapsed ? 'px-2' : 'px-4')}>
-        {isCollapsed ? (
+      <div className={cn('p-3', isCollapsed && !isMobile ? 'px-2' : 'px-4')}>
+        {isCollapsed && !isMobile ? (
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <Button
                 size="icon"
                 className="w-full h-10 gradient-primary btn-lift rounded-xl"
-                onClick={() => navigate('/dashboard/pages/new')}
+                onClick={() => handleNavigation('/dashboard/pages/new')}
               >
                 <Plus className="h-5 w-5" />
               </Button>
@@ -133,7 +150,7 @@ export function DashboardSidebar({ collapsed = false, onCollapsedChange }: Dashb
         ) : (
           <Button
             className="w-full gradient-primary btn-lift rounded-xl h-10"
-            onClick={() => navigate('/dashboard/pages/new')}
+            onClick={() => handleNavigation('/dashboard/pages/new')}
           >
             <Plus className="mr-2 h-4 w-4" />
             Create Page
@@ -142,7 +159,7 @@ export function DashboardSidebar({ collapsed = false, onCollapsedChange }: Dashb
       </div>
 
       {/* Main Navigation */}
-      <nav className={cn('flex-1 py-2 space-y-1', isCollapsed ? 'px-2' : 'px-3')}>
+      <nav className={cn('flex-1 py-2 space-y-1', isCollapsed && !isMobile ? 'px-2' : 'px-3')}>
         {navItems.map((item) => {
           const isActive =
             location.pathname === item.href ||
@@ -161,7 +178,7 @@ export function DashboardSidebar({ collapsed = false, onCollapsedChange }: Dashb
       </nav>
 
       {/* Bottom Navigation */}
-      <div className={cn('py-2 space-y-1 border-t border-sidebar-border', isCollapsed ? 'px-2' : 'px-3')}>
+      <div className={cn('py-2 space-y-1 border-t border-sidebar-border', isCollapsed && !isMobile ? 'px-2' : 'px-3')}>
         {bottomNavItems.map((item) => {
           const isActive = location.pathname === item.href;
           return <NavLink key={item.href} item={item} isActive={isActive} />;
@@ -171,9 +188,9 @@ export function DashboardSidebar({ collapsed = false, onCollapsedChange }: Dashb
       {/* User Section */}
       <div className={cn(
         'border-t border-sidebar-border',
-        isCollapsed ? 'p-2' : 'p-4'
+        isCollapsed && !isMobile ? 'p-2' : 'p-4'
       )}>
-        {isCollapsed ? (
+        {isCollapsed && !isMobile ? (
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <button
@@ -215,6 +232,35 @@ export function DashboardSidebar({ collapsed = false, onCollapsedChange }: Dashb
           </div>
         )}
       </div>
+    </>
+  );
+
+  // Mobile: Use Sheet
+  if (isMobile) {
+    return (
+      <Sheet open={mobileOpen} onOpenChange={onMobileOpenChange}>
+        <SheetContent side="left" className="w-72 p-0 bg-sidebar border-sidebar-border">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Navigation Menu</SheetTitle>
+          </SheetHeader>
+          <div className="flex flex-col h-full">
+            <SidebarContent />
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // Desktop: Fixed sidebar
+  return (
+    <aside
+      className={cn(
+        'fixed left-0 top-0 h-screen bg-sidebar border-r border-sidebar-border',
+        'hidden md:flex flex-col transition-all duration-300 ease-out-expo z-40',
+        isCollapsed ? 'w-[72px]' : 'w-64'
+      )}
+    >
+      <SidebarContent />
 
       {/* Collapse Toggle */}
       <button
@@ -234,5 +280,19 @@ export function DashboardSidebar({ collapsed = false, onCollapsedChange }: Dashb
         )}
       </button>
     </aside>
+  );
+}
+
+// Export the hamburger menu button for use in header
+export function MobileMenuTrigger({ onClick }: { onClick: () => void }) {
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="md:hidden h-10 w-10 rounded-xl"
+      onClick={onClick}
+    >
+      <Menu className="h-5 w-5" />
+    </Button>
   );
 }

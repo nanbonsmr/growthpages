@@ -256,7 +256,7 @@ export default function Subscribers() {
           {/* Stats Overview */}
           <SubscriberStats subscribers={subscribers} pages={pagesForFilter} />
 
-          <div className="flex gap-6">
+          <div className="flex flex-col xl:flex-row gap-4 sm:gap-6">
             {/* Main Content */}
             <div className="flex-1 min-w-0">
               {/* Filters */}
@@ -276,12 +276,12 @@ export default function Subscribers() {
 
               {/* Table or Empty State */}
               {filteredSubscribers.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border border-border/50 bg-card">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                    <Users className="h-8 w-8 text-primary" />
+                <div className="flex flex-col items-center justify-center py-12 sm:py-20 text-center rounded-2xl border border-border/50 bg-card">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-3 sm:mb-4">
+                    <Users className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">No subscribers yet</h3>
-                  <p className="text-muted-foreground text-center max-w-sm">
+                  <h3 className="text-base sm:text-lg font-semibold mb-2">No subscribers yet</h3>
+                  <p className="text-muted-foreground text-center text-sm max-w-sm px-4">
                     {hasActiveFilters
                       ? 'No subscribers match your filters. Try adjusting your search criteria.'
                       : 'Share your signup pages to start collecting subscribers.'}
@@ -307,7 +307,7 @@ export default function Subscribers() {
               )}
             </div>
 
-            {/* Sidebar Insights */}
+            {/* Sidebar Insights - hidden on mobile, shown on xl+ */}
             {subscribers.length > 0 && (
               <div className="hidden xl:block w-72 shrink-0">
                 <PageInsights subscribers={subscribers} pages={pagesForFilter} />

@@ -234,19 +234,19 @@ export function SubscriberTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between px-2">
-        <p className="text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2">
+        <p className="text-xs sm:text-sm text-muted-foreground order-2 sm:order-1">
           Showing <span className="font-medium text-foreground">{startIndex}</span> to{' '}
           <span className="font-medium text-foreground">{endIndex}</span> of{' '}
           <span className="font-medium text-foreground">{totalCount}</span>
         </p>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 order-1 sm:order-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="h-9 w-9 p-0 rounded-lg"
+            className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-lg"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -268,7 +268,7 @@ export function SubscriberTable({
                   variant={currentPage === pageNum ? 'default' : 'ghost'}
                   size="sm"
                   className={cn(
-                    "h-9 w-9 p-0 rounded-lg",
+                    "h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-lg text-xs sm:text-sm",
                     currentPage === pageNum && "gradient-primary"
                   )}
                   onClick={() => onPageChange(pageNum)}
@@ -283,7 +283,7 @@ export function SubscriberTable({
             size="sm"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="h-9 w-9 p-0 rounded-lg"
+            className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-lg"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
