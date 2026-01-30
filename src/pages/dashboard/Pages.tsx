@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { getPublicPageUrl } from '@/lib/config';
 
 const templateLabels: Record<string, string> = {
   newsletter: 'Newsletter',
@@ -53,7 +54,7 @@ export default function Pages() {
   };
 
   const handleCopyLink = (slug: string) => {
-    const url = `${window.location.origin}/p/${slug}`;
+    const url = getPublicPageUrl(slug);
     navigator.clipboard.writeText(url);
     toast({
       title: 'Link copied!',
