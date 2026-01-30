@@ -30,6 +30,10 @@ serve(async (req) => {
       throw new Error('DODO_PAYMENTS_API_KEY is not configured');
     }
 
+    // Optional override (useful if keys don't follow the expected prefixes)
+    // Allowed values: 'test' | 'live'
+    const DODO_MODE = (Deno.env.get('DODO_PAYMENTS_MODE') || '').toLowerCase();
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -58,9 +62,20 @@ serve(async (req) => {
     const baseUrl = returnUrl || `${req.headers.get('origin')}/dashboard/settings`;
 
     // Determine if we're in test mode
-    const isTestMode = DODO_API_KEY.startsWith('sk_test_');
-    const apiBase = isTestMode 
-      ? 'https://test.dodopayments.com' 
+    const isTestMode =
+      DODO_MODE === 'test'
+        ? true
+        : DODO_MODE === 'live'
+          ? false
+          : DODO_API_KEY.startsWith('sk_test_');
+
+    // Safe diagnostic (does not log the secret)
+    console.log(
+      `Dodo mode: ${isTestMode ? 'test' : 'live'} (override=${DODO_MODE || 'none'})`
+    );
+
+    const apiBase = isTestMode
+      ? 'https://test.dodopayments.com'
       : 'https://live.dodopayments.com';
 
     // Create Dodo checkout session
@@ -90,7 +105,9 @@ serve(async (req) => {
     if (!checkoutResponse.ok) {
       const errorText = await checkoutResponse.text();
       console.error('Dodo API error:', errorText);
-      throw new Error(`Failed to create checkout session: ${checkoutResponse.status}`);
+      throw new Error(
+        `Failed to create checkout session: ${checkoutResponse.status} - ${errorText}`
+      );
     }
 
     const checkoutData = await checkoutResponse.json();
