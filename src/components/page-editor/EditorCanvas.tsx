@@ -8,7 +8,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Block, PageSettings } from './types';
 import { BlockRenderer } from './blocks/BlockRenderer';
 import { cn } from '@/lib/utils';
-import { GripVertical, Trash2 } from 'lucide-react';
+import { GripVertical, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface SortableBlockProps {
@@ -17,10 +17,25 @@ interface SortableBlockProps {
   onSelect: () => void;
   onDelete: () => void;
   onUpdate: (props: Record<string, any>) => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
   pageId?: string;
 }
 
-function SortableBlock({ block, isSelected, onSelect, onDelete, onUpdate, pageId }: SortableBlockProps) {
+function SortableBlock({ 
+  block, 
+  isSelected, 
+  onSelect, 
+  onDelete, 
+  onUpdate, 
+  onMoveUp,
+  onMoveDown,
+  canMoveUp,
+  canMoveDown,
+  pageId 
+}: SortableBlockProps) {
   const {
     attributes,
     listeners,
@@ -41,7 +56,7 @@ function SortableBlock({ block, isSelected, onSelect, onDelete, onUpdate, pageId
       style={style}
       className={cn(
         'relative group',
-        isDragging && 'z-50 opacity-70'
+        isDragging && 'z-50 opacity-50'
       )}
     >
       <div
@@ -55,34 +70,69 @@ function SortableBlock({ block, isSelected, onSelect, onDelete, onUpdate, pageId
           onSelect();
         }}
       >
-        {/* Drag Handle */}
+        {/* Block Controls - Always visible on hover, positioned at top */}
         <div
-          {...attributes}
-          {...listeners}
           className={cn(
-            'absolute -left-10 top-1/2 -translate-y-1/2 p-1.5 rounded cursor-grab',
-            'bg-muted opacity-0 group-hover:opacity-100 transition-opacity',
-            'hover:bg-accent'
+            'absolute -top-3 left-1/2 -translate-x-1/2 z-10',
+            'flex items-center gap-1 px-2 py-1 rounded-full',
+            'bg-card border border-border shadow-lg',
+            'opacity-0 group-hover:opacity-100 transition-all duration-200',
+            'scale-90 group-hover:scale-100'
           )}
         >
-          <GripVertical className="h-4 w-4 text-muted-foreground" />
-        </div>
+          {/* Move Up */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoveUp();
+            }}
+            disabled={!canMoveUp}
+          >
+            <ChevronUp className="h-3.5 w-3.5" />
+          </Button>
 
-        {/* Delete Button */}
-        <Button
-          variant="destructive"
-          size="icon"
-          className={cn(
-            'absolute -right-10 top-1/2 -translate-y-1/2 h-8 w-8',
-            'opacity-0 group-hover:opacity-100 transition-opacity'
-          )}
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+          {/* Drag Handle */}
+          <div
+            {...attributes}
+            {...listeners}
+            className={cn(
+              'p-1 rounded cursor-grab active:cursor-grabbing',
+              'hover:bg-muted transition-colors'
+            )}
+          >
+            <GripVertical className="h-4 w-4 text-muted-foreground" />
+          </div>
+
+          {/* Move Down */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoveDown();
+            }}
+            disabled={!canMoveDown}
+          >
+            <ChevronDown className="h-3.5 w-3.5" />
+          </Button>
+
+          {/* Delete */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
 
         {/* Block Content */}
         <div className="p-2">
@@ -106,6 +156,7 @@ interface EditorCanvasProps {
   onSelectBlock: (id: string | null) => void;
   onDeleteBlock: (id: string) => void;
   onUpdateBlock: (id: string, props: Record<string, any>) => void;
+  onMoveBlock: (id: string, direction: 'up' | 'down') => void;
   pageId?: string;
 }
 
@@ -117,6 +168,7 @@ export function EditorCanvas({
   onSelectBlock,
   onDeleteBlock,
   onUpdateBlock,
+  onMoveBlock,
   pageId,
 }: EditorCanvasProps) {
   const { setNodeRef, isOver } = useDroppable({
@@ -188,8 +240,8 @@ export function EditorCanvas({
                     </div>
                   </div>
                 ) : (
-                  <div className="py-4 space-y-2 pl-10 pr-10">
-                    {blocks.map((block) => (
+                  <div className="py-6 space-y-4 px-4">
+                    {blocks.map((block, index) => (
                       <SortableBlock
                         key={block.id}
                         block={block}
@@ -197,6 +249,10 @@ export function EditorCanvas({
                         onSelect={() => onSelectBlock(block.id)}
                         onDelete={() => onDeleteBlock(block.id)}
                         onUpdate={(props) => onUpdateBlock(block.id, props)}
+                        onMoveUp={() => onMoveBlock(block.id, 'up')}
+                        onMoveDown={() => onMoveBlock(block.id, 'down')}
+                        canMoveUp={index > 0}
+                        canMoveDown={index < blocks.length - 1}
                         pageId={pageId}
                       />
                     ))}
