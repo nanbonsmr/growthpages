@@ -75,27 +75,27 @@ export function SubscriberStats({ subscribers, pages }: SubscriberStatsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
       {stats.map((stat) => (
         <Card key={stat.title} className="border-border/50 bg-card/50 backdrop-blur-sm">
-          <CardContent className="p-5">
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                <p className={`text-2xl font-bold tracking-tight ${
+          <CardContent className="p-3 sm:p-5">
+            <div className="flex items-start justify-between gap-2">
+              <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{stat.title}</p>
+                <p className={`text-lg sm:text-2xl font-bold tracking-tight truncate ${
                   stat.trend === 'up' ? 'text-green-600 dark:text-green-400' : 
                   stat.trend === 'down' ? 'text-red-600 dark:text-red-400' : ''
                 }`}>
                   {stat.value}
                 </p>
-                <p className="text-xs text-muted-foreground">{stat.description}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{stat.description}</p>
               </div>
-              <div className={`p-2.5 rounded-xl ${
+              <div className={`p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl shrink-0 ${
                 stat.trend === 'up' ? 'bg-green-100 dark:bg-green-900/30' :
                 stat.trend === 'down' ? 'bg-red-100 dark:bg-red-900/30' :
                 'bg-primary/10'
               }`}>
-                <stat.icon className={`h-5 w-5 ${
+                <stat.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${
                   stat.trend === 'up' ? 'text-green-600 dark:text-green-400' :
                   stat.trend === 'down' ? 'text-red-600 dark:text-red-400' :
                   'text-primary'

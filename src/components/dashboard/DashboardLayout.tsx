@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { DashboardSidebar } from './DashboardSidebar';
+import { DashboardSidebar, MobileMenuTrigger } from './DashboardSidebar';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, Settings, LogOut, HelpCircle } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -24,8 +25,10 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, title, description, actions }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const handleSignOut = async () => {
     await signOut();
@@ -37,37 +40,44 @@ export function DashboardLayout({ children, title, description, actions }: Dashb
       <DashboardSidebar
         collapsed={sidebarCollapsed}
         onCollapsedChange={setSidebarCollapsed}
+        mobileOpen={mobileMenuOpen}
+        onMobileOpenChange={setMobileMenuOpen}
       />
 
       {/* Main content area */}
       <main
         className={cn(
           'min-h-screen transition-all duration-300 ease-out-expo',
-          sidebarCollapsed ? 'ml-[72px]' : 'ml-64'
+          // No margin on mobile, sidebar margin on desktop
+          isMobile ? 'ml-0' : (sidebarCollapsed ? 'md:ml-[72px]' : 'md:ml-64')
         )}
       >
         {/* Top Header Bar */}
-        <header className="sticky top-0 z-30 h-16 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-          <div className="flex items-center justify-between h-full px-6 lg:px-8">
-            {/* Left: Title on mobile, Search on desktop */}
-            <div className="flex items-center gap-4 flex-1">
-              <div className="hidden lg:block relative max-w-md flex-1">
+        <header className="sticky top-0 z-30 h-14 sm:h-16 border-b border-border/50 bg-background/80 backdrop-blur-xl">
+          <div className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-8">
+            {/* Left: Mobile menu + Search */}
+            <div className="flex items-center gap-2 sm:gap-4 flex-1">
+              {/* Mobile Menu Button */}
+              <MobileMenuTrigger onClick={() => setMobileMenuOpen(true)} />
+              
+              {/* Desktop Search */}
+              <div className="hidden sm:block relative max-w-md flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search pages, subscribers..."
-                  className="pl-10 h-10 bg-secondary/50 border-0 rounded-xl focus:bg-background focus:ring-1 focus:ring-border input-glow"
+                  className="pl-10 h-9 sm:h-10 bg-secondary/50 border-0 rounded-xl focus:bg-background focus:ring-1 focus:ring-border input-glow"
                 />
               </div>
             </div>
 
             {/* Right: Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {/* Mobile Search */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden h-10 w-10 rounded-xl"
+                className="sm:hidden h-9 w-9 rounded-xl"
               >
                 <Search className="h-5 w-5" />
               </Button>
@@ -76,17 +86,17 @@ export function DashboardLayout({ children, title, description, actions }: Dashb
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-10 w-10 rounded-xl relative"
+                className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl relative"
               >
                 <Bell className="h-5 w-5" />
-                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-primary animate-pulse" />
+                <span className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 h-2 w-2 rounded-full bg-primary animate-pulse" />
               </Button>
 
-              {/* Help */}
+              {/* Help - hidden on small screens */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="hidden sm:flex h-10 w-10 rounded-xl"
+                className="hidden md:flex h-10 w-10 rounded-xl"
               >
                 <HelpCircle className="h-5 w-5" />
               </Button>
@@ -96,12 +106,12 @@ export function DashboardLayout({ children, title, description, actions }: Dashb
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="h-10 gap-2 px-2 rounded-xl hover:bg-secondary"
+                    className="h-9 sm:h-10 gap-2 px-1.5 sm:px-2 rounded-xl hover:bg-secondary"
                   >
-                    <div className="h-8 w-8 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
+                    <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-xs sm:text-sm font-medium">
                       {profile?.full_name?.charAt(0).toUpperCase() || profile?.email?.charAt(0).toUpperCase() || 'U'}
                     </div>
-                    <span className="hidden md:block text-sm font-medium max-w-[120px] truncate">
+                    <span className="hidden lg:block text-sm font-medium max-w-[120px] truncate">
                       {profile?.full_name || 'User'}
                     </span>
                   </Button>
@@ -145,17 +155,17 @@ export function DashboardLayout({ children, title, description, actions }: Dashb
         </header>
 
         {/* Page Content */}
-        <div className="p-6 lg:p-8">
+        <div className="p-4 sm:p-6 lg:p-8">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4 mb-6 sm:mb-8">
             <div className="animate-fade-in">
-              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">{title}</h1>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">{title}</h1>
               {description && (
-                <p className="text-muted-foreground mt-1 text-sm lg:text-base">{description}</p>
+                <p className="text-muted-foreground mt-1 text-sm">{description}</p>
               )}
             </div>
             {actions && (
-              <div className="flex items-center gap-3 animate-fade-in stagger-1">
+              <div className="flex items-center gap-2 sm:gap-3 animate-fade-in stagger-1">
                 {actions}
               </div>
             )}

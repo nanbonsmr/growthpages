@@ -82,58 +82,58 @@ export default function Analytics() {
       description="Track your signup performance and growth metrics."
     >
       {/* Key Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-primary/10">
-                <Users className="h-5 w-5 text-primary" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-lg bg-primary/10">
+                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Subscribers</p>
-                <p className="text-2xl font-bold">{totalSubscribers}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">Total Subscribers</p>
+                <p className="text-lg sm:text-2xl font-bold">{totalSubscribers}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-success/10">
-                <TrendingUp className="h-5 w-5 text-success" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-lg bg-success/10">
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Last 7 Days</p>
-                <p className="text-2xl font-bold">{last7DaysSubscribers}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-warning/10">
-                <Zap className="h-5 w-5 text-warning" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Avg/Day</p>
-                <p className="text-2xl font-bold">{avgPerDay}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">Last 7 Days</p>
+                <p className="text-lg sm:text-2xl font-bold">{last7DaysSubscribers}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-accent/10">
-                <Target className="h-5 w-5 text-accent" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-lg bg-warning/10">
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Subs/Page</p>
-                <p className="text-2xl font-bold">{conversionRate}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">Avg/Day</p>
+                <p className="text-lg sm:text-2xl font-bold">{avgPerDay}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-lg bg-accent/10">
+                <Target className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">Subs/Page</p>
+                <p className="text-lg sm:text-2xl font-bold">{conversionRate}</p>
               </div>
             </div>
           </CardContent>
@@ -141,14 +141,14 @@ export default function Analytics() {
       </div>
 
       {/* Charts */}
-      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
         {/* Daily Signups */}
         <Card>
-          <CardHeader>
-            <CardTitle>Daily Signups (30 days)</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base sm:text-lg">Daily Signups (30 days)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[200px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={dailyData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -158,17 +158,21 @@ export default function Analytics() {
                     tickLine={false}
                     axisLine={false}
                     interval="preserveStartEnd"
+                    tick={{ fontSize: 10 }}
                   />
                   <YAxis 
                     className="text-xs fill-muted-foreground"
                     tickLine={false}
                     axisLine={false}
+                    width={30}
+                    tick={{ fontSize: 10 }}
                   />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'hsl(var(--card))',
                       borderColor: 'hsl(var(--border))',
                       borderRadius: '0.5rem',
+                      fontSize: '12px',
                     }}
                   />
                   <Line 
@@ -186,31 +190,33 @@ export default function Analytics() {
 
         {/* Page Performance */}
         <Card>
-          <CardHeader>
-            <CardTitle>Page Performance</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base sm:text-lg">Page Performance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[200px] sm:h-[300px]">
               {pagePerformance.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-muted-foreground">
+                <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
                   No pages created yet
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={pagePerformance.slice(0, 5)} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis type="number" className="text-xs fill-muted-foreground" />
+                    <XAxis type="number" className="text-xs fill-muted-foreground" tick={{ fontSize: 10 }} />
                     <YAxis 
                       type="category" 
                       dataKey="name" 
                       className="text-xs fill-muted-foreground"
-                      width={80}
+                      width={60}
+                      tick={{ fontSize: 10 }}
                     />
                     <Tooltip 
                       contentStyle={{ 
                         backgroundColor: 'hsl(var(--card))',
                         borderColor: 'hsl(var(--border))',
                         borderRadius: '0.5rem',
+                        fontSize: '12px',
                       }}
                     />
                     <Bar dataKey="subscribers" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
@@ -224,13 +230,13 @@ export default function Analytics() {
 
       {/* Template Distribution */}
       <Card>
-        <CardHeader>
-          <CardTitle>Template Usage</CardTitle>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base sm:text-lg">Template Usage</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[250px]">
+          <div className="h-[200px] sm:h-[250px]">
             {templateDistribution.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-muted-foreground">
+              <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
                 No pages created yet
               </div>
             ) : (
@@ -240,11 +246,12 @@ export default function Analytics() {
                     data={templateDistribution}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
+                    innerRadius={40}
+                    outerRadius={70}
                     paddingAngle={5}
                     dataKey="value"
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    labelLine={{ strokeWidth: 1 }}
                   >
                     {templateDistribution.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

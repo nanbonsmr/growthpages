@@ -96,22 +96,22 @@ export default function Overview() {
         />
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
         {/* Chart Card */}
-        <Card className="lg:col-span-2 rounded-2xl border-border/50 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card className="lg:col-span-2 rounded-xl sm:rounded-2xl border-border/50 overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 sm:p-6 sm:pb-2">
             <div>
-              <CardTitle className="text-lg font-semibold">Subscriber Growth</CardTitle>
-              <p className="text-sm text-muted-foreground mt-0.5">Daily new signups this week</p>
+              <CardTitle className="text-base sm:text-lg font-semibold">Subscriber Growth</CardTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Daily new signups this week</p>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
+            <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </CardHeader>
-          <CardContent className="pt-4">
-            <div className="h-[280px]">
+          <CardContent className="pt-4 p-4 sm:p-6 sm:pt-4">
+            <div className="h-[200px] sm:h-[280px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorSubscribers" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.15} />
@@ -127,14 +127,15 @@ export default function Overview() {
                     dataKey="date"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
                     dy={10}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                    dx={-10}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
+                    dx={-5}
+                    width={25}
                   />
                   <Tooltip
                     contentStyle={{
@@ -142,7 +143,8 @@ export default function Overview() {
                       borderColor: 'hsl(var(--border))',
                       borderRadius: '12px',
                       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                      padding: '12px 16px',
+                      padding: '8px 12px',
+                      fontSize: '12px',
                     }}
                     labelFormatter={(_, payload) => payload[0]?.payload?.fullDate}
                     formatter={(value: number) => [`${value} subscribers`, 'Signups']}
@@ -151,10 +153,10 @@ export default function Overview() {
                     type="monotone"
                     dataKey="subscribers"
                     stroke="hsl(var(--primary))"
-                    strokeWidth={2.5}
+                    strokeWidth={2}
                     fill="url(#colorSubscribers)"
                     dot={false}
-                    activeDot={{ r: 6, fill: 'hsl(var(--primary))', strokeWidth: 3, stroke: 'hsl(var(--background))' }}
+                    activeDot={{ r: 4, fill: 'hsl(var(--primary))', strokeWidth: 2, stroke: 'hsl(var(--background))' }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -163,37 +165,37 @@ export default function Overview() {
         </Card>
 
         {/* Recent Activity Card */}
-        <Card className="rounded-2xl border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card className="rounded-xl sm:rounded-2xl border-border/50">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 sm:p-6 sm:pb-2">
             <div>
-              <CardTitle className="text-lg font-semibold">Recent Signups</CardTitle>
-              <p className="text-sm text-muted-foreground mt-0.5">Latest subscriber activity</p>
+              <CardTitle className="text-base sm:text-lg font-semibold">Recent Signups</CardTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Latest subscriber activity</p>
             </div>
           </CardHeader>
-          <CardContent className="pt-2">
+          <CardContent className="pt-2 p-4 sm:p-6 sm:pt-2">
             {recentActivity.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
-                  <Users className="h-5 w-5 text-muted-foreground" />
+              <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-muted flex items-center justify-center mb-2 sm:mb-3">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                 </div>
-                <p className="text-sm text-muted-foreground">No signups yet</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">No signups yet</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {recentActivity.map((sub, index) => (
                   <div
                     key={sub.id}
-                    className="flex items-center gap-3 group animate-fade-in"
+                    className="flex items-center gap-2.5 sm:gap-3 group animate-fade-in"
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-medium text-sm flex-shrink-0">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-medium text-xs sm:text-sm flex-shrink-0">
                       {sub.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{sub.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{sub.email}</p>
+                      <p className="text-xs sm:text-sm font-medium truncate">{sub.name}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{sub.email}</p>
                     </div>
-                    <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 ))}
               </div>
