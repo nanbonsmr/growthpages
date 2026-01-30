@@ -174,6 +174,48 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          dodo_customer_id: string | null
+          dodo_subscription_id: string | null
+          id: string
+          plan_id: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          dodo_customer_id?: string | null
+          dodo_subscription_id?: string | null
+          id?: string
+          plan_id: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          dodo_customer_id?: string | null
+          dodo_subscription_id?: string | null
+          id?: string
+          plan_id?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -210,6 +252,12 @@ export type Database = {
     Enums: {
       app_role: "admin" | "moderator" | "user"
       plan_type: "free" | "pro" | "business"
+      subscription_status:
+        | "active"
+        | "canceled"
+        | "past_due"
+        | "trialing"
+        | "paused"
       template_type:
         | "newsletter"
         | "waitlist"
@@ -345,6 +393,13 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "moderator", "user"],
       plan_type: ["free", "pro", "business"],
+      subscription_status: [
+        "active",
+        "canceled",
+        "past_due",
+        "trialing",
+        "paused",
+      ],
       template_type: [
         "newsletter",
         "waitlist",

@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Check, Zap, Crown, Building2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSubscription } from '@/hooks/useSubscription';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
 interface Plan {
@@ -99,9 +102,13 @@ interface PricingCardProps {
   plan: Plan;
   onSubscribe: (planId: string) => void;
   isLoading: boolean;
+  currentPlan?: string;
+  isLoggedIn: boolean;
 }
 
-function PricingCard({ plan, onSubscribe, isLoading }: PricingCardProps) {
+function PricingCard({ plan, onSubscribe, isLoading, currentPlan, isLoggedIn }: PricingCardProps) {
+  const isCurrentPlan = currentPlan === plan.id;
+  
   return (
     <div
       className={cn(
@@ -109,7 +116,8 @@ function PricingCard({ plan, onSubscribe, isLoading }: PricingCardProps) {
         'bg-card hover:-translate-y-1',
         plan.popular
           ? 'border-primary shadow-xl shadow-primary/10 scale-[1.02] z-10'
-          : 'border-border/50 hover:border-border hover:shadow-lg'
+          : 'border-border/50 hover:border-border hover:shadow-lg',
+        isCurrentPlan && 'ring-2 ring-success'
       )}
     >
       {/* Popular Badge */}
@@ -117,6 +125,15 @@ function PricingCard({ plan, onSubscribe, isLoading }: PricingCardProps) {
         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
           <span className="px-4 py-1.5 rounded-full text-xs font-semibold gradient-primary text-primary-foreground shadow-lg">
             ✨ Most Popular
+          </span>
+        </div>
+      )}
+
+      {/* Current Plan Badge */}
+      {isCurrentPlan && (
+        <div className="absolute -top-4 right-4">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-success text-success-foreground shadow-lg">
+            Current Plan
           </span>
         </div>
       )}
@@ -186,13 +203,17 @@ function PricingCard({ plan, onSubscribe, isLoading }: PricingCardProps) {
         )}
         variant={plan.popular ? 'default' : 'outline'}
         onClick={() => onSubscribe(plan.id)}
-        disabled={isLoading}
+        disabled={isLoading || isCurrentPlan}
       >
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Processing...
           </>
+        ) : isCurrentPlan ? (
+          'Current Plan'
+        ) : !isLoggedIn && plan.price > 0 ? (
+          'Sign up to Subscribe'
         ) : (
           plan.ctaText
         )}
@@ -210,7 +231,24 @@ function PricingCard({ plan, onSubscribe, isLoading }: PricingCardProps) {
 
 export function PricingCards() {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { subscription, createCheckout, isCreatingCheckout } = useSubscription();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  // Check for checkout success in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('checkout') === 'success') {
+      const plan = params.get('plan');
+      toast({
+        title: '🎉 Payment Successful!',
+        description: `Thank you! You are now subscribed to the ${plan?.charAt(0).toUpperCase()}${plan?.slice(1)} plan.`,
+      });
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [toast]);
 
   const handleSubscribe = async (planId: string) => {
     const plan = plans.find((p) => p.id === planId);
@@ -218,48 +256,29 @@ export function PricingCards() {
 
     // Free plan - redirect to signup
     if (plan.price === 0) {
-      window.location.href = '/signup';
+      if (user) {
+        navigate('/dashboard');
+      } else {
+        navigate('/signup');
+      }
+      return;
+    }
+
+    // Paid plans - require login
+    if (!user) {
+      toast({
+        title: 'Login Required',
+        description: 'Please log in or sign up to subscribe to a paid plan.',
+      });
+      navigate('/signup');
       return;
     }
 
     setLoadingPlan(planId);
-
-    try {
-      // Dodo Payment Integration Placeholder
-      // This would trigger the Dodo payment modal/redirect
-      // with plan-specific metadata:
-      const paymentData = {
-        planId: plan.id,
-        planName: plan.name,
-        planPrice: plan.price,
-        currency: 'USD',
-        subscriptionType: 'monthly',
-        // userEmail: currentUser?.email, // if logged in
-      };
-
-      console.log('Initiating Dodo payment:', paymentData);
-
-      // Simulate payment process
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // On success, show confirmation
-      toast({
-        title: '🎉 Payment Successful!',
-        description: `Thank you! You are now subscribed to the ${plan.name} plan.`,
-      });
-
-      // Redirect to dashboard or success page
-      // window.location.href = '/dashboard';
-    } catch (error) {
-      toast({
-        title: 'Payment Failed',
-        description: 'Something went wrong. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoadingPlan(null);
-    }
+    createCheckout(planId);
   };
+
+  const currentPlan = subscription?.status === 'active' ? subscription.plan_id : 'free';
 
   return (
     <section className="py-16 sm:py-20">
@@ -273,7 +292,9 @@ export function PricingCards() {
               <PricingCard
                 plan={plan}
                 onSubscribe={handleSubscribe}
-                isLoading={loadingPlan === plan.id}
+                isLoading={isCreatingCheckout && loadingPlan === plan.id}
+                currentPlan={currentPlan}
+                isLoggedIn={!!user}
               />
             </div>
           ))}
