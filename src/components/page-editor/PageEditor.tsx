@@ -139,6 +139,18 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
     }
   };
 
+  const handleMoveBlock = (id: string, direction: 'up' | 'down') => {
+    const currentIndex = blocks.findIndex((b) => b.id === id);
+    if (currentIndex === -1) return;
+    
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (newIndex < 0 || newIndex >= blocks.length) return;
+    
+    const newBlocks = arrayMove(blocks, currentIndex, newIndex);
+    setBlocks(newBlocks);
+    pushHistory(newBlocks);
+  };
+
   const handleUpdateBlock = (id: string, props: Record<string, any>) => {
     const newBlocks = blocks.map((b) =>
       b.id === id ? { ...b, props: { ...b.props, ...props } } : b
@@ -257,6 +269,7 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
             onSelectBlock={setSelectedBlockId}
             onDeleteBlock={handleDeleteBlock}
             onUpdateBlock={handleUpdateBlock}
+            onMoveBlock={handleMoveBlock}
             pageId={pageId}
           />
 
