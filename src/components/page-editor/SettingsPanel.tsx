@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Settings, Palette, Plus, Trash2 } from 'lucide-react';
+import { ImageUpload } from './ImageUpload';
 
 interface SettingsPanelProps {
   selectedBlock: Block | null;
@@ -212,15 +213,12 @@ function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
     case 'image':
       return (
         <div className="space-y-4">
-          <div>
-            <Label>Image URL</Label>
-            <Input
-              value={props.src}
-              onChange={(e) => onUpdate({ src: e.target.value })}
-              placeholder="https://..."
-              className="mt-1"
-            />
-          </div>
+          <ImageUpload
+            value={props.src}
+            onChange={(url) => onUpdate({ src: url })}
+            label="Image"
+            aspectRatio="square"
+          />
           <div>
             <Label>Alt Text</Label>
             <Input
@@ -1121,15 +1119,12 @@ function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
               className="mt-1"
             />
           </div>
-          <div>
-            <Label>Background Image URL</Label>
-            <Input
-              value={props.backgroundImage}
-              onChange={(e) => onUpdate({ backgroundImage: e.target.value })}
-              placeholder="https://..."
-              className="mt-1"
-            />
-          </div>
+          <ImageUpload
+            value={props.backgroundImage}
+            onChange={(url) => onUpdate({ backgroundImage: url })}
+            label="Background Image"
+            aspectRatio="video"
+          />
           {props.backgroundImage && (
             <div>
               <Label>Overlay Opacity: {props.backgroundOverlay}%</Label>
@@ -1201,15 +1196,12 @@ function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
             </Select>
           </div>
           {props.logoType === 'image' ? (
-            <div>
-              <Label>Logo Image URL</Label>
-              <Input
-                value={props.logoImage}
-                onChange={(e) => onUpdate({ logoImage: e.target.value })}
-                placeholder="https://..."
-                className="mt-1"
-              />
-            </div>
+            <ImageUpload
+              value={props.logoImage}
+              onChange={(url) => onUpdate({ logoImage: url })}
+              label="Logo Image"
+              aspectRatio="square"
+            />
           ) : (
             <div>
               <Label>Logo Text</Label>
