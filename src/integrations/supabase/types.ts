@@ -96,7 +96,9 @@ export type Database = {
           id: string
           metadata: Json | null
           name: string
+          notes: string | null
           page_id: string
+          status: string | null
           tags: string[] | null
         }
         Insert: {
@@ -105,7 +107,9 @@ export type Database = {
           id?: string
           metadata?: Json | null
           name: string
+          notes?: string | null
           page_id: string
+          status?: string | null
           tags?: string[] | null
         }
         Update: {
@@ -114,7 +118,9 @@ export type Database = {
           id?: string
           metadata?: Json | null
           name?: string
+          notes?: string | null
           page_id?: string
+          status?: string | null
           tags?: string[] | null
         }
         Relationships: [
