@@ -257,6 +257,7 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
             onSelectBlock={setSelectedBlockId}
             onDeleteBlock={handleDeleteBlock}
             onUpdateBlock={handleUpdateBlock}
+            pageId={pageId}
           />
 
           <DragOverlay>

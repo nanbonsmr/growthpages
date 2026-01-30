@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_submissions: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          message: string | null
+          metadata: Json | null
+          name: string | null
+          page_id: string
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          name?: string | null
+          page_id: string
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          name?: string | null
+          page_id?: string
+          phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_submissions_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pages: {
         Row: {
           button_text: string | null

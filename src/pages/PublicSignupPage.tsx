@@ -3,8 +3,11 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CheckCircle, Zap, Twitter, Facebook, Instagram, Linkedin, Youtube, Quote } from 'lucide-react';
+import { z } from 'zod';
 
 interface Block {
   id: string;
@@ -250,6 +253,7 @@ export default function PublicSignupPage() {
               isSubmitting={isSubmitting}
               primaryColor={settings?.primaryColor || '#7c3aed'}
               onSuccessMessage={setSuccessMessage}
+              pageId={page.id}
             />
           ))}
         </div>
@@ -316,6 +320,7 @@ interface BlockRendererProps {
   isSubmitting: boolean;
   primaryColor: string;
   onSuccessMessage: (msg: string) => void;
+  pageId?: string;
 }
 
 function BlockRenderer({
@@ -326,6 +331,7 @@ function BlockRenderer({
   isSubmitting,
   primaryColor,
   onSuccessMessage,
+  pageId,
 }: BlockRendererProps) {
   const props = block.props;
 
@@ -585,7 +591,246 @@ function BlockRenderer({
       );
     }
 
+    case 'contact-form':
+      return (
+        <ContactFormPublic
+          props={props}
+          pageId={pageId || ''}
+          primaryColor={primaryColor}
+        />
+      );
+
     default:
       return null;
   }
+}
+
+// Contact Form component for public pages
+interface ContactFormPublicProps {
+  props: Record<string, any>;
+  pageId: string;
+  primaryColor: string;
+}
+
+function ContactFormPublic({ props, pageId, primaryColor }: ContactFormPublicProps) {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const createContactSchema = () => {
+    return z.object({
+      name: props.showName
+        ? z.string().trim().min(1, 'Name is required').max(100, 'Name must be less than 100 characters')
+        : z.string().optional(),
+      email: props.showEmail
+        ? z.string().trim().email('Please enter a valid email').max(255, 'Email must be less than 255 characters')
+        : z.string().optional(),
+      phone: props.showPhone
+        ? props.requirePhone
+          ? z.string().trim().min(1, 'Phone is required').max(20, 'Phone must be less than 20 characters')
+              .regex(/^[\d\s\-+()]+$/, 'Please enter a valid phone number')
+          : z.string().trim().max(20, 'Phone must be less than 20 characters')
+              .regex(/^[\d\s\-+()]*$/, 'Please enter a valid phone number').optional().or(z.literal(''))
+        : z.string().optional(),
+      message: props.showMessage
+        ? z.string().trim().min(1, 'Message is required').max(2000, 'Message must be less than 2000 characters')
+        : z.string().optional(),
+    });
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const schema = createContactSchema();
+    const result = schema.safeParse(formData);
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    if (!pageId) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Form configuration error. Please try again later.',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert({
+          page_id: pageId,
+          name: formData.name || null,
+          email: formData.email || null,
+          phone: formData.phone || null,
+          message: formData.message || null,
+          metadata: {
+            submitted_at: new Date().toISOString(),
+          },
+        });
+
+      if (error) throw error;
+
+      setIsSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', message: '' });
+    } catch (err) {
+      console.error('Contact form submission error:', err);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to submit form. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isSubmitted) {
+    return (
+      <div className="w-full p-8 rounded-lg text-center mb-4">
+        <div className="flex flex-col items-center gap-4">
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: props.buttonColor || primaryColor }}
+          >
+            <CheckCircle className="h-8 w-8 text-white" />
+          </div>
+          <p className="text-lg font-medium">
+            {props.successMessage || "Thank you! We'll be in touch soon."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full p-6 rounded-lg mb-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div
+          className={
+            props.layout === 'two-column' ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : 'space-y-4'
+          }
+        >
+          {props.showName && (
+            <div className="space-y-2">
+              <Label htmlFor="contact-name">
+                {props.nameLabel || 'Name'} <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="contact-name"
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                placeholder={props.namePlaceholder || 'Your name'}
+                className={errors.name ? 'border-destructive' : ''}
+                disabled={isSubmitting}
+                maxLength={100}
+              />
+              {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+            </div>
+          )}
+
+          {props.showEmail && (
+            <div className="space-y-2">
+              <Label htmlFor="contact-email">
+                {props.emailLabel || 'Email'} <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="contact-email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                placeholder={props.emailPlaceholder || 'your@email.com'}
+                className={errors.email ? 'border-destructive' : ''}
+                disabled={isSubmitting}
+                maxLength={255}
+              />
+              {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+            </div>
+          )}
+
+          {props.showPhone && (
+            <div className="space-y-2">
+              <Label htmlFor="contact-phone">
+                {props.phoneLabel || 'Phone'}
+                {props.requirePhone && <span className="text-destructive"> *</span>}
+              </Label>
+              <Input
+                id="contact-phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => handleChange('phone', e.target.value)}
+                placeholder={props.phonePlaceholder || '+1 (555) 000-0000'}
+                className={errors.phone ? 'border-destructive' : ''}
+                disabled={isSubmitting}
+                maxLength={20}
+              />
+              {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+            </div>
+          )}
+        </div>
+
+        {props.showMessage && (
+          <div className="space-y-2">
+            <Label htmlFor="contact-message">
+              {props.messageLabel || 'Message'} <span className="text-destructive">*</span>
+            </Label>
+            <Textarea
+              id="contact-message"
+              value={formData.message}
+              onChange={(e) => handleChange('message', e.target.value)}
+              placeholder={props.messagePlaceholder || 'How can we help you?'}
+              className={`min-h-[120px] resize-none ${errors.message ? 'border-destructive' : ''}`}
+              disabled={isSubmitting}
+              maxLength={2000}
+            />
+            {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
+            <p className="text-xs text-muted-foreground text-right">
+              {formData.message.length}/2000
+            </p>
+          </div>
+        )}
+
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full text-white font-medium"
+          style={{ backgroundColor: props.buttonColor || primaryColor }}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Sending...
+            </>
+          ) : (
+            props.buttonText || 'Send Message'
+          )}
+        </Button>
+      </form>
+    </div>
+  );
 }

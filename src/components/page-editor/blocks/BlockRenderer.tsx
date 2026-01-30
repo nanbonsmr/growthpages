@@ -23,9 +23,10 @@ interface BlockRendererProps {
   isSelected: boolean;
   isPreview?: boolean;
   onUpdate?: (props: Record<string, any>) => void;
+  pageId?: string;
 }
 
-export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate }: BlockRendererProps) {
+export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate, pageId }: BlockRendererProps) {
   const commonProps = {
     isSelected,
     isPreview,
@@ -68,7 +69,7 @@ export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate }
     case 'footer':
       return <FooterBlock props={block.props as any} {...commonProps} />;
     case 'contact-form':
-      return <ContactFormBlock props={block.props as any} {...commonProps} />;
+      return <ContactFormBlock props={block.props as any} {...commonProps} pageId={pageId} />;
     default:
       return (
         <div className="p-4 bg-muted rounded text-muted-foreground text-sm">
