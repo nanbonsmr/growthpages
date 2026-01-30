@@ -3,32 +3,28 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, Zap, Newspaper, Rocket, Calendar, Package, Gift } from 'lucide-react';
+import { Loader2, CheckCircle, Zap, Twitter, Facebook, Instagram, Linkedin, Youtube, Quote } from 'lucide-react';
 
-interface FormField {
+interface Block {
   id: string;
-  type: 'text' | 'email' | 'phone' | 'select' | 'textarea';
-  label: string;
-  placeholder: string;
-  required: boolean;
+  type: string;
+  props: Record<string, any>;
 }
 
-interface ThemeSettings {
-  primaryColor?: string;
-  secondaryColor?: string;
-  backgroundColor?: string;
-  backgroundStyle?: string;
-  fontStyle?: string;
-  showSocialProof?: boolean;
-  socialProofText?: string;
-  showBadge?: boolean;
-  badgeText?: string;
-  thankYouTitle?: string;
-  thankYouMessage?: string;
-  formFields?: FormField[];
+interface PageSettings {
+  backgroundType: string;
+  backgroundColor: string;
+  gradientFrom: string;
+  gradientTo: string;
+  backgroundImage: string;
+  primaryColor: string;
+  fontFamily: string;
+  maxWidth: string;
+}
+
+interface ThemeSettingsWithBlocks extends PageSettings {
+  blocks?: Block[];
 }
 
 interface Page {
@@ -38,37 +34,17 @@ interface Page {
   slug: string;
   template: string;
   button_text: string;
-  theme_settings: ThemeSettings | null;
+  theme_settings: ThemeSettingsWithBlocks | null;
   logo_url: string | null;
   is_active: boolean;
 }
 
-const templateIcons: Record<string, React.ElementType> = {
-  newsletter: Newspaper,
-  waitlist: Rocket,
-  event: Calendar,
-  product_launch: Package,
-  free_resource: Gift,
-};
-
-const templateTitles: Record<string, string> = {
-  newsletter: 'Join Our Newsletter',
-  waitlist: 'Join the Waitlist',
-  event: 'Register for the Event',
-  product_launch: 'Get Early Access',
-  free_resource: 'Download Now',
-};
-
-const defaultFormFields: FormField[] = [
-  { id: 'name', type: 'text', label: 'Name', placeholder: 'Your name', required: true },
-  { id: 'email', type: 'email', label: 'Email', placeholder: 'your@email.com', required: true },
-];
-
-const fontFamilies: Record<string, string> = {
-  'inter': '"Inter", system-ui, sans-serif',
-  'playfair': '"Playfair Display", serif',
-  'space-grotesk': '"Space Grotesk", sans-serif',
-  'dm-sans': '"DM Sans", sans-serif',
+const socialIconMap: Record<string, React.ElementType> = {
+  twitter: Twitter,
+  facebook: Facebook,
+  instagram: Instagram,
+  linkedin: Linkedin,
+  youtube: Youtube,
 };
 
 export default function PublicSignupPage() {
@@ -79,6 +55,7 @@ export default function PublicSignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [successMessage, setSuccessMessage] = useState('Thank you for signing up!');
 
   useEffect(() => {
     const fetchPage = async () => {
@@ -101,19 +78,11 @@ export default function PublicSignupPage() {
           slug: data.slug,
           template: data.template,
           button_text: data.button_text,
-          theme_settings: data.theme_settings as ThemeSettings | null,
+          theme_settings: data.theme_settings as unknown as ThemeSettingsWithBlocks | null,
           logo_url: data.logo_url,
-          is_active: data.is_active,
+          is_active: data.is_active ?? false,
         };
         setPage(pageData);
-        
-        // Initialize form data with field IDs
-        const fields = pageData.theme_settings?.formFields || defaultFormFields;
-        const initialData: Record<string, string> = {};
-        fields.forEach(field => {
-          initialData[field.id] = '';
-        });
-        setFormData(initialData);
       }
       setIsLoading(false);
     };
@@ -128,11 +97,19 @@ export default function PublicSignupPage() {
     setIsSubmitting(true);
 
     try {
-      // Extract name and email from form data
-      const name = formData.name || formData[Object.keys(formData).find(k => k !== 'email') || 'name'] || '';
+      const name = formData.name || 'Anonymous';
       const email = formData.email || '';
-      
-      // Store additional fields in metadata
+
+      if (!email) {
+        toast({
+          variant: 'destructive',
+          title: 'Email required',
+          description: 'Please enter a valid email address.',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const metadata: Record<string, string> = {};
       Object.entries(formData).forEach(([key, value]) => {
         if (key !== 'name' && key !== 'email') {
@@ -172,30 +149,24 @@ export default function PublicSignupPage() {
     }
   };
 
-  const getBackgroundStyle = (theme: ThemeSettings | null) => {
-    const primaryColor = theme?.primaryColor || '#4F46E5';
-    const backgroundColor = theme?.backgroundColor || '#ffffff';
-    const style = theme?.backgroundStyle || 'solid';
+  const getBackgroundStyle = (settings: PageSettings | null) => {
+    if (!settings) return { backgroundColor: '#ffffff' };
 
-    switch (style) {
+    switch (settings.backgroundType) {
       case 'gradient':
         return {
-          background: `linear-gradient(135deg, ${backgroundColor} 0%, ${primaryColor}15 50%, ${backgroundColor} 100%)`,
+          background: `linear-gradient(135deg, ${settings.gradientFrom}, ${settings.gradientTo})`,
         };
-      case 'dots':
-        return {
-          backgroundColor,
-          backgroundImage: `radial-gradient(${primaryColor}25 1.5px, transparent 1.5px)`,
-          backgroundSize: '24px 24px',
-        };
-      case 'grid':
-        return {
-          backgroundColor,
-          backgroundImage: `linear-gradient(${primaryColor}12 1px, transparent 1px), linear-gradient(90deg, ${primaryColor}12 1px, transparent 1px)`,
-          backgroundSize: '48px 48px',
-        };
+      case 'image':
+        return settings.backgroundImage
+          ? {
+              backgroundImage: `url(${settings.backgroundImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }
+          : { backgroundColor: settings.backgroundColor };
       default:
-        return { backgroundColor };
+        return { backgroundColor: settings.backgroundColor };
     }
   };
 
@@ -218,49 +189,31 @@ export default function PublicSignupPage() {
     );
   }
 
-  const Icon = templateIcons[page.template] || Newspaper;
-  const theme = page.theme_settings;
-  const primaryColor = theme?.primaryColor || '#4F46E5';
-  const fontFamily = fontFamilies[theme?.fontStyle || 'inter'] || fontFamilies.inter;
-  const formFields = theme?.formFields || defaultFormFields;
-  const showBadge = theme?.showBadge !== false;
-  const badgeText = theme?.badgeText || '✨ Free forever';
-  const showSocialProof = theme?.showSocialProof !== false;
-  const socialProofText = theme?.socialProofText || 'Join 10,000+ subscribers';
-  const thankYouTitle = theme?.thankYouTitle || "You're In!";
-  const thankYouMessage = theme?.thankYouMessage || "Thank you for signing up. We'll be in touch soon!";
+  const settings = page.theme_settings;
+  const blocks = settings?.blocks || [];
+  const hasBlocks = blocks.length > 0;
 
+  // Success state
   if (isSuccess) {
     return (
-      <div 
+      <div
         className="min-h-screen flex items-center justify-center px-4"
-        style={{ ...getBackgroundStyle(theme), fontFamily }}
+        style={{
+          ...getBackgroundStyle(settings),
+          fontFamily: settings?.fontFamily || 'Inter',
+        }}
       >
-        {/* Ambient background blobs */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div 
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse-slow"
-            style={{ backgroundColor: primaryColor }}
-          />
-          <div 
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse-slow"
-            style={{ backgroundColor: primaryColor, animationDelay: '2s' }}
-          />
-        </div>
-
-        <div className="max-w-md w-full text-center animate-fade-up">
-          <div 
+        <div className="max-w-md w-full text-center animate-fade-in">
+          <div
             className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
-            style={{ backgroundColor: `${primaryColor}20` }}
+            style={{ backgroundColor: `${settings?.primaryColor || '#7c3aed'}20` }}
           >
-            <CheckCircle className="h-10 w-10" style={{ color: primaryColor }} />
+            <CheckCircle className="h-10 w-10" style={{ color: settings?.primaryColor || '#7c3aed' }} />
           </div>
-          <h1 className="text-3xl font-bold mb-4" style={{ color: primaryColor }}>
-            {thankYouTitle}
+          <h1 className="text-3xl font-bold mb-4" style={{ color: settings?.primaryColor || '#7c3aed' }}>
+            Thank You!
           </h1>
-          <p className="text-muted-foreground mb-8">
-            {thankYouMessage}
-          </p>
+          <p className="text-muted-foreground mb-8">{successMessage}</p>
           <p className="text-sm text-muted-foreground">
             Powered by <span className="font-semibold">LeadCapture</span>
           </p>
@@ -269,143 +222,370 @@ export default function PublicSignupPage() {
     );
   }
 
-  return (
-    <div 
-      className="min-h-screen flex items-center justify-center px-4 py-12"
-      style={{ ...getBackgroundStyle(theme), fontFamily }}
-    >
-      {/* Ambient background blobs */}
-      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div 
-          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse-slow"
-          style={{ backgroundColor: primaryColor }}
-        />
-        <div 
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse-slow"
-          style={{ backgroundColor: primaryColor, animationDelay: '2s' }}
-        />
-      </div>
+  // Block-based page rendering
+  if (hasBlocks) {
+    const maxWidthClasses: Record<string, string> = {
+      sm: 'max-w-sm',
+      md: 'max-w-md',
+      lg: 'max-w-lg',
+      xl: 'max-w-xl',
+    };
 
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8 animate-fade-up">
-          {/* Logo */}
-          {page.logo_url && (
-            <img 
-              src={page.logo_url} 
-              alt="Logo" 
-              className="h-14 w-auto mx-auto mb-6 object-contain"
-              onError={(e) => e.currentTarget.style.display = 'none'}
+    return (
+      <div
+        className="min-h-screen"
+        style={{
+          ...getBackgroundStyle(settings),
+          fontFamily: settings?.fontFamily || 'Inter',
+        }}
+      >
+        <div className={`mx-auto px-6 py-8 ${maxWidthClasses[settings?.maxWidth || 'md']}`}>
+          {blocks.map((block) => (
+            <BlockRenderer
+              key={block.id}
+              block={block}
+              formData={formData}
+              setFormData={setFormData}
+              onSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+              primaryColor={settings?.primaryColor || '#7c3aed'}
+              onSuccessMessage={setSuccessMessage}
             />
-          )}
-
-          {/* Badge */}
-          {showBadge && badgeText && (
-            <div 
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6"
-              style={{ 
-                backgroundColor: `${primaryColor}15`,
-                color: primaryColor 
-              }}
-            >
-              {badgeText}
-            </div>
-          )}
-
-          {/* Icon (only show if no logo) */}
-          {!page.logo_url && (
-            <div 
-              className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <Icon className="h-8 w-8 text-white" />
-            </div>
-          )}
-
-          {/* Title */}
-          <h1 
-            className="text-3xl md:text-4xl font-bold mb-4"
-            style={{ color: primaryColor }}
-          >
-            {page.title || templateTitles[page.template]}
-          </h1>
-
-          {/* Description */}
-          {page.description && (
-            <p className="text-lg text-muted-foreground">
-              {page.description}
-            </p>
-          )}
-        </div>
-
-        {/* Form Card */}
-        <div 
-          className="bg-white/80 backdrop-blur-sm rounded-2xl border border-border/50 p-6 shadow-lg animate-fade-up"
-          style={{ animationDelay: '0.1s' }}
-        >
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {formFields.map((field) => (
-              <div key={field.id} className="space-y-2">
-                <Label htmlFor={field.id} className="text-sm font-medium">
-                  {field.label}
-                  {field.required && <span className="text-destructive ml-1">*</span>}
-                </Label>
-                {field.type === 'textarea' ? (
-                  <Textarea
-                    id={field.id}
-                    placeholder={field.placeholder}
-                    value={formData[field.id] || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, [field.id]: e.target.value }))}
-                    required={field.required}
-                    rows={3}
-                    className="resize-none"
-                  />
-                ) : (
-                  <Input
-                    id={field.id}
-                    type={field.type === 'phone' ? 'tel' : field.type}
-                    placeholder={field.placeholder}
-                    value={formData[field.id] || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, [field.id]: e.target.value }))}
-                    required={field.required}
-                    className="h-12"
-                  />
-                )}
-              </div>
-            ))}
-
-            <Button 
-              type="submit" 
-              className="w-full h-12 text-lg font-semibold shadow-md hover:shadow-lg transition-shadow"
-              style={{ backgroundColor: primaryColor }}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                page.button_text || 'Subscribe'
-              )}
-            </Button>
-          </form>
-
-          {/* Social Proof */}
-          {showSocialProof && socialProofText && (
-            <p className="text-center text-sm text-muted-foreground mt-4">
-              {socialProofText}
-            </p>
-          )}
+          ))}
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-muted-foreground mt-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-          Powered by{' '}
-          <a href="/" className="font-semibold hover:underline inline-flex items-center gap-1">
-            <Zap className="h-3.5 w-3.5" /> LeadCapture
-          </a>
-        </p>
+        <div className="text-center py-6">
+          <p className="text-sm text-muted-foreground">
+            Powered by{' '}
+            <a href="/" className="font-semibold hover:underline inline-flex items-center gap-1">
+              <Zap className="h-3.5 w-3.5" /> LeadCapture
+            </a>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback for legacy pages without blocks
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center px-4 py-12"
+      style={{
+        ...getBackgroundStyle(settings),
+        fontFamily: settings?.fontFamily || 'Inter',
+      }}
+    >
+      <div className="max-w-md w-full text-center">
+        <h1
+          className="text-3xl md:text-4xl font-bold mb-4"
+          style={{ color: settings?.primaryColor || '#7c3aed' }}
+        >
+          {page.title}
+        </h1>
+        {page.description && <p className="text-lg text-muted-foreground mb-8">{page.description}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white/80 backdrop-blur p-6 rounded-2xl">
+          <Input
+            type="email"
+            placeholder="Enter your email"
+            value={formData.email || ''}
+            onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+            required
+            className="h-12"
+          />
+          <Button
+            type="submit"
+            className="w-full h-12"
+            style={{ backgroundColor: settings?.primaryColor || '#7c3aed' }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : page.button_text || 'Subscribe'}
+          </Button>
+        </form>
       </div>
     </div>
   );
+}
+
+// Block renderer for the public page
+interface BlockRendererProps {
+  block: Block;
+  formData: Record<string, string>;
+  setFormData: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  onSubmit: (e: React.FormEvent) => void;
+  isSubmitting: boolean;
+  primaryColor: string;
+  onSuccessMessage: (msg: string) => void;
+}
+
+function BlockRenderer({
+  block,
+  formData,
+  setFormData,
+  onSubmit,
+  isSubmitting,
+  primaryColor,
+  onSuccessMessage,
+}: BlockRendererProps) {
+  const props = block.props;
+
+  switch (block.type) {
+    case 'heading': {
+      const Tag = props.level || 'h1';
+      return (
+        <Tag
+          style={{
+            fontSize: `${props.fontSize || 36}px`,
+            fontWeight: props.fontWeight === 'normal' ? 400 : props.fontWeight === 'medium' ? 500 : props.fontWeight === 'semibold' ? 600 : 700,
+            textAlign: props.alignment || 'center',
+            color: props.color || '#000000',
+          }}
+          className="mb-4"
+        >
+          {props.text}
+        </Tag>
+      );
+    }
+
+    case 'text':
+      return (
+        <p
+          style={{
+            fontSize: `${props.fontSize || 16}px`,
+            textAlign: props.alignment || 'center',
+            color: props.color || '#666666',
+          }}
+          className="mb-4 leading-relaxed"
+        >
+          {props.text}
+        </p>
+      );
+
+    case 'image':
+      if (!props.src) return null;
+      return (
+        <div
+          className="mb-4"
+          style={{
+            display: 'flex',
+            justifyContent: props.alignment === 'left' ? 'flex-start' : props.alignment === 'right' ? 'flex-end' : 'center',
+          }}
+        >
+          <img
+            src={props.src}
+            alt={props.alt || ''}
+            style={{
+              width: `${props.width || 200}px`,
+              height: `${props.height || 200}px`,
+              borderRadius: `${props.borderRadius || 8}px`,
+              objectFit: 'cover',
+            }}
+          />
+        </div>
+      );
+
+    case 'button': {
+      const sizeClasses: Record<string, string> = {
+        sm: 'px-4 py-2 text-sm',
+        md: 'px-6 py-3 text-base',
+        lg: 'px-8 py-4 text-lg',
+      };
+      return (
+        <div className={`mb-4 ${props.fullWidth ? 'w-full' : 'flex justify-center'}`}>
+          <button
+            type={props.action === 'submit' ? 'submit' : 'button'}
+            style={{
+              backgroundColor: props.backgroundColor || primaryColor,
+              color: props.textColor || '#ffffff',
+              borderRadius: `${props.borderRadius || 8}px`,
+            }}
+            className={`${sizeClasses[props.size || 'md']} ${props.fullWidth ? 'w-full' : ''} font-medium transition-opacity hover:opacity-90`}
+          >
+            {props.text || 'Click me'}
+          </button>
+        </div>
+      );
+    }
+
+    case 'divider':
+      return (
+        <hr
+          className="my-4 border-0"
+          style={{
+            borderTopStyle: props.style || 'solid',
+            borderTopColor: props.color || '#e5e7eb',
+            borderTopWidth: `${props.thickness || 1}px`,
+            width: `${props.width || 100}%`,
+            margin: '0 auto',
+          }}
+        />
+      );
+
+    case 'spacer':
+      return <div style={{ height: `${props.height || 40}px` }} />;
+
+    case 'form': {
+      // Store success message when form is rendered
+      if (props.successMessage) {
+        onSuccessMessage(props.successMessage);
+      }
+
+      const isInline = props.layout === 'inline';
+      return (
+        <form onSubmit={onSubmit} className="mb-4 w-full max-w-md mx-auto">
+          <div className={isInline ? 'flex gap-2' : 'space-y-3'}>
+            {props.showName && (
+              <Input
+                type="text"
+                placeholder={props.namePlaceholder || 'Your name'}
+                value={formData.name || ''}
+                onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                className={isInline ? 'flex-1' : ''}
+              />
+            )}
+            {props.showEmail && (
+              <Input
+                type="email"
+                placeholder={props.emailPlaceholder || 'Your email'}
+                value={formData.email || ''}
+                onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                required
+                className={isInline ? 'flex-1' : ''}
+              />
+            )}
+            {props.showPhone && !isInline && (
+              <Input
+                type="tel"
+                placeholder={props.phonePlaceholder || 'Your phone'}
+                value={formData.phone || ''}
+                onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+              />
+            )}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                backgroundColor: props.buttonColor || primaryColor,
+                color: '#ffffff',
+              }}
+              className={`px-6 py-2.5 rounded-md font-medium transition-opacity hover:opacity-90 disabled:opacity-50 ${isInline ? '' : 'w-full'}`}
+            >
+              {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : props.buttonText || 'Subscribe'}
+            </button>
+          </div>
+        </form>
+      );
+    }
+
+    case 'social': {
+      const sizeClasses: Record<string, string> = {
+        sm: 'h-4 w-4',
+        md: 'h-5 w-5',
+        lg: 'h-6 w-6',
+      };
+      const enabledPlatforms = props.platforms?.filter((p: any) => p.enabled) || [];
+      return (
+        <div
+          className="flex gap-4 mb-4"
+          style={{
+            justifyContent: props.alignment === 'left' ? 'flex-start' : props.alignment === 'right' ? 'flex-end' : 'center',
+          }}
+        >
+          {enabledPlatforms.map((platform: any) => {
+            const Icon = socialIconMap[platform.name];
+            if (!Icon) return null;
+            return (
+              <a
+                key={platform.name}
+                href={platform.url || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-70 transition-opacity"
+                style={{ color: props.color || '#6b7280' }}
+              >
+                <Icon className={sizeClasses[props.size || 'md']} />
+              </a>
+            );
+          })}
+        </div>
+      );
+    }
+
+    case 'testimonial':
+      return (
+        <div
+          className="p-6 rounded-xl max-w-lg mx-auto mb-4"
+          style={{ backgroundColor: props.backgroundColor || '#f9fafb' }}
+        >
+          <Quote className="h-6 w-6 text-primary/30 mb-3" />
+          <p className="text-foreground mb-4 leading-relaxed">{props.quote}</p>
+          <div className="flex items-center gap-3">
+            {props.avatar ? (
+              <img src={props.avatar} alt={props.author} className="w-10 h-10 rounded-full object-cover" />
+            ) : (
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"
+                style={{ backgroundColor: primaryColor }}
+              >
+                {props.author?.charAt(0) || 'A'}
+              </div>
+            )}
+            <div>
+              <p className="font-semibold text-foreground text-sm">{props.author}</p>
+              <p className="text-muted-foreground text-xs">{props.role}</p>
+            </div>
+          </div>
+        </div>
+      );
+
+    case 'countdown': {
+      const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+      useEffect(() => {
+        const calculateTimeLeft = () => {
+          const difference = new Date(props.targetDate).getTime() - Date.now();
+          if (difference > 0) {
+            setTimeLeft({
+              days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+              hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+              minutes: Math.floor((difference / 1000 / 60) % 60),
+              seconds: Math.floor((difference / 1000) % 60),
+            });
+          }
+        };
+        calculateTimeLeft();
+        const timer = setInterval(calculateTimeLeft, 1000);
+        return () => clearInterval(timer);
+      }, [props.targetDate]);
+
+      const units = [
+        { key: 'days', label: 'Days', show: props.showDays },
+        { key: 'hours', label: 'Hours', show: props.showHours },
+        { key: 'minutes', label: 'Min', show: props.showMinutes },
+        { key: 'seconds', label: 'Sec', show: props.showSeconds },
+      ].filter((u) => u.show);
+
+      return (
+        <div className="text-center mb-4">
+          {props.label && <p className="text-muted-foreground text-sm mb-3">{props.label}</p>}
+          <div className="flex justify-center gap-3">
+            {units.map((unit) => (
+              <div key={unit.key} className="flex flex-col items-center">
+                <div
+                  className="text-3xl font-bold w-16 h-16 flex items-center justify-center rounded-lg"
+                  style={{ backgroundColor: `${props.color || primaryColor}20`, color: props.color || primaryColor }}
+                >
+                  {String(timeLeft[unit.key as keyof typeof timeLeft]).padStart(2, '0')}
+                </div>
+                <span className="text-xs text-muted-foreground mt-1">{unit.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    default:
+      return null;
+  }
 }
