@@ -1,10 +1,11 @@
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { StatsCard } from '@/components/dashboard/StatsCard';
+import { UsageIndicator } from '@/components/dashboard/UsageIndicator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePages } from '@/hooks/usePages';
 import { useSubscribers } from '@/hooks/useSubscribers';
 import { FileText, Users, TrendingUp, Star, ArrowUpRight, MoreHorizontal } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format, subDays } from 'date-fns';
 import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
@@ -96,7 +97,7 @@ export default function Overview() {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
         {/* Chart Card */}
         <Card className="lg:col-span-2 rounded-xl sm:rounded-2xl border-border/50 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 sm:p-6 sm:pb-2">
@@ -202,6 +203,9 @@ export default function Overview() {
             )}
           </CardContent>
         </Card>
+
+        {/* Usage Indicator */}
+        <UsageIndicator />
       </div>
     </DashboardLayout>
   );
