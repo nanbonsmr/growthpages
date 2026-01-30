@@ -14,6 +14,12 @@ import Signup from "./pages/Signup";
 import PricingPage from "./pages/PricingPage";
 import PublicSignupPage from "./pages/PublicSignupPage";
 import NotFound from "./pages/NotFound";
+import FeaturesPage from "./pages/FeaturesPage";
+import UseCasesPage from "./pages/UseCasesPage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
+import Contact from "./pages/Contact";
 
 // Dashboard Pages
 import Overview from "./pages/dashboard/Overview";
@@ -41,11 +47,17 @@ const App = () => (
           <AuthProvider>
             <ScrollToTop />
             <Routes>
-              {/* Public Routes */}
+            {/* Public Routes */}
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/features" element={<FeaturesPage />} />
+              <Route path="/use-cases" element={<UseCasesPage />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/cookies" element={<CookiePolicy />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/p/:slug" element={<PublicSignupPage />} />
 
               {/* Protected Dashboard Routes */}
