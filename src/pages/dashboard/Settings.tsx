@@ -1,26 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, User, CreditCard, Shield } from 'lucide-react';
-
-const planFeatures = {
-  free: ['1 signup page', 'Up to 100 subscribers', 'Basic templates'],
-  pro: ['Unlimited pages', '10,000 subscribers', 'All templates', 'No branding'],
-  business: ['Everything in Pro', 'Custom domains', 'Team access', 'API access'],
-};
+import { Loader2, User, Shield } from 'lucide-react';
+import { SubscriptionManager } from '@/components/subscription';
+import { useSearchParams } from 'react-router-dom';
 
 export default function Settings() {
   const { profile, refreshProfile } = useAuth();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [fullName, setFullName] = useState(profile?.full_name || '');
+
+  // Handle checkout success notification
+  useEffect(() => {
+    if (searchParams.get('checkout') === 'success') {
+      const plan = searchParams.get('plan');
+      toast({
+        title: '🎉 Payment Successful!',
+        description: `Thank you! You are now subscribed to the ${plan?.charAt(0).toUpperCase()}${plan?.slice(1)} plan.`,
+      });
+      // Clean up URL
+      window.history.replaceState({}, '', '/dashboard/settings');
+      refreshProfile();
+    }
+  }, [searchParams, toast, refreshProfile]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,50 +111,8 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* Subscription */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-muted-foreground" />
-              <CardTitle>Subscription</CardTitle>
-            </div>
-            <CardDescription>Manage your subscription plan.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/50 mb-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="font-semibold capitalize">{profile?.plan || 'Free'} Plan</p>
-                  <Badge variant={profile?.plan === 'free' ? 'secondary' : 'default'}>
-                    {profile?.plan === 'free' ? 'Current' : 'Active'}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {profile?.plan === 'free' 
-                    ? 'Upgrade to unlock more features'
-                    : 'You have access to premium features'}
-                </p>
-              </div>
-              {profile?.plan === 'free' && (
-                <Button className="gradient-primary">
-                  Upgrade
-                </Button>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Your plan includes:</p>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                {planFeatures[profile?.plan || 'free'].map((feature) => (
-                  <li key={feature} className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Subscription Manager */}
+        <SubscriptionManager />
 
         {/* Security */}
         <Card>
