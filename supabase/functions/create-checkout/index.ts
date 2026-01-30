@@ -61,7 +61,7 @@ serve(async (req) => {
     const isTestMode = DODO_API_KEY.startsWith('sk_test_');
     const apiBase = isTestMode 
       ? 'https://test.dodopayments.com' 
-      : 'https://api.dodopayments.com';
+      : 'https://live.dodopayments.com';
 
     // Create Dodo checkout session
     const checkoutResponse = await fetch(`${apiBase}/checkouts`, {
