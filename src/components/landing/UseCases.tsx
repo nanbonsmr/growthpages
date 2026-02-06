@@ -46,7 +46,7 @@ export function UseCases() {
             <span className="text-gradient">every use case</span>
           </h2>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Whether you're a solo creator or a growing business, LeadCapture adapts to your unique needs.
+            Whether you're a solo creator or a growing business, GrowthPages adapts to your unique needs.
           </p>
         </div>
 
