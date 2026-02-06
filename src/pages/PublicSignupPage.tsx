@@ -236,7 +236,7 @@ export default function PublicSignupPage() {
           </h1>
           <p className="text-muted-foreground mb-8">{successMessage}</p>
           <p className="text-sm text-muted-foreground">
-            Powered by <span className="font-semibold">LeadCapture</span>
+            Powered by <span className="font-semibold">GrowthPages</span>
           </p>
         </div>
       </div>
@@ -281,7 +281,7 @@ export default function PublicSignupPage() {
           <p className="text-sm text-muted-foreground">
             Powered by{' '}
             <a href="/" className="font-semibold hover:underline inline-flex items-center gap-1">
-              <Zap className="h-3.5 w-3.5" /> LeadCapture
+              <Zap className="h-3.5 w-3.5" /> GrowthPages
             </a>
           </p>
         </div>

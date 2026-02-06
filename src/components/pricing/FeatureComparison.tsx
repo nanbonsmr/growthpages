@@ -21,7 +21,7 @@ const features: Feature[] = [
   { name: 'Basic Templates', free: true, pro: true, business: true, category: 'Design & Branding' },
   { name: 'Premium Templates', free: false, pro: true, business: true },
   { name: 'Custom Colors & Fonts', free: false, pro: true, business: true },
-  { name: 'Remove LeadCapture Branding', free: false, pro: true, business: true },
+  { name: 'Remove GrowthPages Branding', free: false, pro: true, business: true },
   { name: 'White-label Solution', free: false, pro: false, business: true },
   
   // Features

@@ -14,14 +14,14 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
               <p className="text-muted-foreground leading-relaxed">
-                By accessing or using LeadCapture's services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.
+                By accessing or using GrowthPages's services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold mb-4">2. Description of Service</h2>
               <p className="text-muted-foreground leading-relaxed">
-                LeadCapture provides a platform for creating landing pages, collecting subscriber information, and managing email lists. We reserve the right to modify, suspend, or discontinue any part of the service at any time.
+                GrowthPages provides a platform for creating landing pages, collecting subscriber information, and managing email lists. We reserve the right to modify, suspend, or discontinue any part of the service at any time.
               </p>
             </section>
 
@@ -67,7 +67,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">7. Limitation of Liability</h2>
               <p className="text-muted-foreground leading-relaxed">
-                To the maximum extent permitted by law, LeadCapture shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the service.
+                To the maximum extent permitted by law, GrowthPages shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the service.
               </p>
             </section>
 
@@ -88,7 +88,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">10. Contact</h2>
               <p className="text-muted-foreground leading-relaxed">
-                For questions about these Terms of Service, please contact us at legal@leadcapture.com.
+                For questions about these Terms of Service, please contact us at legal@growthpages.com.
               </p>
             </section>
           </div>

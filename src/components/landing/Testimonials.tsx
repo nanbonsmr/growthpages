@@ -2,14 +2,14 @@ import { Star, Quote } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: "LeadCapture helped us grow our newsletter from 0 to 10,000 subscribers in just 3 months. The templates are gorgeous and the analytics are incredibly insightful.",
+    quote: "GrowthPages helped us grow our newsletter from 0 to 10,000 subscribers in just 3 months. The templates are gorgeous and the analytics are incredibly insightful.",
     author: "Sarah Chen",
     role: "Creator, The Daily Spark",
     avatar: "SC",
     rating: 5,
   },
   {
-    quote: "We used LeadCapture for our product launch waitlist and collected 5,000 signups before we even had a product. Absolute game changer for validating ideas.",
+    quote: "We used GrowthPages for our product launch waitlist and collected 5,000 signups before we even had a product. Absolute game changer for validating ideas.",
     author: "Michael Torres",
     role: "Founder, Launchpad",
     avatar: "MT",
@@ -42,7 +42,7 @@ export function Testimonials() {
             <span className="text-gradient">thousands of creators</span>
           </h2>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            See what our users have to say about growing their audience with LeadCapture.
+            See what our users have to say about growing their audience with GrowthPages.
           </p>
         </div>
 

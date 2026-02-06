@@ -14,7 +14,7 @@ const plans = [
       'Up to 100 subscribers',
       'Basic templates',
       'Email support',
-      'LeadCapture branding',
+      'GrowthPages branding',
     ],
     cta: 'Get Started',
     popular: false,

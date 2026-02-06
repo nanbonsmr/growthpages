@@ -19,7 +19,7 @@ export function PricingCTA() {
             </h2>
             <p className="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-10">
               Join thousands of creators and businesses growing their audience with
-              LeadCapture. Start free today.
+              GrowthPages. Start free today.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

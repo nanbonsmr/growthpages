@@ -102,7 +102,7 @@ export default function CookiePolicy() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">8. Contact Us</h2>
               <p className="text-muted-foreground leading-relaxed">
-                If you have questions about our use of cookies, please contact us at privacy@leadcapture.com.
+                If you have questions about our use of cookies, please contact us at privacy@growthpages.com.
               </p>
             </section>
           </div>

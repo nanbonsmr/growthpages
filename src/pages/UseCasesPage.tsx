@@ -78,21 +78,21 @@ const useCases = [
 
 const successStories = [
   {
-    quote: "We collected 15,000 waitlist signups in just 2 weeks before our launch. LeadCapture made it effortless.",
+    quote: "We collected 15,000 waitlist signups in just 2 weeks before our launch. GrowthPages made it effortless.",
     author: "Alex Rivera",
     role: "Founder, TechStart",
     metric: "15,000",
     metricLabel: "Signups in 2 weeks",
   },
   {
-    quote: "Our newsletter grew from 500 to 25,000 subscribers using LeadCapture's beautiful templates.",
+    quote: "Our newsletter grew from 500 to 25,000 subscribers using GrowthPages's beautiful templates.",
     author: "Jamie Chen",
     role: "Creator, Daily Insights",
     metric: "50x",
     metricLabel: "Growth in 6 months",
   },
   {
-    quote: "Event registration became so much easier. We now manage all our webinar signups through LeadCapture.",
+    quote: "Event registration became so much easier. We now manage all our webinar signups through GrowthPages.",
     author: "Morgan Blake",
     role: "Events Lead, GrowthCo",
     metric: "200+",
@@ -123,7 +123,7 @@ export default function UseCasesPage() {
                 <span className="text-gradient">creators, startups, and businesses</span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                Whether you're launching a product, growing a newsletter, or building a community, LeadCapture has you covered.
+                Whether you're launching a product, growing a newsletter, or building a community, GrowthPages has you covered.
               </p>
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function UseCasesPage() {
                 <span className="text-gradient">real users</span>
               </h2>
               <p className="text-lg text-muted-foreground">
-                See how businesses and creators are growing with LeadCapture.
+                See how businesses and creators are growing with GrowthPages.
               </p>
             </div>
 

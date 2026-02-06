@@ -126,7 +126,7 @@ export function Hero() {
                 </div>
                 <div className="flex-1 flex justify-center">
                   <div className="px-4 py-1 rounded-md bg-background text-xs text-muted-foreground">
-                    app.leadcapture.com/dashboard
+                    app.growthpages.com/dashboard
                   </div>
                 </div>
               </div>
@@ -134,7 +134,7 @@ export function Hero() {
               {/* Preview content - actual mockup */}
               <img 
                 src={dashboardMockup} 
-                alt="LeadCapture Dashboard - Track subscribers, analytics, and growth metrics"
+                alt="GrowthPages Dashboard - Track subscribers, analytics, and growth metrics"
                 className="w-full h-auto"
               />
             </div>

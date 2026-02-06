@@ -129,7 +129,7 @@ export function DashboardSidebar({
             <Zap className="h-5 w-5 text-primary-foreground" />
           </div>
           {(!isCollapsed || isMobile) && (
-            <span className="text-lg font-bold tracking-tight">LeadCapture</span>
+            <span className="text-lg font-bold tracking-tight">GrowthPages</span>
           )}
         </Link>
       </div>

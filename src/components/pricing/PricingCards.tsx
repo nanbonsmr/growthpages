@@ -38,7 +38,7 @@ const plans: Plan[] = [
       'Up to 100 subscribers',
       'Basic templates',
       'Email support',
-      'LeadCapture branding',
+      'GrowthPages branding',
     ],
     limits: {
       pages: '1 page',
@@ -59,7 +59,7 @@ const plans: Plan[] = [
       'Unlimited signup pages',
       'Up to 30,000 subscribers',
       'All premium templates',
-      'Remove LeadCapture branding',
+      'Remove GrowthPages branding',
       'Custom colors & fonts',
       'Advanced analytics',
       'Priority support',

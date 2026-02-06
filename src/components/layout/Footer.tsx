@@ -129,15 +129,15 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="py-6 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} LeadCapture. All rights reserved.
+            © {new Date().getFullYear()} GrowthPages. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <a
-              href="mailto:hello@leadcapture.com"
+              href="mailto:hello@growthpages.com"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2"
             >
               <Mail className="h-4 w-4" />
-              hello@leadcapture.com
+              hello@growthpages.com
             </a>
           </div>
         </div>
