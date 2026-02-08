@@ -11,7 +11,7 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Block, PageSettings, PageData, BLOCK_DEFINITIONS, DEFAULT_PAGE_SETTINGS } from './types';
+import { Block, PageSettings, PageData, BLOCK_DEFINITIONS, DEFAULT_PAGE_SETTINGS, BlockPosition } from './types';
 import { PAGE_TEMPLATES, PageTemplate } from './templates';
 import { ElementsPanel } from './ElementsPanel';
 import { EditorCanvas } from './EditorCanvas';
@@ -37,6 +37,7 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
   );
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [layoutMode, setLayoutMode] = useState<'flow' | 'free'>('flow');
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -159,6 +160,13 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
     // Don't push to history for every keystroke, only on blur
   };
 
+  const handleUpdateBlockPosition = (id: string, position: BlockPosition) => {
+    const newBlocks = blocks.map((b) =>
+      b.id === id ? { ...b, position } : b
+    );
+    setBlocks(newBlocks);
+  };
+
   const handleUpdateSettings = (newSettings: Partial<PageSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
@@ -238,12 +246,14 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
       <EditorToolbar
         slug={settings.slug}
         viewMode={viewMode}
+        layoutMode={layoutMode}
         isSaving={isSaving}
         canUndo={historyIndex > 0}
         canRedo={historyIndex < history.length - 1}
         templates={PAGE_TEMPLATES}
         onSlugChange={(slug) => handleUpdateSettings({ slug })}
         onViewModeChange={setViewMode}
+        onLayoutModeChange={setLayoutMode}
         onSave={handleSave}
         onPublish={handlePublish}
         onPreview={handlePreview}
@@ -266,10 +276,12 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
             settings={settings}
             selectedBlockId={selectedBlockId}
             viewMode={viewMode}
+            layoutMode={layoutMode}
             onSelectBlock={setSelectedBlockId}
             onDeleteBlock={handleDeleteBlock}
             onUpdateBlock={handleUpdateBlock}
             onMoveBlock={handleMoveBlock}
+            onUpdateBlockPosition={handleUpdateBlockPosition}
             pageId={pageId}
           />
 
