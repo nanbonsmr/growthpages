@@ -28,10 +28,18 @@ export interface BlockDefinition {
   defaultProps: Record<string, any>;
 }
 
+export interface BlockPosition {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface Block {
   id: string;
   type: BlockType;
   props: Record<string, any>;
+  position?: BlockPosition; // Optional - if not set, uses flow layout
 }
 
 export interface HeadingProps {

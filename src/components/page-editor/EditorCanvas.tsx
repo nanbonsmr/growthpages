@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -5,8 +6,9 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Block, PageSettings } from './types';
+import { Block, PageSettings, BlockPosition } from './types';
 import { BlockRenderer } from './blocks/BlockRenderer';
+import { ResizableBlock } from './blocks/ResizableBlock';
 import { cn } from '@/lib/utils';
 import { GripVertical, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -153,10 +155,12 @@ interface EditorCanvasProps {
   settings: PageSettings;
   selectedBlockId: string | null;
   viewMode: 'desktop' | 'mobile';
+  layoutMode: 'flow' | 'free';
   onSelectBlock: (id: string | null) => void;
   onDeleteBlock: (id: string) => void;
   onUpdateBlock: (id: string, props: Record<string, any>) => void;
   onMoveBlock: (id: string, direction: 'up' | 'down') => void;
+  onUpdateBlockPosition: (id: string, position: BlockPosition) => void;
   pageId?: string;
 }
 
@@ -165,12 +169,15 @@ export function EditorCanvas({
   settings,
   selectedBlockId,
   viewMode,
+  layoutMode,
   onSelectBlock,
   onDeleteBlock,
   onUpdateBlock,
   onMoveBlock,
+  onUpdateBlockPosition,
   pageId,
 }: EditorCanvasProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const { setNodeRef, isOver } = useDroppable({
     id: 'canvas',
   });
@@ -201,6 +208,13 @@ export function EditorCanvas({
     xl: 'max-w-xl',
   };
 
+  const combineRefs = (el: HTMLDivElement | null) => {
+    setNodeRef(el);
+    if (containerRef.current !== el) {
+      (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+    }
+  };
+
   return (
     <div className="flex-1 bg-muted/50 overflow-auto">
       <div className="p-8 min-h-full flex justify-center">
@@ -212,10 +226,11 @@ export function EditorCanvas({
         >
           {/* Canvas Container */}
           <div
-            ref={setNodeRef}
+            ref={combineRefs}
             className={cn(
               'min-h-[600px] rounded-xl shadow-2xl overflow-hidden transition-all',
-              isOver && 'ring-2 ring-primary ring-offset-2'
+              isOver && 'ring-2 ring-primary ring-offset-2',
+              layoutMode === 'free' && 'relative'
             )}
             style={{
               ...getBackgroundStyle(),
@@ -223,11 +238,48 @@ export function EditorCanvas({
             }}
             onClick={() => onSelectBlock(null)}
           >
-            <div className={cn('mx-auto px-6', maxWidthClasses[settings.maxWidth])}>
-              <SortableContext
-                items={blocks.map((b) => b.id)}
-                strategy={verticalListSortingStrategy}
-              >
+            {layoutMode === 'flow' ? (
+              // Flow Layout (original vertical stacking)
+              <div className={cn('mx-auto px-6', maxWidthClasses[settings.maxWidth])}>
+                <SortableContext
+                  items={blocks.map((b) => b.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {blocks.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-[400px] text-center">
+                      <div className="p-4 rounded-xl bg-background/80 backdrop-blur">
+                        <p className="text-muted-foreground font-medium">
+                          Drag elements here to start building
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Or choose a template from the toolbar
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-6 space-y-4 px-4">
+                      {blocks.map((block, index) => (
+                        <SortableBlock
+                          key={block.id}
+                          block={block}
+                          isSelected={selectedBlockId === block.id}
+                          onSelect={() => onSelectBlock(block.id)}
+                          onDelete={() => onDeleteBlock(block.id)}
+                          onUpdate={(props) => onUpdateBlock(block.id, props)}
+                          onMoveUp={() => onMoveBlock(block.id, 'up')}
+                          onMoveDown={() => onMoveBlock(block.id, 'down')}
+                          canMoveUp={index > 0}
+                          canMoveDown={index < blocks.length - 1}
+                          pageId={pageId}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </SortableContext>
+              </div>
+            ) : (
+              // Free Position Layout
+              <div className="relative w-full min-h-[600px]">
                 {blocks.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-[400px] text-center">
                     <div className="p-4 rounded-xl bg-background/80 backdrop-blur">
@@ -240,26 +292,30 @@ export function EditorCanvas({
                     </div>
                   </div>
                 ) : (
-                  <div className="py-6 space-y-4 px-4">
-                    {blocks.map((block, index) => (
-                      <SortableBlock
-                        key={block.id}
-                        block={block}
-                        isSelected={selectedBlockId === block.id}
-                        onSelect={() => onSelectBlock(block.id)}
-                        onDelete={() => onDeleteBlock(block.id)}
-                        onUpdate={(props) => onUpdateBlock(block.id, props)}
-                        onMoveUp={() => onMoveBlock(block.id, 'up')}
-                        onMoveDown={() => onMoveBlock(block.id, 'down')}
-                        canMoveUp={index > 0}
-                        canMoveDown={index < blocks.length - 1}
-                        pageId={pageId}
-                      />
-                    ))}
-                  </div>
+                  blocks.map((block, index) => (
+                    <ResizableBlock
+                      key={block.id}
+                      block={{
+                        ...block,
+                        position: block.position || {
+                          x: 20,
+                          y: 20 + index * 120,
+                          width: viewMode === 'mobile' ? 335 : 600,
+                          height: 100,
+                        },
+                      }}
+                      isSelected={selectedBlockId === block.id}
+                      onSelect={() => onSelectBlock(block.id)}
+                      onDelete={() => onDeleteBlock(block.id)}
+                      onUpdate={(props) => onUpdateBlock(block.id, props)}
+                      onPositionChange={(position) => onUpdateBlockPosition(block.id, position)}
+                      containerRef={containerRef}
+                      pageId={pageId}
+                    />
+                  ))
                 )}
-              </SortableContext>
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
