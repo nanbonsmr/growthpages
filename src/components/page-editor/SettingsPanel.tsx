@@ -1351,6 +1351,20 @@ function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
               </>
             )}
           </div>
+
+          {/* Sticky Option */}
+          <div className="flex items-center justify-between mt-4 pt-4 border-t">
+            <div>
+              <Label>Sticky Navigation</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Keep navbar fixed at top when scrolling
+              </p>
+            </div>
+            <Switch
+              checked={props.sticky ?? false}
+              onCheckedChange={(v) => onUpdate({ sticky: v })}
+            />
+          </div>
         </div>
       );
 

@@ -60,9 +60,11 @@ export function NavBlock({ block, isSelected, isPreview, onUpdate }: NavBlockPro
   return (
     <nav
       className={cn(
-        'w-full px-4 sm:px-6 py-4',
+        'w-full px-4 sm:px-6 py-4 z-50',
         styleClasses[props.style || 'solid'],
-        isSelected && !isPreview && 'ring-2 ring-primary ring-offset-2 rounded-lg'
+        isSelected && !isPreview && 'ring-2 ring-primary ring-offset-2 rounded-lg',
+        // Apply sticky positioning in preview mode
+        isPreview && props.sticky && 'sticky top-0 left-0 right-0'
       )}
       style={{
         backgroundColor: props.style === 'solid' ? props.backgroundColor : undefined,
