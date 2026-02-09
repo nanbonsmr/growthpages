@@ -80,7 +80,7 @@ export function SortableBlock({
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isMoving && onPositionChange) {
-      const newX = Math.max(0, e.clientX - moveStart.x);
+      const newX = e.clientX - moveStart.x;
       const newY = e.clientY - moveStart.y;
       onPositionChange({
         ...position,
