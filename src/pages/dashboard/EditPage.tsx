@@ -77,6 +77,12 @@ export default function EditPage() {
         id: block.id,
         type: block.type,
         props: block.props,
+        position: block.position ? {
+          x: block.position.x,
+          y: block.position.y,
+          width: block.position.width,
+          height: block.position.height,
+        } : undefined,
       })),
     };
 
@@ -111,6 +117,12 @@ export default function EditPage() {
         id: block.id,
         type: block.type,
         props: block.props,
+        position: block.position ? {
+          x: block.position.x,
+          y: block.position.y,
+          width: block.position.width,
+          height: block.position.height,
+        } : undefined,
       })),
     };
 

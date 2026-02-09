@@ -37,7 +37,7 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
   );
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
-  const [layoutMode, setLayoutMode] = useState<'flow' | 'free'>('flow');
+  const [layoutMode, setLayoutMode] = useState<'flow' | 'free'>('free');
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   
