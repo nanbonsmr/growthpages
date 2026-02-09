@@ -194,10 +194,14 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
         title: 'Saved',
         description: 'Your changes have been saved.',
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Save error:', error);
+      const errorMessage = error?.message || error?.code || 'Failed to save changes.';
       toast({
-        title: 'Error',
-        description: 'Failed to save changes.',
+        title: 'Error saving',
+        description: errorMessage.includes('duplicate') 
+          ? 'This URL slug is already in use. Please choose a different one.'
+          : errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -213,10 +217,14 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
         title: 'Published',
         description: 'Your page is now live!',
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Publish error:', error);
+      const errorMessage = error?.message || error?.code || 'Failed to publish page.';
       toast({
-        title: 'Error',
-        description: 'Failed to publish page.',
+        title: 'Error publishing',
+        description: errorMessage.includes('duplicate') 
+          ? 'This URL slug is already in use. Please choose a different one.'
+          : errorMessage,
         variant: 'destructive',
       });
     } finally {

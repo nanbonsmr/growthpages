@@ -62,7 +62,8 @@ export default function EditPage() {
   }, [id, user, navigate, toast]);
 
   const handleSave = async (data: PageData) => {
-    if (!id || !user) throw new Error('Missing page ID or user');
+    if (!id) throw new Error('Missing page ID');
+    if (!user) throw new Error('User not authenticated');
 
     const themeSettingsJson = {
       backgroundType: data.settings.backgroundType,
@@ -95,14 +96,17 @@ export default function EditPage() {
         theme_settings: themeSettingsJson,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', id)
-      .eq('user_id', user.id);
+      .eq('id', id);
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase save error:', error);
+      throw new Error(error.message || error.code || 'Failed to save');
+    }
   };
 
   const handlePublish = async (data: PageData) => {
-    if (!id || !user) throw new Error('Missing page ID or user');
+    if (!id) throw new Error('Missing page ID');
+    if (!user) throw new Error('User not authenticated');
 
     const themeSettingsJson = {
       backgroundType: data.settings.backgroundType,
@@ -136,10 +140,12 @@ export default function EditPage() {
         is_active: true,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', id)
-      .eq('user_id', user.id);
+      .eq('id', id);
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase publish error:', error);
+      throw new Error(error.message || error.code || 'Failed to publish');
+    }
   };
 
   if (isLoading || !initialData) {
