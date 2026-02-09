@@ -102,40 +102,77 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Hamburger */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+            className={cn(
+              'md:hidden p-2 rounded-lg transition-all duration-200',
+              'hover:bg-muted active:scale-95',
+              isMenuOpen && 'bg-muted/50'
+            )}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMenuOpen}
           >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            <div className="relative w-6 h-6">
+              <Menu 
+                className={cn(
+                  'h-6 w-6 absolute inset-0 transition-all duration-300',
+                  isMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'
+                )} 
+              />
+              <X 
+                className={cn(
+                  'h-6 w-6 absolute inset-0 transition-all duration-300',
+                  isMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'
+                )} 
+              />
+            </div>
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Animated Slide Down */}
         <div
           className={cn(
-            'md:hidden overflow-hidden transition-all duration-300 ease-out',
-            isMenuOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
+            'md:hidden overflow-hidden transition-all duration-300 ease-in-out',
+            isMenuOpen ? 'max-h-[500px] opacity-100 mt-4' : 'max-h-0 opacity-0'
           )}
         >
           <div className="py-4 space-y-1 border-t border-border/50">
-            {navLinks.map((link) => (
+            {navLinks.map((link, index) => (
               <Link
                 key={link.name}
                 to={link.href}
                 onClick={() => setIsMenuOpen(false)}
                 className={cn(
-                  'block px-4 py-3 text-sm font-medium rounded-lg transition-colors',
+                  'block px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200',
+                  'transform',
                   location.pathname === link.href
                     ? 'text-foreground bg-muted'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                  isMenuOpen 
+                    ? 'translate-x-0 opacity-100' 
+                    : '-translate-x-4 opacity-0'
                 )}
+                style={{
+                  transitionDelay: isMenuOpen ? `${index * 50}ms` : '0ms'
+                }}
               >
                 {link.name}
               </Link>
             ))}
-            <div className="pt-4 space-y-2 border-t border-border/50 mt-4">
+            
+            {/* Auth Buttons - Mobile */}
+            <div 
+              className={cn(
+                'pt-4 space-y-2 border-t border-border/50 mt-4 transition-all duration-200',
+                isMenuOpen 
+                  ? 'translate-y-0 opacity-100' 
+                  : 'translate-y-2 opacity-0'
+              )}
+              style={{
+                transitionDelay: isMenuOpen ? `${navLinks.length * 50 + 50}ms` : '0ms'
+              }}
+            >
               {user ? (
                 <>
                   <Button
