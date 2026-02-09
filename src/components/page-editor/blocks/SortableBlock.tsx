@@ -1,9 +1,10 @@
+import { useState, useCallback, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Block } from '../types';
+import { Block, BlockPosition } from '../types';
 import { BlockRenderer } from './BlockRenderer';
 import { cn } from '@/lib/utils';
-import { GripVertical, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
+import { GripVertical, Trash2, ChevronUp, ChevronDown, Move, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface SortableBlockProps {
@@ -16,6 +17,7 @@ interface SortableBlockProps {
   onUpdate: (props: Record<string, any>) => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onPositionChange?: (position: BlockPosition) => void;
   pageId?: string;
 }
 
@@ -29,6 +31,7 @@ export function SortableBlock({
   onUpdate,
   onMoveUp,
   onMoveDown,
+  onPositionChange,
   pageId,
 }: SortableBlockProps) {
   const {
@@ -40,10 +43,75 @@ export function SortableBlock({
     isDragging,
   } = useSortable({ id: block.id });
 
+  const [isMoving, setIsMoving] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [moveStart, setMoveStart] = useState({ x: 0, y: 0 });
+  const [resizeStart, setResizeStart] = useState({ x: 0, width: 0 });
+
+  // Default position values
+  const position = block.position || { x: 0, y: 0, width: 100, height: 0 };
+  const offsetX = position.x || 0;
+  const customWidth = position.width || 100; // percentage
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    marginLeft: `${offsetX}px`,
+    width: `${customWidth}%`,
   };
+
+  const handleMoveStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsMoving(true);
+    setMoveStart({ x: e.clientX - offsetX, y: e.clientY });
+    onSelect();
+  }, [offsetX, onSelect]);
+
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsResizing(true);
+    setResizeStart({ x: e.clientX, width: customWidth });
+    onSelect();
+  }, [customWidth, onSelect]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isMoving && onPositionChange) {
+      const newX = Math.max(0, e.clientX - moveStart.x);
+      onPositionChange({
+        ...position,
+        x: newX,
+      });
+    }
+
+    if (isResizing && onPositionChange) {
+      const deltaX = e.clientX - resizeStart.x;
+      const containerWidth = (e.target as HTMLElement)?.closest('.min-h-\\[600px\\]')?.clientWidth || 800;
+      const deltaPercent = (deltaX / containerWidth) * 100;
+      const newWidth = Math.max(20, Math.min(100, resizeStart.width + deltaPercent));
+      onPositionChange({
+        ...position,
+        width: newWidth,
+      });
+    }
+  }, [isMoving, isResizing, moveStart, resizeStart, position, onPositionChange]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsMoving(false);
+    setIsResizing(false);
+  }, []);
+
+  useEffect(() => {
+    if (isMoving || isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isMoving, isResizing, handleMouseMove, handleMouseUp]);
 
   return (
     <div
@@ -51,7 +119,8 @@ export function SortableBlock({
       style={style}
       className={cn(
         'group relative',
-        isDragging && 'opacity-50 z-50'
+        isDragging && 'opacity-50 z-50',
+        (isMoving || isResizing) && 'z-50'
       )}
       onClick={(e) => {
         e.stopPropagation();
@@ -76,7 +145,7 @@ export function SortableBlock({
             isSelected && 'opacity-100 scale-100'
           )}
         >
-          {/* Drag Handle */}
+          {/* Reorder Drag Handle */}
           <div
             {...attributes}
             {...listeners}
@@ -84,8 +153,22 @@ export function SortableBlock({
               'p-1 rounded cursor-grab active:cursor-grabbing',
               'hover:bg-muted transition-colors'
             )}
+            title="Drag to reorder"
           >
             <GripVertical className="h-4 w-4 text-muted-foreground" />
+          </div>
+
+          {/* Free Move Handle */}
+          <div
+            onMouseDown={handleMoveStart}
+            className={cn(
+              'p-1 rounded cursor-move',
+              'hover:bg-muted transition-colors',
+              isMoving && 'bg-primary/20'
+            )}
+            title="Move left/right"
+          >
+            <Move className="h-4 w-4 text-muted-foreground" />
           </div>
 
           {/* Move Up */}
@@ -98,6 +181,7 @@ export function SortableBlock({
               onMoveUp();
             }}
             disabled={isFirst}
+            title="Move up"
           >
             <ChevronUp className="h-3.5 w-3.5" />
           </Button>
@@ -112,6 +196,7 @@ export function SortableBlock({
               onMoveDown();
             }}
             disabled={isLast}
+            title="Move down"
           >
             <ChevronDown className="h-3.5 w-3.5" />
           </Button>
@@ -125,6 +210,7 @@ export function SortableBlock({
               e.stopPropagation();
               onDelete();
             }}
+            title="Delete"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
@@ -139,6 +225,21 @@ export function SortableBlock({
             pageId={pageId}
           />
         </div>
+
+        {/* Resize Handle */}
+        {isSelected && (
+          <div
+            onMouseDown={handleResizeStart}
+            className={cn(
+              'absolute bottom-1 right-1 w-5 h-5 cursor-ew-resize',
+              'bg-primary/80 hover:bg-primary rounded-bl rounded-tr',
+              'flex items-center justify-center transition-colors'
+            )}
+            title="Resize width"
+          >
+            <Maximize2 className="h-3 w-3 text-primary-foreground rotate-90" />
+          </div>
+        )}
       </div>
     </div>
   );

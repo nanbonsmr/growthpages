@@ -11,7 +11,7 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Block, PageSettings, PageData, BLOCK_DEFINITIONS, DEFAULT_PAGE_SETTINGS } from './types';
+import { Block, PageSettings, PageData, BLOCK_DEFINITIONS, DEFAULT_PAGE_SETTINGS, BlockPosition } from './types';
 import { PAGE_TEMPLATES, PageTemplate } from './templates';
 import { ElementsPanel } from './ElementsPanel';
 import { EditorCanvas } from './EditorCanvas';
@@ -159,6 +159,13 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
     // Don't push to history for every keystroke, only on blur
   };
 
+  const handleUpdateBlockPosition = (id: string, position: BlockPosition) => {
+    const newBlocks = blocks.map((b) =>
+      b.id === id ? { ...b, position } : b
+    );
+    setBlocks(newBlocks);
+  };
+
   const handleUpdateSettings = (newSettings: Partial<PageSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
@@ -270,6 +277,7 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
             onDeleteBlock={handleDeleteBlock}
             onUpdateBlock={handleUpdateBlock}
             onMoveBlock={handleMoveBlock}
+            onUpdateBlockPosition={handleUpdateBlockPosition}
             pageId={pageId}
           />
 

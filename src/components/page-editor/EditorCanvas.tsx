@@ -3,7 +3,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Block, PageSettings } from './types';
+import { Block, PageSettings, BlockPosition } from './types';
 import { SortableBlock } from './blocks/SortableBlock';
 import { cn } from '@/lib/utils';
 
@@ -16,6 +16,7 @@ interface EditorCanvasProps {
   onDeleteBlock: (id: string) => void;
   onUpdateBlock: (id: string, props: Record<string, any>) => void;
   onMoveBlock: (id: string, direction: 'up' | 'down') => void;
+  onUpdateBlockPosition: (id: string, position: BlockPosition) => void;
   pageId?: string;
 }
 
@@ -28,6 +29,7 @@ export function EditorCanvas({
   onDeleteBlock,
   onUpdateBlock,
   onMoveBlock,
+  onUpdateBlockPosition,
   pageId,
 }: EditorCanvasProps) {
   const { setNodeRef, isOver } = useDroppable({
@@ -105,6 +107,7 @@ export function EditorCanvas({
                       onUpdate={(props) => onUpdateBlock(block.id, props)}
                       onMoveUp={() => onMoveBlock(block.id, 'up')}
                       onMoveDown={() => onMoveBlock(block.id, 'down')}
+                      onPositionChange={(pos) => onUpdateBlockPosition(block.id, pos)}
                       pageId={pageId}
                     />
                   ))
