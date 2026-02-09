@@ -51,12 +51,14 @@ export function SortableBlock({
   // Default position values
   const position = block.position || { x: 0, y: 0, width: 100, height: 0 };
   const offsetX = position.x || 0;
+  const offsetY = position.y || 0;
   const customWidth = position.width || 100; // percentage
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     marginLeft: `${offsetX}px`,
+    marginTop: `${offsetY}px`,
     width: `${customWidth}%`,
   };
 
@@ -64,9 +66,9 @@ export function SortableBlock({
     e.preventDefault();
     e.stopPropagation();
     setIsMoving(true);
-    setMoveStart({ x: e.clientX - offsetX, y: e.clientY });
+    setMoveStart({ x: e.clientX - offsetX, y: e.clientY - offsetY });
     onSelect();
-  }, [offsetX, onSelect]);
+  }, [offsetX, offsetY, onSelect]);
 
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -79,9 +81,11 @@ export function SortableBlock({
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isMoving && onPositionChange) {
       const newX = Math.max(0, e.clientX - moveStart.x);
+      const newY = e.clientY - moveStart.y;
       onPositionChange({
         ...position,
         x: newX,
+        y: newY,
       });
     }
 
@@ -166,7 +170,7 @@ export function SortableBlock({
               'hover:bg-muted transition-colors',
               isMoving && 'bg-primary/20'
             )}
-            title="Move left/right"
+            title="Move freely"
           >
             <Move className="h-4 w-4 text-muted-foreground" />
           </div>
