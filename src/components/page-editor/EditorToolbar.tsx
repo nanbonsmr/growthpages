@@ -15,8 +15,6 @@ import {
   Redo2,
   Monitor,
   Smartphone,
-  LayoutTemplate,
-  ChevronDown,
   Loader2,
   ArrowLeft,
   Share2,
@@ -24,6 +22,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { PageTemplate } from './templates';
+import { TemplatesDialog } from './TemplatesDialog';
 import { cn } from '@/lib/utils';
 import { getPublicPageUrl } from '@/lib/config';
 import { useToast } from '@/hooks/use-toast';
@@ -118,29 +117,8 @@ export function EditorToolbar({
 
         <div className="h-6 w-px bg-border" />
 
-        {/* Templates */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
-              <LayoutTemplate className="h-4 w-4" />
-              Templates
-              <ChevronDown className="h-3 w-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            {templates.map((template) => (
-              <DropdownMenuItem
-                key={template.id}
-                onClick={() => onLoadTemplate(template)}
-              >
-                <div>
-                  <p className="font-medium">{template.name}</p>
-                  <p className="text-xs text-muted-foreground">{template.description}</p>
-                </div>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Templates Dialog */}
+        <TemplatesDialog templates={templates} onLoadTemplate={onLoadTemplate} />
 
         <div className="h-6 w-px bg-border" />
 
