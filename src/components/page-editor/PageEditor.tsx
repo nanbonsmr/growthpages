@@ -11,7 +11,7 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Block, PageSettings, PageData, BLOCK_DEFINITIONS, DEFAULT_PAGE_SETTINGS, BlockPosition } from './types';
+import { Block, PageSettings, PageData, BLOCK_DEFINITIONS, DEFAULT_PAGE_SETTINGS } from './types';
 import { PAGE_TEMPLATES, PageTemplate } from './templates';
 import { ElementsPanel } from './ElementsPanel';
 import { EditorCanvas } from './EditorCanvas';
@@ -159,35 +159,16 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
     // Don't push to history for every keystroke, only on blur
   };
 
-  const handleUpdateBlockPosition = (id: string, position: BlockPosition) => {
-    const newBlocks = blocks.map((b) =>
-      b.id === id ? { ...b, position } : b
-    );
-    setBlocks(newBlocks);
-  };
-
   const handleUpdateSettings = (newSettings: Partial<PageSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
   const handleLoadTemplate = (template: PageTemplate) => {
-    // Generate new IDs for template blocks and assign positions for free layout
-    let currentY = 20;
-    const newBlocks = template.blocks.map((b) => {
-      const blockHeight = getBlockDefaultHeight(b.type);
-      const position = {
-        x: 20,
-        y: currentY,
-        width: 600,
-        height: blockHeight,
-      };
-      currentY += blockHeight + 20; // Add spacing between blocks
-      return {
-        ...b,
-        id: generateId(),
-        position,
-      };
-    });
+    // Generate new IDs for template blocks
+    const newBlocks = template.blocks.map((b) => ({
+      ...b,
+      id: generateId(),
+    }));
     setBlocks(newBlocks);
     pushHistory(newBlocks);
     setSettings((prev) => ({ ...prev, ...template.settings }));
@@ -196,31 +177,6 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
       title: 'Template loaded',
       description: `"${template.name}" template has been applied.`,
     });
-  };
-
-  // Helper to get default height for different block types
-  const getBlockDefaultHeight = (type: string): number => {
-    const heights: Record<string, number> = {
-      spacer: 40,
-      heading: 80,
-      text: 60,
-      form: 200,
-      image: 200,
-      button: 60,
-      divider: 30,
-      countdown: 100,
-      testimonial: 150,
-      social: 60,
-      video: 300,
-      accordion: 200,
-      'feature-grid': 250,
-      pricing: 400,
-      hero: 350,
-      nav: 70,
-      footer: 200,
-      'contact-form': 350,
-    };
-    return heights[type] || 100;
   };
 
   const handleSave = async () => {
@@ -314,7 +270,6 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
             onDeleteBlock={handleDeleteBlock}
             onUpdateBlock={handleUpdateBlock}
             onMoveBlock={handleMoveBlock}
-            onUpdateBlockPosition={handleUpdateBlockPosition}
             pageId={pageId}
           />
 
