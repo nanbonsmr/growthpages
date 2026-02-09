@@ -61,8 +61,8 @@ export function ResizableBlock({
     const containerRect = containerRef.current.getBoundingClientRect();
 
     if (isDragging) {
-      const newX = Math.max(0, Math.min(e.clientX - dragStart.x, containerRect.width - position.width));
-      const newY = Math.max(0, e.clientY - dragStart.y);
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
       
       onPositionChange({
         ...position,
@@ -80,7 +80,7 @@ export function ResizableBlock({
       
       onPositionChange({
         ...position,
-        width: Math.min(newWidth, containerRect.width - position.x),
+        width: newWidth,
         height: newHeight,
       });
     }
