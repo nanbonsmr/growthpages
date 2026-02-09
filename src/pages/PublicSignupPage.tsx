@@ -247,9 +247,9 @@ export default function PublicSignupPage() {
   if (hasBlocks) {
     const maxWidthClasses: Record<string, string> = {
       sm: 'max-w-sm',
-      md: 'max-w-md',
-      lg: 'max-w-lg',
-      xl: 'max-w-xl',
+      md: 'max-w-2xl',
+      lg: 'max-w-4xl',
+      xl: 'max-w-6xl',
     };
 
     return (
@@ -260,7 +260,7 @@ export default function PublicSignupPage() {
           fontFamily: settings?.fontFamily || 'Inter',
         }}
       >
-        <div className={`mx-auto px-6 py-8 ${maxWidthClasses[settings?.maxWidth || 'md']}`}>
+        <div className={`mx-auto px-4 sm:px-6 py-8 ${maxWidthClasses[settings?.maxWidth || 'lg']}`}>
           {blocks.map((block) => (
             <BlockRenderer
               key={block.id}
@@ -352,6 +352,45 @@ function BlockRenderer({
   pageId,
 }: BlockRendererProps) {
   const props = block.props;
+  
+  // State for countdown timer
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  
+  // State for accordion
+  const [openItems, setOpenItems] = useState<string[]>([]);
+  
+  // State for mobile nav
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Countdown effect
+  useEffect(() => {
+    if (block.type !== 'countdown' || !props.targetDate) return;
+    
+    const calculateTimeLeft = () => {
+      const difference = new Date(props.targetDate).getTime() - Date.now();
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+      }
+    };
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(timer);
+  }, [block.type, props.targetDate]);
+
+  const toggleAccordionItem = (id: string) => {
+    if (props.allowMultiple) {
+      setOpenItems(prev => 
+        prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+      );
+    } else {
+      setOpenItems(prev => prev.includes(id) ? [] : [id]);
+    }
+  };
 
   switch (block.type) {
     case 'heading': {
@@ -563,25 +602,6 @@ function BlockRenderer({
       );
 
     case 'countdown': {
-      const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-
-      useEffect(() => {
-        const calculateTimeLeft = () => {
-          const difference = new Date(props.targetDate).getTime() - Date.now();
-          if (difference > 0) {
-            setTimeLeft({
-              days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-              hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-              minutes: Math.floor((difference / 1000 / 60) % 60),
-              seconds: Math.floor((difference / 1000) % 60),
-            });
-          }
-        };
-        calculateTimeLeft();
-        const timer = setInterval(calculateTimeLeft, 1000);
-        return () => clearInterval(timer);
-      }, [props.targetDate]);
-
       const units = [
         { key: 'days', label: 'Days', show: props.showDays },
         { key: 'hours', label: 'Hours', show: props.showHours },
@@ -609,14 +629,367 @@ function BlockRenderer({
       );
     }
 
-    case 'contact-form':
+    case 'video': {
+      if (!props.url) return null;
+      
+      // Parse video URL to get embed URL
+      const getEmbedUrl = (url: string) => {
+        // YouTube
+        const youtubeMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s]+)/);
+        if (youtubeMatch) {
+          return `https://www.youtube.com/embed/${youtubeMatch[1]}${props.autoplay ? '?autoplay=1&mute=1' : ''}`;
+        }
+        // Vimeo
+        const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+        if (vimeoMatch) {
+          return `https://player.vimeo.com/video/${vimeoMatch[1]}${props.autoplay ? '?autoplay=1&muted=1' : ''}`;
+        }
+        return url;
+      };
+
+      const aspectRatios: Record<string, string> = {
+        '16:9': '56.25%',
+        '4:3': '75%',
+        '1:1': '100%',
+      };
+
       return (
-        <ContactFormPublic
-          props={props}
-          pageId={pageId || ''}
-          primaryColor={primaryColor}
-        />
+        <div
+          className="mb-4"
+          style={{
+            display: 'flex',
+            justifyContent: props.alignment === 'left' ? 'flex-start' : props.alignment === 'right' ? 'flex-end' : 'center',
+          }}
+        >
+          <div className="relative w-full max-w-2xl" style={{ paddingBottom: aspectRatios[props.aspectRatio || '16:9'] }}>
+            <iframe
+              src={getEmbedUrl(props.url)}
+              className="absolute inset-0 w-full h-full rounded-lg"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
       );
+    }
+
+    case 'accordion': {
+      return (
+        <div className="mb-4 space-y-2 max-w-2xl mx-auto">
+          {props.items?.map((item: any) => (
+            <div
+              key={item.id}
+              className={`border rounded-lg overflow-hidden ${props.style === 'separated' ? 'mb-3' : ''}`}
+            >
+              <button
+                onClick={() => toggleAccordionItem(item.id)}
+                className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-muted/50 transition-colors"
+              >
+                <span className="font-medium">{item.question}</span>
+                <span className={`transform transition-transform ${openItems.includes(item.id) ? 'rotate-180' : ''}`}>
+                  ▼
+                </span>
+              </button>
+              {openItems.includes(item.id) && (
+                <div className="px-4 pb-4 text-muted-foreground">
+                  {item.answer}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    case 'pricing': {
+      return (
+        <div className={`mb-4 grid gap-6 ${props.columns === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'} max-w-5xl mx-auto`}>
+          {props.tiers?.map((tier: any) => (
+            <div
+              key={tier.id}
+              className={`p-6 rounded-xl border-2 ${tier.highlighted ? 'border-primary shadow-lg scale-105' : 'border-border'}`}
+              style={tier.highlighted ? { borderColor: props.highlightColor || primaryColor } : {}}
+            >
+              <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
+              <div className="mb-4">
+                <span className="text-3xl font-bold">{tier.price}</span>
+                {tier.period && <span className="text-muted-foreground">/{tier.period}</span>}
+              </div>
+              <p className="text-muted-foreground mb-4">{tier.description}</p>
+              <ul className="space-y-2 mb-6">
+                {tier.features?.map((feature: string, idx: number) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <span style={{ color: props.highlightColor || primaryColor }}>✓</span>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href={tier.buttonUrl || '#'}
+                className="block w-full text-center py-2 px-4 rounded-lg font-medium transition-opacity hover:opacity-90"
+                style={{
+                  backgroundColor: tier.highlighted ? (props.highlightColor || primaryColor) : 'transparent',
+                  color: tier.highlighted ? '#fff' : (props.highlightColor || primaryColor),
+                  border: tier.highlighted ? 'none' : `2px solid ${props.highlightColor || primaryColor}`,
+                }}
+              >
+                {tier.buttonText}
+              </a>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    case 'feature-grid': {
+      const iconMap: Record<string, string> = {
+        star: '⭐',
+        check: '✓',
+        heart: '❤️',
+        bolt: '⚡',
+        shield: '🛡️',
+        rocket: '🚀',
+        globe: '🌐',
+        users: '👥',
+        chart: '📊',
+        lock: '🔒',
+      };
+
+      return (
+        <div className={`mb-4 grid gap-6 ${props.columns === 2 ? 'md:grid-cols-2' : props.columns === 4 ? 'md:grid-cols-4' : 'md:grid-cols-3'} max-w-5xl mx-auto`}>
+          {props.features?.map((feature: any) => (
+            <div key={feature.id} className={`p-4 ${props.style === 'cards' ? 'border rounded-lg' : ''}`}>
+              {props.showIcons && (
+                <div
+                  className="text-2xl mb-3"
+                  style={{ color: props.iconColor || primaryColor }}
+                >
+                  {iconMap[feature.icon] || '✨'}
+                </div>
+              )}
+              <h4 className="font-semibold mb-2">{feature.title}</h4>
+              <p className="text-sm text-muted-foreground">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    case 'hero': {
+      const heightClasses: Record<string, string> = {
+        small: 'min-h-[300px]',
+        medium: 'min-h-[450px]',
+        large: 'min-h-[600px]',
+        full: 'min-h-screen',
+      };
+
+      return (
+        <div
+          className={`relative ${heightClasses[props.height || 'medium']} flex items-center justify-center mb-4 rounded-xl overflow-hidden`}
+          style={{
+            backgroundImage: props.backgroundImage ? `url(${props.backgroundImage})` : undefined,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          {props.backgroundImage && (
+            <div
+              className="absolute inset-0"
+              style={{ backgroundColor: `rgba(0,0,0,${(props.backgroundOverlay || 30) / 100})` }}
+            />
+          )}
+          <div
+            className={`relative z-10 px-6 py-12 ${props.alignment === 'left' ? 'text-left' : props.alignment === 'right' ? 'text-right' : 'text-center'}`}
+            style={{ color: props.textColor === 'light' ? '#fff' : '#000' }}
+          >
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">{props.headline}</h1>
+            <p className="text-lg md:text-xl opacity-90 mb-6 max-w-2xl mx-auto">{props.subheadline}</p>
+            {props.buttonText && (
+              <a
+                href={props.buttonLink || '#'}
+                className="inline-block px-6 py-3 rounded-lg font-medium text-white transition-opacity hover:opacity-90"
+                style={{ backgroundColor: primaryColor }}
+              >
+                {props.buttonText}
+              </a>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    case 'nav': {
+      const styleClasses: Record<string, string> = {
+        transparent: 'bg-transparent',
+        solid: 'bg-background shadow-sm',
+        glass: 'bg-background/80 backdrop-blur-md border-b border-border/50',
+      };
+
+      return (
+        <nav
+          className={`w-full px-4 sm:px-6 py-4 mb-4 rounded-lg ${styleClasses[props.style || 'solid']} ${props.sticky ? 'sticky top-0 z-50' : ''}`}
+          style={{
+            backgroundColor: props.style === 'solid' ? props.backgroundColor : undefined,
+            color: props.textColor,
+          }}
+        >
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              {props.logoType === 'image' && props.logoImage ? (
+                <img src={props.logoImage} alt="Logo" className="h-8 w-auto object-contain" />
+              ) : (
+                <span className="text-xl font-bold">{props.logoText || 'Logo'}</span>
+              )}
+            </div>
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center gap-6">
+              {props.menuItems?.map((item: any) => (
+                <a
+                  key={item.id}
+                  href={item.url || '#'}
+                  className="text-sm font-medium opacity-80 hover:opacity-100 transition-opacity"
+                >
+                  {item.label}
+                </a>
+              ))}
+              {props.ctaButton?.enabled && (
+                <a
+                  href={props.ctaButton.url || '#'}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  {props.ctaButton.text || 'Get Started'}
+                </a>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2 rounded-lg hover:bg-muted/50"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? '✕' : '☰'}
+            </button>
+          </div>
+
+          {/* Mobile Menu */}
+          {mobileOpen && (
+            <div className="md:hidden mt-4 pt-4 border-t border-border/50 space-y-2">
+              {props.menuItems?.map((item: any) => (
+                <a
+                  key={item.id}
+                  href={item.url || '#'}
+                  className="block py-2 text-sm font-medium opacity-80 hover:opacity-100"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
+                </a>
+              ))}
+              {props.ctaButton?.enabled && (
+                <a
+                  href={props.ctaButton.url || '#'}
+                  className="block w-full text-center py-2 px-4 rounded-lg text-sm font-medium text-white mt-2"
+                  style={{ backgroundColor: primaryColor }}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {props.ctaButton.text || 'Get Started'}
+                </a>
+              )}
+            </div>
+          )}
+        </nav>
+      );
+    }
+
+    case 'footer': {
+      const socialIcons: Record<string, string> = {
+        twitter: '𝕏',
+        facebook: 'f',
+        instagram: '📷',
+        linkedin: 'in',
+        youtube: '▶',
+        github: '⌂',
+      };
+
+      return (
+        <footer
+          className="w-full px-6 py-8 mt-8 rounded-lg"
+          style={{
+            backgroundColor: props.backgroundColor || '#111827',
+            color: props.textColor || '#9ca3af',
+          }}
+        >
+          <div className="max-w-6xl mx-auto">
+            {props.style === 'columns' && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                {/* Logo Column */}
+                <div>
+                  {props.logoType === 'image' && props.logoImage ? (
+                    <img src={props.logoImage} alt="Logo" className="h-8 w-auto mb-3" />
+                  ) : (
+                    <span className="text-lg font-bold text-white">{props.logoText || 'Logo'}</span>
+                  )}
+                  {props.tagline && <p className="text-sm mt-2">{props.tagline}</p>}
+                </div>
+                
+                {/* Link Columns */}
+                {props.columns?.map((col: any) => (
+                  <div key={col.id}>
+                    <h4 className="font-semibold text-white mb-3">{col.title}</h4>
+                    <ul className="space-y-2">
+                      {col.links?.map((link: any) => (
+                        <li key={link.id}>
+                          <a href={link.url || '#'} className="text-sm hover:text-white transition-colors">
+                            {link.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Simple/Centered Footer */}
+            {(props.style === 'simple' || props.style === 'centered') && (
+              <div className={`${props.style === 'centered' ? 'text-center' : 'flex justify-between items-center'} mb-4`}>
+                <div>
+                  {props.logoType === 'image' && props.logoImage ? (
+                    <img src={props.logoImage} alt="Logo" className="h-8 w-auto" />
+                  ) : (
+                    <span className="text-lg font-bold text-white">{props.logoText || 'Logo'}</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Socials */}
+            {props.showSocials && props.socials?.filter((s: any) => s.enabled).length > 0 && (
+              <div className={`flex gap-4 ${props.style === 'centered' ? 'justify-center' : ''} mb-4`}>
+                {props.socials?.filter((s: any) => s.enabled).map((social: any) => (
+                  <a
+                    key={social.platform}
+                    href={social.url || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    {socialIcons[social.platform] || social.platform[0].toUpperCase()}
+                  </a>
+                ))}
+              </div>
+            )}
+
+            {/* Copyright */}
+            <div className={`pt-4 border-t border-white/10 text-sm ${props.style === 'centered' ? 'text-center' : ''}`}>
+              {props.copyrightText || `© ${new Date().getFullYear()} All rights reserved.`}
+            </div>
+          </div>
+        </footer>
+      );
+    }
 
     default:
       return null;
