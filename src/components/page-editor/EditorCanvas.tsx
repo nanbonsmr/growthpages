@@ -9,7 +9,6 @@ interface EditorCanvasProps {
   settings: PageSettings;
   selectedBlockId: string | null;
   viewMode: 'desktop' | 'mobile';
-  layoutMode: 'flow' | 'free';
   onSelectBlock: (id: string | null) => void;
   onDeleteBlock: (id: string) => void;
   onUpdateBlock: (id: string, props: Record<string, any>) => void;
@@ -23,7 +22,6 @@ export function EditorCanvas({
   settings,
   selectedBlockId,
   viewMode,
-  layoutMode,
   onSelectBlock,
   onDeleteBlock,
   onUpdateBlock,
@@ -82,9 +80,8 @@ export function EditorCanvas({
           <div
             ref={combineRefs}
             className={cn(
-              'min-h-[600px] rounded-xl shadow-2xl overflow-hidden transition-all',
-              isOver && 'ring-2 ring-primary ring-offset-2',
-              layoutMode === 'free' && 'relative'
+              'min-h-[600px] rounded-xl shadow-2xl overflow-hidden transition-all relative',
+              isOver && 'ring-2 ring-primary ring-offset-2'
             )}
             style={{
               ...getBackgroundStyle(),
@@ -92,7 +89,7 @@ export function EditorCanvas({
             }}
             onClick={() => onSelectBlock(null)}
           >
-            {/* Flow Layout - now with free positioning */}
+            {/* Flow Layout with free positioning */}
               <div className="relative w-full min-h-[600px]">
                 {blocks.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-[400px] text-center">

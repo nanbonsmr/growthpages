@@ -37,7 +37,6 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
   );
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
-  const [layoutMode, setLayoutMode] = useState<'flow' | 'free'>('free');
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -246,14 +245,12 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
       <EditorToolbar
         slug={settings.slug}
         viewMode={viewMode}
-        layoutMode={layoutMode}
         isSaving={isSaving}
         canUndo={historyIndex > 0}
         canRedo={historyIndex < history.length - 1}
         templates={PAGE_TEMPLATES}
         onSlugChange={(slug) => handleUpdateSettings({ slug })}
         onViewModeChange={setViewMode}
-        onLayoutModeChange={setLayoutMode}
         onSave={handleSave}
         onPublish={handlePublish}
         onPreview={handlePreview}
@@ -276,7 +273,6 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
             settings={settings}
             selectedBlockId={selectedBlockId}
             viewMode={viewMode}
-            layoutMode={layoutMode}
             onSelectBlock={setSelectedBlockId}
             onDeleteBlock={handleDeleteBlock}
             onUpdateBlock={handleUpdateBlock}

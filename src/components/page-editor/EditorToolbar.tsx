@@ -22,8 +22,6 @@ import {
   Share2,
   Copy,
   ExternalLink,
-  LayoutGrid,
-  Rows3,
 } from 'lucide-react';
 import { PageTemplate } from './templates';
 import { cn } from '@/lib/utils';
@@ -33,14 +31,12 @@ import { useToast } from '@/hooks/use-toast';
 interface EditorToolbarProps {
   slug: string;
   viewMode: 'desktop' | 'mobile';
-  layoutMode: 'flow' | 'free';
   isSaving: boolean;
   canUndo: boolean;
   canRedo: boolean;
   templates: PageTemplate[];
   onSlugChange: (slug: string) => void;
   onViewModeChange: (mode: 'desktop' | 'mobile') => void;
-  onLayoutModeChange: (mode: 'flow' | 'free') => void;
   onSave: () => void;
   onPublish: () => void;
   onPreview: () => void;
@@ -52,14 +48,12 @@ interface EditorToolbarProps {
 export function EditorToolbar({
   slug,
   viewMode,
-  layoutMode,
   isSaving,
   canUndo,
   canRedo,
   templates,
   onSlugChange,
   onViewModeChange,
-  onLayoutModeChange,
   onSave,
   onPublish,
   onPreview,
@@ -189,36 +183,6 @@ export function EditorToolbar({
           >
             <Smartphone className="h-4 w-4" />
             Mobile
-          </Button>
-        </div>
-
-        {/* Layout Mode Toggle */}
-        <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-          <Button
-            variant={layoutMode === 'flow' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => onLayoutModeChange('flow')}
-            className={cn(
-              'gap-2',
-              layoutMode === 'flow' && 'shadow-sm'
-            )}
-            title="Stack elements vertically"
-          >
-            <Rows3 className="h-4 w-4" />
-            Flow
-          </Button>
-          <Button
-            variant={layoutMode === 'free' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => onLayoutModeChange('free')}
-            className={cn(
-              'gap-2',
-              layoutMode === 'free' && 'shadow-sm'
-            )}
-            title="Position elements freely"
-          >
-            <LayoutGrid className="h-4 w-4" />
-            Free
           </Button>
         </div>
       </div>
