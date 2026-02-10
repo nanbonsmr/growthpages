@@ -254,16 +254,16 @@ export default function PublicSignupPage() {
 
     return (
       <div
-        className="min-h-screen"
+        className="min-h-screen scroll-smooth"
         style={{
           ...getBackgroundStyle(settings),
           fontFamily: settings?.fontFamily || 'Inter',
         }}
       >
-        <div className={`mx-auto px-4 sm:px-6 py-8 ${maxWidthClasses[settings?.maxWidth || 'lg']}`}>
-          {blocks.map((block) => (
+      <div className={`mx-auto px-4 sm:px-6 py-8 ${maxWidthClasses[settings?.maxWidth || 'lg']} scroll-smooth`}>
+          {blocks.map((block, index) => (
+            <div key={block.id} id={`section-${block.type}-${index}`} className="scroll-mt-20">
             <BlockRenderer
-              key={block.id}
               block={block}
               formData={formData}
               setFormData={setFormData}
@@ -273,6 +273,7 @@ export default function PublicSignupPage() {
               onSuccessMessage={setSuccessMessage}
               pageId={page.id}
             />
+            </div>
           ))}
         </div>
 
@@ -845,15 +846,23 @@ function BlockRenderer({
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-6">
-              {props.menuItems?.map((item: any) => (
-                <a
-                  key={item.id}
-                  href={item.url || '#'}
-                  className="text-sm font-medium opacity-80 hover:opacity-100 transition-opacity"
-                >
-                  {item.label}
-                </a>
-              ))}
+              {props.menuItems?.map((item: any) => {
+                const isAnchor = item.url?.startsWith('#');
+                return (
+                  <a
+                    key={item.id}
+                    href={item.url || '#'}
+                    className="text-sm font-medium opacity-80 hover:opacity-100 transition-opacity"
+                    onClick={isAnchor ? (e: React.MouseEvent) => {
+                      e.preventDefault();
+                      const target = document.querySelector(item.url);
+                      target?.scrollIntoView({ behavior: 'smooth' });
+                    } : undefined}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
               {props.ctaButton?.enabled && (
                 <a
                   href={props.ctaButton.url || '#'}
@@ -877,16 +886,26 @@ function BlockRenderer({
           {/* Mobile Menu */}
           {mobileOpen && (
             <div className="md:hidden mt-4 pt-4 border-t border-border/50 space-y-2">
-              {props.menuItems?.map((item: any) => (
-                <a
-                  key={item.id}
-                  href={item.url || '#'}
-                  className="block py-2 text-sm font-medium opacity-80 hover:opacity-100"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {item.label}
-                </a>
-              ))}
+              {props.menuItems?.map((item: any) => {
+                const isAnchor = item.url?.startsWith('#');
+                return (
+                  <a
+                    key={item.id}
+                    href={item.url || '#'}
+                    className="block py-2 text-sm font-medium opacity-80 hover:opacity-100"
+                    onClick={(e: React.MouseEvent) => {
+                      setMobileOpen(false);
+                      if (isAnchor) {
+                        e.preventDefault();
+                        const target = document.querySelector(item.url);
+                        target?.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
               {props.ctaButton?.enabled && (
                 <a
                   href={props.ctaButton.url || '#'}
