@@ -1378,12 +1378,39 @@ function BlockSettings({ block, blocks, onUpdate }: BlockSettingsProps) {
                 </div>
                 <div>
                   <Label>Button URL</Label>
-                  <Input
-                    value={props.ctaButton?.url || ''}
-                    onChange={(e) => onUpdate({ ctaButton: { ...props.ctaButton, url: e.target.value } })}
-                    placeholder="#signup or https://..."
-                    className="mt-1"
-                  />
+                  <Select
+                    value={props.ctaButton?.url || '#'}
+                    onValueChange={(v) => {
+                      onUpdate({ ctaButton: { ...props.ctaButton, url: v } });
+                    }}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Choose section..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {blocks
+                        .filter((b) => b.id !== block.id)
+                        .map((b) => {
+                          const sectionId = `#section-${b.type}-${blocks.indexOf(b)}`;
+                          const def = BLOCK_DEFINITIONS.find((d) => d.type === b.type);
+                          const label = (b.props as any)?.headline || (b.props as any)?.text?.slice(0, 30) || def?.label || b.type;
+                          return (
+                            <SelectItem key={b.id} value={sectionId}>
+                              {def?.label || b.type}: {label !== def?.label ? label : `Section ${blocks.indexOf(b) + 1}`}
+                            </SelectItem>
+                          );
+                        })}
+                      <SelectItem value="custom">Custom URL...</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {props.ctaButton?.url === 'custom' || (!props.ctaButton?.url?.startsWith('#section-') && props.ctaButton?.url !== '#' && props.ctaButton?.url !== 'custom' && props.ctaButton?.url) ? (
+                    <Input
+                      value={props.ctaButton?.url === 'custom' ? '' : (props.ctaButton?.url || '')}
+                      onChange={(e) => onUpdate({ ctaButton: { ...props.ctaButton, url: e.target.value } })}
+                      placeholder="https://... or #anchor"
+                      className="mt-1"
+                    />
+                  ) : null}
                 </div>
               </>
             )}
