@@ -11,7 +11,7 @@ interface EditorCanvasProps {
   blocks: Block[];
   settings: PageSettings;
   selectedBlockId: string | null;
-  viewMode: 'desktop' | 'mobile';
+  viewMode: 'desktop' | 'tablet' | 'mobile';
   onSelectBlock: (id: string | null) => void;
   onDeleteBlock: (id: string) => void;
   onUpdateBlock: (id: string, props: Record<string, any>) => void;
@@ -61,7 +61,7 @@ export function EditorCanvas({
         <div
           className={cn(
             'transition-all duration-300',
-            viewMode === 'mobile' ? 'w-[375px]' : 'w-full max-w-4xl'
+            viewMode === 'mobile' ? 'w-[375px]' : viewMode === 'tablet' ? 'w-[768px]' : 'w-full max-w-4xl'
           )}
         >
           {/* Canvas Container */}
