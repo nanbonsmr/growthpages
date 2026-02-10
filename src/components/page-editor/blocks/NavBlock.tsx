@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Block } from '../types';
 import { cn } from '@/lib/utils';
 import { Menu, X } from 'lucide-react';
@@ -12,6 +12,7 @@ interface NavBlockProps {
 
 export function NavBlock({ block, isSelected, isPreview, onUpdate }: NavBlockProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   
   const props = block.props as {
     logoType: 'text' | 'image';
@@ -26,6 +27,14 @@ export function NavBlock({ block, isSelected, isPreview, onUpdate }: NavBlockPro
     textColor: string;
   };
 
+  useEffect(() => {
+    if (!isPreview || !props.sticky) return;
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isPreview, props.sticky]);
+
   const styleClasses = {
     transparent: 'bg-transparent',
     solid: 'bg-background shadow-sm',
@@ -38,36 +47,35 @@ export function NavBlock({ block, isSelected, isPreview, onUpdate }: NavBlockPro
       return;
     }
     
-    // Close mobile menu when navigating
     setMobileMenuOpen(false);
     
-    // Handle different URL types
     if (url.startsWith('#')) {
-      // Anchor link - scroll to element
       e.preventDefault();
       const element = document.querySelector(url);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     } else if (url.startsWith('http') || url.startsWith('https')) {
-      // External link - open in new tab
       e.preventDefault();
       window.open(url, '_blank', 'noopener,noreferrer');
     }
-    // For relative links, let the default behavior happen
   };
+
+  const isSticky = isPreview && props.sticky;
+  const navScrolled = isSticky && scrolled;
 
   return (
     <nav
       className={cn(
-        'w-full px-4 sm:px-6 py-4 z-50',
-        styleClasses[props.style || 'solid'],
+        'w-full px-4 sm:px-6 py-4 z-50 transition-all duration-300',
+        navScrolled
+          ? 'bg-background/95 backdrop-blur-md shadow-md border-b border-border/30'
+          : styleClasses[props.style || 'solid'],
         isSelected && !isPreview && 'ring-2 ring-primary ring-offset-2 rounded-lg',
-        // Apply sticky positioning in preview mode
-        isPreview && props.sticky && 'sticky top-0 left-0 right-0'
+        isSticky && 'sticky top-0 left-0 right-0'
       )}
       style={{
-        backgroundColor: props.style === 'solid' ? props.backgroundColor : undefined,
+        backgroundColor: navScrolled ? undefined : (props.style === 'solid' ? props.backgroundColor : undefined),
         color: props.textColor,
       }}
     >
