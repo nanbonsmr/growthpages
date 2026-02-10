@@ -304,6 +304,7 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
 
         <SettingsPanel
           selectedBlock={selectedBlock}
+          blocks={blocks}
           settings={settings}
           onUpdateBlock={(props) => {
             if (selectedBlockId) {
