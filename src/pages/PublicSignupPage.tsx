@@ -828,96 +828,126 @@ function BlockRenderer({
 
       return (
         <nav
-          className={`w-full px-4 sm:px-6 py-4 mb-4 rounded-lg ${styleClasses[props.style || 'solid']} ${props.sticky ? 'sticky top-0 z-50' : ''}`}
+          className={`w-full px-4 sm:px-6 py-3 sm:py-4 mb-4 rounded-lg ${styleClasses[props.style || 'solid']} ${props.sticky ? 'sticky top-0 z-50' : ''}`}
           style={{
             backgroundColor: props.style === 'solid' ? props.backgroundColor : undefined,
             color: props.textColor,
           }}
         >
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              {props.logoType === 'image' && props.logoImage ? (
-                <img src={props.logoImage} alt="Logo" className="h-8 w-auto object-contain" />
-              ) : (
-                <span className="text-xl font-bold">{props.logoText || 'Logo'}</span>
-              )}
-            </div>
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between">
+              {/* Logo */}
+              <div className="flex-shrink-0">
+                {props.logoType === 'image' && props.logoImage ? (
+                  <img src={props.logoImage} alt="Logo" className="h-7 sm:h-8 w-auto object-contain" />
+                ) : (
+                  <span className="text-lg sm:text-xl font-bold">{props.logoText || 'Logo'}</span>
+                )}
+              </div>
 
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-6">
-              {props.menuItems?.map((item: any) => {
-                const isAnchor = item.url?.startsWith('#');
-                return (
-                  <a
-                    key={item.id}
-                    href={item.url || '#'}
-                    className="text-sm font-medium opacity-80 hover:opacity-100 transition-opacity"
-                    onClick={isAnchor ? (e: React.MouseEvent) => {
-                      e.preventDefault();
-                      const target = document.querySelector(item.url);
-                      target?.scrollIntoView({ behavior: 'smooth' });
-                    } : undefined}
-                  >
-                    {item.label}
-                  </a>
-                );
-              })}
-              {props.ctaButton?.enabled && (
-                <a
-                  href={props.ctaButton.url || '#'}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  {props.ctaButton.text || 'Get Started'}
-                </a>
-              )}
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2 rounded-lg hover:bg-muted/50"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              {mobileOpen ? '✕' : '☰'}
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileOpen && (
-            <div className="md:hidden mt-4 pt-4 border-t border-border/50 space-y-2">
-              {props.menuItems?.map((item: any) => {
-                const isAnchor = item.url?.startsWith('#');
-                return (
-                  <a
-                    key={item.id}
-                    href={item.url || '#'}
-                    className="block py-2 text-sm font-medium opacity-80 hover:opacity-100"
-                    onClick={(e: React.MouseEvent) => {
-                      setMobileOpen(false);
-                      if (isAnchor) {
+              {/* Desktop Menu */}
+              <div className="hidden md:flex items-center gap-6">
+                {props.menuItems?.map((item: any) => {
+                  const isAnchor = item.url?.startsWith('#');
+                  return (
+                    <a
+                      key={item.id}
+                      href={item.url || '#'}
+                      className="text-sm font-medium opacity-80 hover:opacity-100 transition-opacity"
+                      onClick={isAnchor ? (e: React.MouseEvent) => {
                         e.preventDefault();
                         const target = document.querySelector(item.url);
                         target?.scrollIntoView({ behavior: 'smooth' });
+                      } : undefined}
+                    >
+                      {item.label}
+                    </a>
+                  );
+                })}
+                {props.ctaButton?.enabled && (
+                  <a
+                    href={props.ctaButton.url || '#'}
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: primaryColor }}
+                    onClick={props.ctaButton.url?.startsWith('#') ? (e: React.MouseEvent) => {
+                      e.preventDefault();
+                      const target = document.querySelector(props.ctaButton.url);
+                      target?.scrollIntoView({ behavior: 'smooth' });
+                    } : undefined}
+                  >
+                    {props.ctaButton.text || 'Get Started'}
+                  </a>
+                )}
+              </div>
+
+              {/* Mobile Hamburger Button */}
+              <button
+                className="md:hidden p-2 rounded-lg hover:bg-muted/50 active:scale-95 transition-all duration-200"
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={mobileOpen}
+              >
+                <div className="relative w-5 h-5 flex items-center justify-center">
+                  <span className={`absolute w-5 h-0.5 rounded-full transition-all duration-300 ${mobileOpen ? 'rotate-45 bg-current' : '-translate-y-1.5 bg-current'}`} />
+                  <span className={`absolute w-5 h-0.5 rounded-full bg-current transition-all duration-300 ${mobileOpen ? 'opacity-0 scale-0' : 'opacity-100'}`} />
+                  <span className={`absolute w-5 h-0.5 rounded-full transition-all duration-300 ${mobileOpen ? '-rotate-45 bg-current' : 'translate-y-1.5 bg-current'}`} />
+                </div>
+              </button>
+            </div>
+
+            {/* Mobile Menu - Animated */}
+            <div
+              className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}
+            >
+              <div className="pt-4 border-t border-border/50 space-y-1">
+                {props.menuItems?.map((item: any, index: number) => {
+                  const isAnchor = item.url?.startsWith('#');
+                  return (
+                    <a
+                      key={item.id}
+                      href={item.url || '#'}
+                      className={`block py-3 px-3 rounded-lg text-sm font-medium opacity-80 hover:opacity-100 hover:bg-muted/50 transition-all duration-200 ${mobileOpen ? 'translate-x-0' : '-translate-x-4'}`}
+                      style={{ transitionDelay: mobileOpen ? `${index * 50}ms` : '0ms' }}
+                      onClick={(e: React.MouseEvent) => {
+                        setMobileOpen(false);
+                        if (isAnchor) {
+                          e.preventDefault();
+                          setTimeout(() => {
+                            const target = document.querySelector(item.url);
+                            target?.scrollIntoView({ behavior: 'smooth' });
+                          }, 300);
+                        }
+                      }}
+                    >
+                      {item.label}
+                    </a>
+                  );
+                })}
+                {props.ctaButton?.enabled && (
+                  <a
+                    href={props.ctaButton.url || '#'}
+                    className={`block w-full text-center py-3 px-4 rounded-lg text-sm font-medium text-white mt-2 active:scale-[0.98] transition-all duration-200 ${mobileOpen ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`}
+                    style={{
+                      backgroundColor: primaryColor,
+                      transitionDelay: mobileOpen ? `${(props.menuItems?.length || 0) * 50 + 50}ms` : '0ms',
+                    }}
+                    onClick={(e: React.MouseEvent) => {
+                      setMobileOpen(false);
+                      if (props.ctaButton.url?.startsWith('#')) {
+                        e.preventDefault();
+                        setTimeout(() => {
+                          const target = document.querySelector(props.ctaButton.url);
+                          target?.scrollIntoView({ behavior: 'smooth' });
+                        }, 300);
                       }
                     }}
                   >
-                    {item.label}
+                    {props.ctaButton.text || 'Get Started'}
                   </a>
-                );
-              })}
-              {props.ctaButton?.enabled && (
-                <a
-                  href={props.ctaButton.url || '#'}
-                  className="block w-full text-center py-2 px-4 rounded-lg text-sm font-medium text-white mt-2"
-                  style={{ backgroundColor: primaryColor }}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {props.ctaButton.text || 'Get Started'}
-                </a>
-              )}
+                )}
+              </div>
             </div>
-          )}
+          </div>
         </nav>
       );
     }
