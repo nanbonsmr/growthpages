@@ -407,10 +407,11 @@ function BlockRenderer({
   switch (block.type) {
     case 'heading': {
       const Tag = props.level || 'h1';
+      const mobileFontSize = Math.max(Math.round((props.fontSize || 36) * 0.65), 18);
       return (
         <Tag
           style={{
-            fontSize: `${props.fontSize || 36}px`,
+            fontSize: `clamp(${mobileFontSize}px, 5vw, ${props.fontSize || 36}px)`,
             fontWeight: props.fontWeight === 'normal' ? 400 : props.fontWeight === 'medium' ? 500 : props.fontWeight === 'semibold' ? 600 : 700,
             textAlign: props.alignment || 'center',
             color: props.color || '#000000',
@@ -449,9 +450,11 @@ function BlockRenderer({
           <img
             src={props.src}
             alt={props.alt || ''}
+            className="max-w-full"
             style={{
-              width: `${props.width || 200}px`,
-              height: `${props.height || 200}px`,
+              width: `min(${props.width || 200}px, 100%)`,
+              height: 'auto',
+              aspectRatio: `${props.width || 200} / ${props.height || 200}`,
               borderRadius: `${props.borderRadius || 8}px`,
               objectFit: 'cover',
             }}
@@ -624,16 +627,16 @@ function BlockRenderer({
       return (
         <div className="text-center mb-4">
           {props.label && <p className="text-muted-foreground text-sm mb-3">{props.label}</p>}
-          <div className="flex justify-center gap-3">
+          <div className="flex justify-center gap-2 sm:gap-3">
             {units.map((unit) => (
               <div key={unit.key} className="flex flex-col items-center">
                 <div
-                  className="text-3xl font-bold w-16 h-16 flex items-center justify-center rounded-lg"
+                  className="text-xl sm:text-3xl font-bold w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-lg"
                   style={{ backgroundColor: `${props.color || primaryColor}20`, color: props.color || primaryColor }}
                 >
                   {String(timeLeft[unit.key as keyof typeof timeLeft]).padStart(2, '0')}
                 </div>
-                <span className="text-xs text-muted-foreground mt-1">{unit.label}</span>
+                <span className="text-[10px] sm:text-xs text-muted-foreground mt-1">{unit.label}</span>
               </div>
             ))}
           </div>
@@ -715,19 +718,19 @@ function BlockRenderer({
 
     case 'pricing': {
       return (
-        <div className={`mb-4 grid gap-6 ${props.columns === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'} max-w-5xl mx-auto`}>
+        <div className={`mb-4 grid gap-4 sm:gap-6 grid-cols-1 ${props.columns === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3'} max-w-5xl mx-auto`}>
           {props.tiers?.map((tier: any) => (
             <div
               key={tier.id}
-              className={`p-6 rounded-xl border-2 ${tier.highlighted ? 'border-primary shadow-lg scale-105' : 'border-border'}`}
+              className={`p-5 sm:p-6 rounded-xl border-2 ${tier.highlighted ? 'border-primary shadow-lg sm:scale-105' : 'border-border'}`}
               style={tier.highlighted ? { borderColor: props.highlightColor || primaryColor } : {}}
             >
-              <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
+              <h3 className="text-lg sm:text-xl font-bold mb-2">{tier.name}</h3>
               <div className="mb-4">
-                <span className="text-3xl font-bold">{tier.price}</span>
+                <span className="text-2xl sm:text-3xl font-bold">{tier.price}</span>
                 {tier.period && <span className="text-muted-foreground">/{tier.period}</span>}
               </div>
-              <p className="text-muted-foreground mb-4">{tier.description}</p>
+              <p className="text-muted-foreground text-sm mb-4">{tier.description}</p>
               <ul className="space-y-2 mb-6">
                 {tier.features?.map((feature: string, idx: number) => (
                   <li key={idx} className="flex items-center gap-2 text-sm">
@@ -768,7 +771,7 @@ function BlockRenderer({
       };
 
       return (
-        <div className={`mb-4 grid gap-6 ${props.columns === 2 ? 'md:grid-cols-2' : props.columns === 4 ? 'md:grid-cols-4' : 'md:grid-cols-3'} max-w-5xl mx-auto`}>
+        <div className={`mb-4 grid gap-4 sm:gap-6 grid-cols-1 ${props.columns === 2 ? 'sm:grid-cols-2' : props.columns === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3'} max-w-5xl mx-auto`}>
           {props.features?.map((feature: any) => (
             <div key={feature.id} className={`p-4 ${props.style === 'cards' ? 'border rounded-lg' : ''}`}>
               {props.showIcons && (
@@ -811,15 +814,15 @@ function BlockRenderer({
             />
           )}
           <div
-            className={`relative z-10 px-6 py-12 ${props.alignment === 'left' ? 'text-left' : props.alignment === 'right' ? 'text-right' : 'text-center'}`}
+            className={`relative z-10 px-4 sm:px-6 py-8 sm:py-12 w-full ${props.alignment === 'left' ? 'text-left' : props.alignment === 'right' ? 'text-right' : 'text-center'}`}
             style={{ color: props.textColor === 'light' ? '#fff' : '#000' }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{props.headline}</h1>
-            <p className="text-lg md:text-xl opacity-90 mb-6 max-w-2xl mx-auto">{props.subheadline}</p>
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">{props.headline}</h1>
+            <p className="text-base sm:text-lg md:text-xl opacity-90 mb-4 sm:mb-6 max-w-2xl mx-auto">{props.subheadline}</p>
             {props.buttonText && (
               <a
                 href={props.buttonLink || '#'}
-                className="inline-block px-6 py-3 rounded-lg font-medium text-white transition-opacity hover:opacity-90"
+                className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-medium text-white text-sm sm:text-base transition-opacity hover:opacity-90"
                 style={{ backgroundColor: primaryColor }}
               >
                 {props.buttonText}
@@ -984,7 +987,7 @@ function BlockRenderer({
 
       return (
         <footer
-          className="w-full px-6 py-8 mt-8 rounded-lg"
+          className="w-full px-4 sm:px-6 py-6 sm:py-8 mt-8 rounded-lg"
           style={{
             backgroundColor: props.backgroundColor || '#111827',
             color: props.textColor || '#9ca3af',
@@ -992,7 +995,7 @@ function BlockRenderer({
         >
           <div className="max-w-6xl mx-auto">
             {props.style === 'columns' && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8">
                 {/* Logo Column */}
                 <div>
                   {props.logoType === 'image' && props.logoImage ? (
@@ -1023,7 +1026,7 @@ function BlockRenderer({
 
             {/* Simple/Centered Footer */}
             {(props.style === 'simple' || props.style === 'centered') && (
-              <div className={`${props.style === 'centered' ? 'text-center' : 'flex justify-between items-center'} mb-4`}>
+              <div className={`${props.style === 'centered' ? 'text-center' : 'flex flex-col sm:flex-row justify-between items-center gap-3'} mb-4`}>
                 <div>
                   {props.logoType === 'image' && props.logoImage ? (
                     <img src={props.logoImage} alt="Logo" className="h-8 w-auto" />
