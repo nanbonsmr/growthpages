@@ -14,6 +14,7 @@ import {
   Undo2,
   Redo2,
   Monitor,
+  Tablet,
   Smartphone,
   Loader2,
   ArrowLeft,
@@ -29,13 +30,13 @@ import { useToast } from '@/hooks/use-toast';
 
 interface EditorToolbarProps {
   slug: string;
-  viewMode: 'desktop' | 'mobile';
+  viewMode: 'desktop' | 'tablet' | 'mobile';
   isSaving: boolean;
   canUndo: boolean;
   canRedo: boolean;
   templates: PageTemplate[];
   onSlugChange: (slug: string) => void;
-  onViewModeChange: (mode: 'desktop' | 'mobile') => void;
+  onViewModeChange: (mode: 'desktop' | 'tablet' | 'mobile') => void;
   onSave: () => void;
   onPublish: () => void;
   onPreview: () => void;
@@ -140,27 +141,30 @@ export function EditorToolbar({
         <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
           <Button
             variant={viewMode === 'desktop' ? 'default' : 'ghost'}
-            size="sm"
+            size="icon"
             onClick={() => onViewModeChange('desktop')}
-            className={cn(
-              'gap-2',
-              viewMode === 'desktop' && 'shadow-sm'
-            )}
+            className={cn('h-8 w-8', viewMode === 'desktop' && 'shadow-sm')}
+            title="Desktop"
           >
             <Monitor className="h-4 w-4" />
-            Desktop
+          </Button>
+          <Button
+            variant={viewMode === 'tablet' ? 'default' : 'ghost'}
+            size="icon"
+            onClick={() => onViewModeChange('tablet')}
+            className={cn('h-8 w-8', viewMode === 'tablet' && 'shadow-sm')}
+            title="Tablet"
+          >
+            <Tablet className="h-4 w-4" />
           </Button>
           <Button
             variant={viewMode === 'mobile' ? 'default' : 'ghost'}
-            size="sm"
+            size="icon"
             onClick={() => onViewModeChange('mobile')}
-            className={cn(
-              'gap-2',
-              viewMode === 'mobile' && 'shadow-sm'
-            )}
+            className={cn('h-8 w-8', viewMode === 'mobile' && 'shadow-sm')}
+            title="Mobile"
           >
             <Smartphone className="h-4 w-4" />
-            Mobile
           </Button>
         </div>
       </div>
