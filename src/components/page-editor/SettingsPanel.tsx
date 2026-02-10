@@ -13,6 +13,7 @@ import { ImageUpload } from './ImageUpload';
 
 interface SettingsPanelProps {
   selectedBlock: Block | null;
+  blocks: Block[];
   settings: PageSettings;
   onUpdateBlock: (props: Record<string, any>) => void;
   onUpdateSettings: (settings: Partial<PageSettings>) => void;
@@ -20,6 +21,7 @@ interface SettingsPanelProps {
 
 export function SettingsPanel({
   selectedBlock,
+  blocks,
   settings,
   onUpdateBlock,
   onUpdateSettings,
@@ -54,6 +56,7 @@ export function SettingsPanel({
                   </h3>
                   <BlockSettings
                     block={selectedBlock}
+                    blocks={blocks}
                     onUpdate={onUpdateBlock}
                   />
                 </div>
@@ -81,10 +84,11 @@ export function SettingsPanel({
 
 interface BlockSettingsProps {
   block: Block;
+  blocks: Block[];
   onUpdate: (props: Record<string, any>) => void;
 }
 
-function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
+function BlockSettings({ block, blocks, onUpdate }: BlockSettingsProps) {
   const props = block.props;
 
   switch (block.type) {
@@ -1306,16 +1310,49 @@ function BlockSettings({ block, onUpdate }: BlockSettingsProps) {
                   }}
                   placeholder="Label"
                 />
-                <Input
-                  value={item.url}
-                  onChange={(e) => {
-                    const newItems = props.menuItems.map((i: NavMenuItem) =>
-                      i.id === item.id ? { ...i, url: e.target.value } : i
-                    );
-                    onUpdate({ menuItems: newItems });
-                  }}
-                  placeholder="#section or https://..."
-                />
+                <div>
+                  <Label className="text-xs text-muted-foreground">Link to</Label>
+                  <Select
+                    value={item.url || '#'}
+                    onValueChange={(v) => {
+                      const newItems = props.menuItems.map((i: NavMenuItem) =>
+                        i.id === item.id ? { ...i, url: v } : i
+                      );
+                      onUpdate({ menuItems: newItems });
+                    }}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Choose section..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {blocks
+                        .filter((b) => b.id !== block.id)
+                        .map((b, bIdx) => {
+                          const sectionId = `#section-${b.type}-${blocks.indexOf(b)}`;
+                          const def = BLOCK_DEFINITIONS.find((d) => d.type === b.type);
+                          const label = (b.props as any)?.headline || (b.props as any)?.text?.slice(0, 30) || def?.label || b.type;
+                          return (
+                            <SelectItem key={b.id} value={sectionId}>
+                              {def?.label || b.type}: {label !== def?.label ? label : `Section ${blocks.indexOf(b) + 1}`}
+                            </SelectItem>
+                          );
+                        })}
+                      <SelectItem value="custom">Custom URL...</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {item.url === 'custom' || (!item.url?.startsWith('#section-') && item.url !== '#' && item.url !== 'custom') ? (
+                  <Input
+                    value={item.url === 'custom' ? '' : (item.url || '')}
+                    onChange={(e) => {
+                      const newItems = props.menuItems.map((i: NavMenuItem) =>
+                        i.id === item.id ? { ...i, url: e.target.value } : i
+                      );
+                      onUpdate({ menuItems: newItems });
+                    }}
+                    placeholder="https://... or #anchor"
+                  />
+                ) : null}
               </div>
             ))}
           </div>
