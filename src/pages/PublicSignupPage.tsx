@@ -362,6 +362,17 @@ function BlockRenderer({
   
   // State for mobile nav
   const [mobileOpen, setMobileOpen] = useState(false);
+  
+  // State for scroll-based nav styling
+  const [scrolled, setScrolled] = useState(false);
+  
+  useEffect(() => {
+    if (block.type !== 'nav' || !props.sticky) return;
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [block.type, props.sticky]);
 
   // Countdown effect
   useEffect(() => {
@@ -826,11 +837,20 @@ function BlockRenderer({
         glass: 'bg-background/80 backdrop-blur-md border-b border-border/50',
       };
 
+      const isSticky = !!props.sticky;
+      const navScrolled = isSticky && scrolled;
+
       return (
         <nav
-          className={`w-full px-4 sm:px-6 py-3 sm:py-4 mb-4 rounded-lg ${styleClasses[props.style || 'solid']} ${props.sticky ? 'sticky top-0 z-50' : ''}`}
+          className={`w-full px-4 sm:px-6 py-3 sm:py-4 mb-4 rounded-lg transition-all duration-300 ${
+            navScrolled
+              ? 'bg-background/95 backdrop-blur-md shadow-md border-b border-border/30'
+              : styleClasses[props.style || 'solid']
+          } ${isSticky ? 'sticky top-0 z-50' : ''}`}
           style={{
-            backgroundColor: props.style === 'solid' ? props.backgroundColor : undefined,
+            backgroundColor: navScrolled
+              ? undefined
+              : props.style === 'solid' ? props.backgroundColor : undefined,
             color: props.textColor,
           }}
         >
