@@ -61,7 +61,7 @@ export function SortableBlock({
     marginLeft: `${offsetX}px`,
     marginTop: `${offsetY}px`,
     width: `${customWidth}%`,
-    ...(customHeight > 0 ? { minHeight: `${customHeight}px` } : {}),
+    ...(customHeight > 0 ? { height: `${customHeight}px`, overflow: 'hidden' } : {}),
   };
 
   const handleMoveStart = useCallback((e: React.MouseEvent) => {
@@ -99,7 +99,7 @@ export function SortableBlock({
       const containerWidth = (e.target as HTMLElement)?.closest('.min-h-\\[600px\\]')?.clientWidth || 800;
       const deltaPercent = (deltaX / containerWidth) * 100;
       const newWidth = Math.max(20, Math.min(100, resizeStart.width + deltaPercent));
-      const newHeight = Math.max(0, resizeStart.height + deltaY);
+      const newHeight = Math.max(40, resizeStart.height + deltaY);
       onPositionChange({
         ...position,
         width: newWidth,
@@ -228,7 +228,7 @@ export function SortableBlock({
         </div>
 
         {/* Block Content */}
-        <div className="p-3">
+        <div className={cn("p-3", customHeight > 0 && "h-full overflow-auto")}>
           <BlockRenderer
             block={block}
             isSelected={isSelected}
