@@ -19,6 +19,13 @@ import {
   PanelTop,
   PanelBottom,
   MessageSquare,
+  List,
+  TextQuote,
+  MapPin,
+  BarChart3,
+  Building2,
+  Bell,
+  Code,
 } from 'lucide-react';
 import { BLOCK_DEFINITIONS, BlockDefinition, BlockCategory } from './types';
 import { cn } from '@/lib/utils';
@@ -43,6 +50,13 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   PanelTop,
   PanelBottom,
   MessageSquare,
+  List,
+  TextQuote,
+  MapPin,
+  BarChart3,
+  Building2,
+  Bell,
+  Code,
 };
 
 const categoryLabels: Record<BlockCategory, string> = {

@@ -16,7 +16,14 @@ export type BlockType =
   | 'hero'
   | 'nav'
   | 'footer'
-  | 'contact-form';
+  | 'contact-form'
+  | 'list'
+  | 'blockquote'
+  | 'map'
+  | 'stats'
+  | 'logo-cloud'
+  | 'alert-banner'
+  | 'html-embed';
 
 export type BlockCategory = 'basic' | 'forms' | 'marketing' | 'layout';
 
@@ -267,6 +274,74 @@ export interface ContactFormProps {
   successMessage: string;
   requirePhone: boolean;
   layout: 'stacked' | 'two-column';
+}
+
+export interface ListProps {
+  items: string[];
+  style: 'bullet' | 'numbered' | 'check' | 'none';
+  fontSize: number;
+  color: string;
+  spacing: 'tight' | 'normal' | 'relaxed';
+}
+
+export interface BlockquoteProps {
+  text: string;
+  author: string;
+  style: 'simple' | 'bordered' | 'highlighted';
+  fontSize: number;
+  color: string;
+  accentColor: string;
+}
+
+export interface MapProps {
+  address: string;
+  zoom: number;
+  height: number;
+  borderRadius: number;
+  style: 'roadmap' | 'satellite';
+}
+
+export interface StatItem {
+  id: string;
+  value: string;
+  label: string;
+  prefix: string;
+  suffix: string;
+}
+
+export interface StatsProps {
+  stats: StatItem[];
+  columns: 2 | 3 | 4;
+  style: 'simple' | 'cards' | 'bordered';
+  valueColor: string;
+  valueSize: number;
+}
+
+export interface LogoItem {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
+export interface LogoCloudProps {
+  logos: LogoItem[];
+  columns: 3 | 4 | 5 | 6;
+  grayscale: boolean;
+  title: string;
+  showTitle: boolean;
+}
+
+export interface AlertBannerProps {
+  text: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  icon: boolean;
+  dismissible: boolean;
+  style: 'filled' | 'outlined' | 'subtle';
+}
+
+export interface HtmlEmbedProps {
+  code: string;
+  height: number;
 }
 
 export interface PageSettings {
@@ -640,6 +715,107 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       requirePhone: false,
       layout: 'stacked',
     } as ContactFormProps,
+  },
+  {
+    type: 'list',
+    label: 'List',
+    icon: 'List',
+    category: 'basic',
+    defaultProps: {
+      items: ['First item in the list', 'Second item in the list', 'Third item in the list'],
+      style: 'bullet',
+      fontSize: 16,
+      color: '#333333',
+      spacing: 'normal',
+    } as ListProps,
+  },
+  {
+    type: 'blockquote',
+    label: 'Blockquote',
+    icon: 'TextQuote',
+    category: 'basic',
+    defaultProps: {
+      text: 'The only way to do great work is to love what you do.',
+      author: 'Steve Jobs',
+      style: 'bordered',
+      fontSize: 20,
+      color: '#333333',
+      accentColor: '#7c3aed',
+    } as BlockquoteProps,
+  },
+  {
+    type: 'map',
+    label: 'Map',
+    icon: 'MapPin',
+    category: 'basic',
+    defaultProps: {
+      address: 'New York, NY',
+      zoom: 12,
+      height: 300,
+      borderRadius: 12,
+      style: 'roadmap',
+    } as MapProps,
+  },
+  {
+    type: 'stats',
+    label: 'Stats Counter',
+    icon: 'BarChart3',
+    category: 'marketing',
+    defaultProps: {
+      stats: [
+        { id: '1', value: '10K', label: 'Happy Users', prefix: '', suffix: '+' },
+        { id: '2', value: '99', label: 'Uptime', prefix: '', suffix: '%' },
+        { id: '3', value: '24/7', label: 'Support', prefix: '', suffix: '' },
+        { id: '4', value: '50', label: 'Countries', prefix: '', suffix: '+' },
+      ],
+      columns: 4,
+      style: 'simple',
+      valueColor: '#7c3aed',
+      valueSize: 36,
+    } as StatsProps,
+  },
+  {
+    type: 'logo-cloud',
+    label: 'Logo Cloud',
+    icon: 'Building2',
+    category: 'marketing',
+    defaultProps: {
+      logos: [
+        { id: '1', name: 'Company 1', imageUrl: '' },
+        { id: '2', name: 'Company 2', imageUrl: '' },
+        { id: '3', name: 'Company 3', imageUrl: '' },
+        { id: '4', name: 'Company 4', imageUrl: '' },
+        { id: '5', name: 'Company 5', imageUrl: '' },
+        { id: '6', name: 'Company 6', imageUrl: '' },
+      ],
+      columns: 6,
+      grayscale: true,
+      title: 'Trusted by leading companies',
+      showTitle: true,
+    } as LogoCloudProps,
+  },
+  {
+    type: 'alert-banner',
+    label: 'Alert Banner',
+    icon: 'Bell',
+    category: 'marketing',
+    defaultProps: {
+      text: '🎉 Special offer: Get 50% off for a limited time!',
+      type: 'info',
+      icon: true,
+      dismissible: false,
+      style: 'filled',
+    } as AlertBannerProps,
+  },
+  {
+    type: 'html-embed',
+    label: 'HTML Embed',
+    icon: 'Code',
+    category: 'layout',
+    defaultProps: {
+      code: '<div style="padding: 20px; text-align: center; background: #f3f4f6; border-radius: 8px;"><p>Custom HTML content goes here</p></div>',
+      height: 200,
+    } as HtmlEmbedProps,
   },
 ];
 
