@@ -46,20 +46,22 @@ export function SortableBlock({
   const [isMoving, setIsMoving] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [moveStart, setMoveStart] = useState({ x: 0, y: 0 });
-  const [resizeStart, setResizeStart] = useState({ x: 0, width: 0 });
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
 
   // Default position values
   const position = block.position || { x: 0, y: 0, width: 100, height: 0 };
   const offsetX = position.x || 0;
   const offsetY = position.y || 0;
   const customWidth = position.width || 100; // percentage
+  const customHeight = position.height || 0; // pixels, 0 = auto
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     marginLeft: `${offsetX}px`,
     marginTop: `${offsetY}px`,
     width: `${customWidth}%`,
+    ...(customHeight > 0 ? { minHeight: `${customHeight}px` } : {}),
   };
 
   const handleMoveStart = useCallback((e: React.MouseEvent) => {
@@ -74,9 +76,11 @@ export function SortableBlock({
     e.preventDefault();
     e.stopPropagation();
     setIsResizing(true);
-    setResizeStart({ x: e.clientX, width: customWidth });
+    const blockEl = e.currentTarget.closest('.group') as HTMLElement;
+    const currentHeightPx = blockEl?.getBoundingClientRect().height || 100;
+    setResizeStart({ x: e.clientX, y: e.clientY, width: customWidth, height: customHeight || currentHeightPx });
     onSelect();
-  }, [customWidth, onSelect]);
+  }, [customWidth, customHeight, onSelect]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isMoving && onPositionChange) {
@@ -91,12 +95,15 @@ export function SortableBlock({
 
     if (isResizing && onPositionChange) {
       const deltaX = e.clientX - resizeStart.x;
+      const deltaY = e.clientY - resizeStart.y;
       const containerWidth = (e.target as HTMLElement)?.closest('.min-h-\\[600px\\]')?.clientWidth || 800;
       const deltaPercent = (deltaX / containerWidth) * 100;
       const newWidth = Math.max(20, Math.min(100, resizeStart.width + deltaPercent));
+      const newHeight = Math.max(0, resizeStart.height + deltaY);
       onPositionChange({
         ...position,
         width: newWidth,
+        height: newHeight,
       });
     }
   }, [isMoving, isResizing, moveStart, resizeStart, position, onPositionChange]);
@@ -230,16 +237,16 @@ export function SortableBlock({
           />
         </div>
 
-        {/* Resize Handle */}
+        {/* Resize Handle - SE corner */}
         {isSelected && (
           <div
             onMouseDown={handleResizeStart}
             className={cn(
-              'absolute bottom-1 right-1 w-5 h-5 cursor-ew-resize',
+              'absolute bottom-1 right-1 w-5 h-5 cursor-nwse-resize',
               'bg-primary/80 hover:bg-primary rounded-bl rounded-tr',
               'flex items-center justify-center transition-colors'
             )}
-            title="Resize width"
+            title="Resize"
           >
             <Maximize2 className="h-3 w-3 text-primary-foreground rotate-90" />
           </div>
