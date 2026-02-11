@@ -1063,6 +1063,137 @@ function BlockRenderer({
       );
     }
 
+    case 'list': {
+      const spacingClass = props.spacing === 'tight' ? 'space-y-1' : props.spacing === 'relaxed' ? 'space-y-3' : 'space-y-2';
+      return (
+        <div className={`mb-4 ${spacingClass}`}>
+          {(props.items || []).map((item: string, i: number) => (
+            <div key={i} className="flex items-start gap-2" style={{ fontSize: props.fontSize || 16, color: props.color || '#333' }}>
+              {props.style === 'bullet' && <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-current shrink-0" />}
+              {props.style === 'numbered' && <span className="font-semibold shrink-0">{i + 1}.</span>}
+              {props.style === 'check' && <CheckCircle className="h-5 w-5 shrink-0 mt-0.5 text-green-500" />}
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    case 'blockquote':
+      return (
+        <blockquote
+          className="mb-4 py-2"
+          style={{
+            borderLeft: props.style === 'bordered' ? `4px solid ${props.accentColor || primaryColor}` : 'none',
+            paddingLeft: props.style === 'bordered' ? '1.5rem' : '0',
+            backgroundColor: props.style === 'highlighted' ? `${(props.accentColor || primaryColor)}10` : 'transparent',
+            borderRadius: props.style === 'highlighted' ? '0.5rem' : '0',
+            padding: props.style === 'highlighted' ? '1.5rem' : undefined,
+          }}
+        >
+          <p className="italic leading-relaxed" style={{ fontSize: props.fontSize || 20, color: props.color || '#333' }}>
+            "{props.text}"
+          </p>
+          {props.author && (
+            <p className="mt-3 text-sm font-medium opacity-70" style={{ color: props.color }}>— {props.author}</p>
+          )}
+        </blockquote>
+      );
+
+    case 'map': {
+      const address = encodeURIComponent(props.address || 'New York, NY');
+      const embedUrl = `https://www.google.com/maps?q=${address}&z=${props.zoom || 12}&output=embed`;
+      return (
+        <div className="mb-4">
+          <iframe
+            src={embedUrl}
+            className="w-full border-0"
+            style={{ height: props.height || 300, borderRadius: props.borderRadius || 12 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title={`Map of ${props.address}`}
+          />
+        </div>
+      );
+    }
+
+    case 'stats': {
+      const cols = props.columns || 4;
+      const gridCols = cols === 2 ? 'grid-cols-2' : cols === 3 ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-4';
+      return (
+        <div className={`grid gap-4 sm:gap-6 ${gridCols} mb-4`}>
+          {(props.stats || []).map((stat: any) => (
+            <div
+              key={stat.id}
+              className={`text-center p-4 ${
+                props.style === 'cards' ? 'bg-white/80 rounded-xl shadow-sm border' :
+                props.style === 'bordered' ? 'border-l-2 pl-4 text-left' : ''
+              }`}
+              style={props.style === 'bordered' ? { borderColor: props.valueColor || primaryColor } : {}}
+            >
+              <div className="font-bold leading-none" style={{ fontSize: `clamp(24px, 4vw, ${props.valueSize || 36}px)`, color: props.valueColor || primaryColor }}>
+                {stat.prefix}{stat.value}{stat.suffix}
+              </div>
+              <div className="mt-2 text-sm opacity-70 font-medium">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    case 'logo-cloud': {
+      const cols = props.columns || 6;
+      const gridCols =
+        cols === 3 ? 'grid-cols-3' :
+        cols === 4 ? 'grid-cols-2 sm:grid-cols-4' :
+        cols === 5 ? 'grid-cols-3 sm:grid-cols-5' :
+        'grid-cols-3 sm:grid-cols-6';
+      return (
+        <div className="mb-4 space-y-4">
+          {props.showTitle && props.title && (
+            <p className="text-center text-sm font-medium uppercase tracking-wider opacity-60">{props.title}</p>
+          )}
+          <div className={`grid gap-6 items-center justify-items-center ${gridCols}`}>
+            {(props.logos || []).map((logo: any) => (
+              <div key={logo.id} className={`flex items-center justify-center h-12 w-full ${props.grayscale ? 'opacity-50' : ''}`}>
+                {logo.imageUrl ? (
+                  <img src={logo.imageUrl} alt={logo.name} className={`max-h-10 max-w-full object-contain ${props.grayscale ? 'grayscale' : ''}`} />
+                ) : (
+                  <span className="text-xs font-medium opacity-50">{logo.name}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    case 'alert-banner': {
+      const typeColors: Record<string, { filled: string; outlined: string; subtle: string }> = {
+        info: { filled: 'bg-blue-500 text-white', outlined: 'border-2 border-blue-500 text-blue-700', subtle: 'bg-blue-50 text-blue-700 border border-blue-200' },
+        success: { filled: 'bg-green-500 text-white', outlined: 'border-2 border-green-500 text-green-700', subtle: 'bg-green-50 text-green-700 border border-green-200' },
+        warning: { filled: 'bg-amber-500 text-white', outlined: 'border-2 border-amber-500 text-amber-700', subtle: 'bg-amber-50 text-amber-700 border border-amber-200' },
+        error: { filled: 'bg-red-500 text-white', outlined: 'border-2 border-red-500 text-red-700', subtle: 'bg-red-50 text-red-700 border border-red-200' },
+      };
+      const colors = typeColors[props.type || 'info'];
+      const styleClass = props.style === 'filled' ? colors.filled : props.style === 'outlined' ? colors.outlined : colors.subtle;
+      return (
+        <div className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-4 ${styleClass}`}>
+          <p className="text-sm font-medium flex-1">{props.text}</p>
+        </div>
+      );
+    }
+
+    case 'html-embed':
+      return (
+        <div
+          className="mb-4 w-full overflow-hidden rounded-lg"
+          style={{ minHeight: props.height || 200 }}
+          dangerouslySetInnerHTML={{ __html: props.code || '' }}
+        />
+      );
+
     default:
       return null;
   }

@@ -17,6 +17,13 @@ import { HeroBlock } from './HeroBlock';
 import { NavBlock } from './NavBlock';
 import { FooterBlock } from './FooterBlock';
 import { ContactFormBlock } from './ContactFormBlock';
+import { ListBlock } from './ListBlock';
+import { BlockquoteBlock } from './BlockquoteBlock';
+import { MapBlock } from './MapBlock';
+import { StatsBlock } from './StatsBlock';
+import { LogoCloudBlock } from './LogoCloudBlock';
+import { AlertBannerBlock } from './AlertBannerBlock';
+import { HtmlEmbedBlock } from './HtmlEmbedBlock';
 
 interface BlockRendererProps {
   block: Block;
@@ -70,6 +77,20 @@ export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate, 
       return <FooterBlock props={block.props as any} {...commonProps} />;
     case 'contact-form':
       return <ContactFormBlock props={block.props as any} {...commonProps} pageId={pageId} />;
+    case 'list':
+      return <ListBlock props={block.props as any} {...commonProps} />;
+    case 'blockquote':
+      return <BlockquoteBlock props={block.props as any} {...commonProps} />;
+    case 'map':
+      return <MapBlock props={block.props as any} {...commonProps} />;
+    case 'stats':
+      return <StatsBlock props={block.props as any} {...commonProps} />;
+    case 'logo-cloud':
+      return <LogoCloudBlock props={block.props as any} {...commonProps} />;
+    case 'alert-banner':
+      return <AlertBannerBlock props={block.props as any} {...commonProps} />;
+    case 'html-embed':
+      return <HtmlEmbedBlock props={block.props as any} {...commonProps} />;
     default:
       return (
         <div className="p-4 bg-muted rounded text-muted-foreground text-sm">
