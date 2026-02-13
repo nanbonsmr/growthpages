@@ -1845,6 +1845,308 @@ function BlockSettings({ block, blocks, onUpdate }: BlockSettingsProps) {
         </div>
       );
 
+    case 'list':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Style</Label>
+            <Select value={props.style} onValueChange={(v) => onUpdate({ style: v })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bullet">Bullet</SelectItem>
+                <SelectItem value="numbered">Numbered</SelectItem>
+                <SelectItem value="check">Checkmark</SelectItem>
+                <SelectItem value="none">None</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Font Size: {props.fontSize}px</Label>
+            <Slider value={[props.fontSize || 16]} onValueChange={([v]) => onUpdate({ fontSize: v })} min={12} max={32} step={1} className="mt-2" />
+          </div>
+          <div>
+            <Label>Spacing</Label>
+            <Select value={props.spacing} onValueChange={(v) => onUpdate({ spacing: v })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="tight">Tight</SelectItem>
+                <SelectItem value="normal">Normal</SelectItem>
+                <SelectItem value="relaxed">Relaxed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Color</Label>
+            <Input type="color" value={props.color || '#333333'} onChange={(e) => onUpdate({ color: e.target.value })} className="mt-1 h-10 cursor-pointer" />
+          </div>
+          <div className="space-y-3 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <Label>Items</Label>
+              <Button size="sm" variant="outline" onClick={() => onUpdate({ items: [...(props.items || []), 'New item'] })}>
+                <Plus className="h-4 w-4 mr-1" /> Add
+              </Button>
+            </div>
+            {(props.items || []).map((item: string, idx: number) => (
+              <div key={idx} className="flex gap-1">
+                <Input
+                  value={item}
+                  onChange={(e) => {
+                    const newItems = [...props.items];
+                    newItems[idx] = e.target.value;
+                    onUpdate({ items: newItems });
+                  }}
+                />
+                <Button size="icon" variant="ghost" className="h-8 w-8 shrink-0" onClick={() => onUpdate({ items: props.items.filter((_: string, i: number) => i !== idx) })}>
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case 'blockquote':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Quote Text</Label>
+            <Textarea value={props.text} onChange={(e) => onUpdate({ text: e.target.value })} className="mt-1" rows={3} />
+          </div>
+          <div>
+            <Label>Author</Label>
+            <Input value={props.author} onChange={(e) => onUpdate({ author: e.target.value })} className="mt-1" />
+          </div>
+          <div>
+            <Label>Style</Label>
+            <Select value={props.style} onValueChange={(v) => onUpdate({ style: v })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="simple">Simple</SelectItem>
+                <SelectItem value="bordered">Bordered</SelectItem>
+                <SelectItem value="highlighted">Highlighted</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Font Size: {props.fontSize}px</Label>
+            <Slider value={[props.fontSize || 20]} onValueChange={([v]) => onUpdate({ fontSize: v })} min={14} max={36} step={1} className="mt-2" />
+          </div>
+          <div>
+            <Label>Text Color</Label>
+            <Input type="color" value={props.color || '#333333'} onChange={(e) => onUpdate({ color: e.target.value })} className="mt-1 h-10 cursor-pointer" />
+          </div>
+          <div>
+            <Label>Accent Color</Label>
+            <Input type="color" value={props.accentColor || '#7c3aed'} onChange={(e) => onUpdate({ accentColor: e.target.value })} className="mt-1 h-10 cursor-pointer" />
+          </div>
+        </div>
+      );
+
+    case 'map':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Address</Label>
+            <Input value={props.address} onChange={(e) => onUpdate({ address: e.target.value })} placeholder="New York, NY" className="mt-1" />
+          </div>
+          <div>
+            <Label>Zoom: {props.zoom}</Label>
+            <Slider value={[props.zoom || 12]} onValueChange={([v]) => onUpdate({ zoom: v })} min={1} max={20} step={1} className="mt-2" />
+          </div>
+          <div>
+            <Label>Height: {props.height}px</Label>
+            <Slider value={[props.height || 300]} onValueChange={([v]) => onUpdate({ height: v })} min={150} max={600} step={10} className="mt-2" />
+          </div>
+          <div>
+            <Label>Border Radius: {props.borderRadius}px</Label>
+            <Slider value={[props.borderRadius || 12]} onValueChange={([v]) => onUpdate({ borderRadius: v })} min={0} max={32} step={1} className="mt-2" />
+          </div>
+          <div>
+            <Label>Map Style</Label>
+            <Select value={props.style} onValueChange={(v) => onUpdate({ style: v })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="roadmap">Roadmap</SelectItem>
+                <SelectItem value="satellite">Satellite</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      );
+
+    case 'stats':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Columns</Label>
+            <Select value={String(props.columns)} onValueChange={(v) => onUpdate({ columns: Number(v) })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="2">2 Columns</SelectItem>
+                <SelectItem value="3">3 Columns</SelectItem>
+                <SelectItem value="4">4 Columns</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Style</Label>
+            <Select value={props.style} onValueChange={(v) => onUpdate({ style: v })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="simple">Simple</SelectItem>
+                <SelectItem value="cards">Cards</SelectItem>
+                <SelectItem value="bordered">Bordered</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Value Color</Label>
+            <Input type="color" value={props.valueColor || '#7c3aed'} onChange={(e) => onUpdate({ valueColor: e.target.value })} className="mt-1 h-10 cursor-pointer" />
+          </div>
+          <div>
+            <Label>Value Size: {props.valueSize}px</Label>
+            <Slider value={[props.valueSize || 36]} onValueChange={([v]) => onUpdate({ valueSize: v })} min={20} max={64} step={1} className="mt-2" />
+          </div>
+          <div className="space-y-3 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <Label>Stats</Label>
+              <Button size="sm" variant="outline" onClick={() => {
+                const newStat = { id: Math.random().toString(36).substr(2, 9), value: '0', label: 'Label', prefix: '', suffix: '' };
+                onUpdate({ stats: [...(props.stats || []), newStat] });
+              }}>
+                <Plus className="h-4 w-4 mr-1" /> Add
+              </Button>
+            </div>
+            {(props.stats || []).map((stat: any, idx: number) => (
+              <div key={stat.id} className="p-3 border rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Stat {idx + 1}</span>
+                  <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => onUpdate({ stats: props.stats.filter((s: any) => s.id !== stat.id) })}>
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+                <Input value={stat.value} onChange={(e) => { const n = props.stats.map((s: any) => s.id === stat.id ? { ...s, value: e.target.value } : s); onUpdate({ stats: n }); }} placeholder="Value (e.g. 10K)" />
+                <Input value={stat.label} onChange={(e) => { const n = props.stats.map((s: any) => s.id === stat.id ? { ...s, label: e.target.value } : s); onUpdate({ stats: n }); }} placeholder="Label" />
+                <div className="flex gap-2">
+                  <Input value={stat.prefix} onChange={(e) => { const n = props.stats.map((s: any) => s.id === stat.id ? { ...s, prefix: e.target.value } : s); onUpdate({ stats: n }); }} placeholder="Prefix" className="w-1/2" />
+                  <Input value={stat.suffix} onChange={(e) => { const n = props.stats.map((s: any) => s.id === stat.id ? { ...s, suffix: e.target.value } : s); onUpdate({ stats: n }); }} placeholder="Suffix" className="w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case 'logo-cloud':
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label>Show Title</Label>
+            <Switch checked={props.showTitle ?? true} onCheckedChange={(v) => onUpdate({ showTitle: v })} />
+          </div>
+          {props.showTitle && (
+            <div>
+              <Label>Title</Label>
+              <Input value={props.title} onChange={(e) => onUpdate({ title: e.target.value })} className="mt-1" />
+            </div>
+          )}
+          <div>
+            <Label>Columns</Label>
+            <Select value={String(props.columns)} onValueChange={(v) => onUpdate({ columns: Number(v) })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="3">3 Columns</SelectItem>
+                <SelectItem value="4">4 Columns</SelectItem>
+                <SelectItem value="5">5 Columns</SelectItem>
+                <SelectItem value="6">6 Columns</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Grayscale</Label>
+            <Switch checked={props.grayscale ?? true} onCheckedChange={(v) => onUpdate({ grayscale: v })} />
+          </div>
+          <div className="space-y-3 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <Label>Logos</Label>
+              <Button size="sm" variant="outline" onClick={() => {
+                const newLogo = { id: Math.random().toString(36).substr(2, 9), name: 'Company', imageUrl: '' };
+                onUpdate({ logos: [...(props.logos || []), newLogo] });
+              }}>
+                <Plus className="h-4 w-4 mr-1" /> Add
+              </Button>
+            </div>
+            {(props.logos || []).map((logo: any, idx: number) => (
+              <div key={logo.id} className="p-3 border rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">{logo.name}</span>
+                  <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => onUpdate({ logos: props.logos.filter((l: any) => l.id !== logo.id) })}>
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+                <Input value={logo.name} onChange={(e) => { const n = props.logos.map((l: any) => l.id === logo.id ? { ...l, name: e.target.value } : l); onUpdate({ logos: n }); }} placeholder="Company name" />
+                <Input value={logo.imageUrl} onChange={(e) => { const n = props.logos.map((l: any) => l.id === logo.id ? { ...l, imageUrl: e.target.value } : l); onUpdate({ logos: n }); }} placeholder="Logo URL" />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case 'alert-banner':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Text</Label>
+            <Textarea value={props.text} onChange={(e) => onUpdate({ text: e.target.value })} className="mt-1" rows={2} />
+          </div>
+          <div>
+            <Label>Type</Label>
+            <Select value={props.type} onValueChange={(v) => onUpdate({ type: v })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="info">Info</SelectItem>
+                <SelectItem value="success">Success</SelectItem>
+                <SelectItem value="warning">Warning</SelectItem>
+                <SelectItem value="error">Error</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Style</Label>
+            <Select value={props.style} onValueChange={(v) => onUpdate({ style: v })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="filled">Filled</SelectItem>
+                <SelectItem value="outlined">Outlined</SelectItem>
+                <SelectItem value="subtle">Subtle</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Show Icon</Label>
+            <Switch checked={props.icon ?? true} onCheckedChange={(v) => onUpdate({ icon: v })} />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Dismissible</Label>
+            <Switch checked={props.dismissible ?? false} onCheckedChange={(v) => onUpdate({ dismissible: v })} />
+          </div>
+        </div>
+      );
+
+    case 'html-embed':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>HTML Code</Label>
+            <Textarea value={props.code} onChange={(e) => onUpdate({ code: e.target.value })} className="mt-1 font-mono text-xs" rows={8} />
+          </div>
+          <div>
+            <Label>Height: {props.height}px</Label>
+            <Slider value={[props.height || 200]} onValueChange={([v]) => onUpdate({ height: v })} min={50} max={800} step={10} className="mt-2" />
+          </div>
+        </div>
+      );
+
     default:
       return (
         <p className="text-muted-foreground text-sm">
