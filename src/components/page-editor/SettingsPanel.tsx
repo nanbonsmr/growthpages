@@ -82,6 +82,56 @@ export function SettingsPanel({
   );
 }
 
+function CommonBlockSettings({ props, onUpdate }: { props: Record<string, any>; onUpdate: (p: Record<string, any>) => void }) {
+  return (
+    <div className="space-y-4 pt-4 mt-4 border-t">
+      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Block Style</h4>
+      <div>
+        <Label>Background Color</Label>
+        <div className="flex gap-2 mt-1 items-center">
+          <Input
+            type="color"
+            value={props._bgColor || '#ffffff'}
+            onChange={(e) => onUpdate({ _bgColor: e.target.value })}
+            className="h-10 w-14 cursor-pointer p-1"
+          />
+          <Button size="sm" variant="ghost" className="text-xs" onClick={() => onUpdate({ _bgColor: '' })}>Clear</Button>
+        </div>
+      </div>
+      <div>
+        <Label>Padding: {props._padding ?? 16}px</Label>
+        <Slider value={[props._padding ?? 16]} onValueChange={([v]) => onUpdate({ _padding: v })} min={0} max={64} step={4} className="mt-2" />
+      </div>
+      <div>
+        <Label>Border Radius: {props._borderRadius ?? 0}px</Label>
+        <Slider value={[props._borderRadius ?? 0]} onValueChange={([v]) => onUpdate({ _borderRadius: v })} min={0} max={32} step={1} className="mt-2" />
+      </div>
+      <div>
+        <Label>Opacity: {Math.round((props._opacity ?? 1) * 100)}%</Label>
+        <Slider value={[props._opacity ?? 1]} onValueChange={([v]) => onUpdate({ _opacity: v })} min={0.1} max={1} step={0.05} className="mt-2" />
+      </div>
+      <div>
+        <Label>Border</Label>
+        <Select value={props._borderStyle || 'none'} onValueChange={(v) => onUpdate({ _borderStyle: v })}>
+          <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">None</SelectItem>
+            <SelectItem value="solid">Solid</SelectItem>
+            <SelectItem value="dashed">Dashed</SelectItem>
+            <SelectItem value="dotted">Dotted</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      {props._borderStyle && props._borderStyle !== 'none' && (
+        <div>
+          <Label>Border Color</Label>
+          <Input type="color" value={props._borderColor || '#e5e7eb'} onChange={(e) => onUpdate({ _borderColor: e.target.value })} className="mt-1 h-10 cursor-pointer" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface BlockSettingsProps {
   block: Block;
   blocks: Block[];
@@ -91,7 +141,8 @@ interface BlockSettingsProps {
 function BlockSettings({ block, blocks, onUpdate }: BlockSettingsProps) {
   const props = block.props;
 
-  switch (block.type) {
+  const specificSettings = (() => {
+    switch (block.type) {
     case 'heading':
       return (
         <div className="space-y-4">
@@ -2085,7 +2136,12 @@ function BlockSettings({ block, blocks, onUpdate }: BlockSettingsProps) {
                   </Button>
                 </div>
                 <Input value={logo.name} onChange={(e) => { const n = props.logos.map((l: any) => l.id === logo.id ? { ...l, name: e.target.value } : l); onUpdate({ logos: n }); }} placeholder="Company name" />
-                <Input value={logo.imageUrl} onChange={(e) => { const n = props.logos.map((l: any) => l.id === logo.id ? { ...l, imageUrl: e.target.value } : l); onUpdate({ logos: n }); }} placeholder="Logo URL" />
+                <ImageUpload
+                  value={logo.imageUrl || ''}
+                  onChange={(url) => { const n = props.logos.map((l: any) => l.id === logo.id ? { ...l, imageUrl: url } : l); onUpdate({ logos: n }); }}
+                  label="Logo Image"
+                  aspectRatio="square"
+                />
               </div>
             ))}
           </div>
@@ -2148,12 +2204,16 @@ function BlockSettings({ block, blocks, onUpdate }: BlockSettingsProps) {
       );
 
     default:
-      return (
-        <p className="text-muted-foreground text-sm">
-          No settings available for this block type.
-        </p>
-      );
+      return null;
   }
+  })();
+
+  return (
+    <div>
+      {specificSettings}
+      <CommonBlockSettings props={props} onUpdate={onUpdate} />
+    </div>
+  );
 }
 
 interface PageSettingsFormProps {
@@ -2250,15 +2310,12 @@ function PageSettingsForm({ settings, onUpdate }: PageSettingsFormProps) {
           )}
 
           {settings.backgroundType === 'image' && (
-            <div>
-              <Label>Image URL</Label>
-              <Input
-                value={settings.backgroundImage}
-                onChange={(e) => onUpdate({ backgroundImage: e.target.value })}
-                placeholder="https://..."
-                className="mt-1"
-              />
-            </div>
+            <ImageUpload
+              value={settings.backgroundImage}
+              onChange={(url) => onUpdate({ backgroundImage: url })}
+              label="Background Image"
+              aspectRatio="banner"
+            />
           )}
         </div>
       </div>

@@ -228,7 +228,18 @@ export function SortableBlock({
         </div>
 
         {/* Block Content */}
-        <div className={cn("p-3", customHeight > 0 && "h-full overflow-auto")}>
+        <div
+          className={cn("p-3", customHeight > 0 && "h-full overflow-auto")}
+          style={{
+            ...(block.props._bgColor ? { backgroundColor: block.props._bgColor } : {}),
+            ...(block.props._padding !== undefined ? { padding: `${block.props._padding}px` } : {}),
+            ...(block.props._borderRadius ? { borderRadius: `${block.props._borderRadius}px` } : {}),
+            ...(block.props._opacity !== undefined && block.props._opacity !== 1 ? { opacity: block.props._opacity } : {}),
+            ...(block.props._borderStyle && block.props._borderStyle !== 'none' ? {
+              border: `1px ${block.props._borderStyle} ${block.props._borderColor || '#e5e7eb'}`,
+            } : {}),
+          }}
+        >
           <BlockRenderer
             block={block}
             isSelected={isSelected}
