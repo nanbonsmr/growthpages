@@ -1,10 +1,18 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 const navLinks = [
   { name: 'Features', href: '/features' },
@@ -17,6 +25,7 @@ export function Navbar() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -102,125 +111,80 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Button - Hamburger */}
-          <button
-            className={cn(
-              'md:hidden p-2 rounded-lg transition-all duration-200',
-              'hover:bg-muted active:scale-95',
-              isMenuOpen && 'bg-muted/50'
-            )}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={isMenuOpen}
-          >
-            <div className="relative w-6 h-6">
-              <Menu 
-                className={cn(
-                  'h-6 w-6 absolute inset-0 transition-all duration-300',
-                  isMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'
-                )} 
-              />
-              <X 
-                className={cn(
-                  'h-6 w-6 absolute inset-0 transition-all duration-300',
-                  isMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'
-                )} 
-              />
-            </div>
-          </button>
-        </div>
-
-        {/* Mobile Menu - Animated Slide Down */}
-        <div
-          className={cn(
-            'md:hidden overflow-hidden transition-all duration-300 ease-in-out',
-            isMenuOpen ? 'max-h-[500px] opacity-100 mt-4' : 'max-h-0 opacity-0'
+          {/* Mobile Menu - Sheet Drawer */}
+          {isMobile && (
+            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <SheetTrigger asChild>
+                <button
+                  className="md:hidden p-2 rounded-lg transition-all duration-200 hover:bg-muted active:scale-95"
+                  aria-label="Open menu"
+                >
+                  <Menu className="h-6 w-6" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] pt-10">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2.5">
+                    <img src={logo} alt="GrowthPages" className="h-8 w-8 object-contain" />
+                    <span className="text-lg font-bold tracking-tight">GrowthPages</span>
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-1 mt-6">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.name}
+                      to={link.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className={cn(
+                        'px-4 py-3 text-sm font-medium rounded-lg transition-colors',
+                        location.pathname === link.href
+                          ? 'text-foreground bg-muted'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      )}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </nav>
+                <div className="mt-6 pt-6 border-t border-border/50 space-y-2">
+                  {user ? (
+                    <>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => { navigate('/dashboard'); setIsMenuOpen(false); }}
+                      >
+                        Dashboard
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => { handleSignOut(); setIsMenuOpen(false); }}
+                      >
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => { navigate('/login'); setIsMenuOpen(false); }}
+                      >
+                        Log In
+                      </Button>
+                      <Button
+                        className="w-full gradient-primary"
+                        onClick={() => { navigate('/signup'); setIsMenuOpen(false); }}
+                      >
+                        Get Started Free
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
           )}
-        >
-          <div className="py-4 space-y-1 border-t border-border/50">
-            {navLinks.map((link, index) => (
-              <Link
-                key={link.name}
-                to={link.href}
-                onClick={() => setIsMenuOpen(false)}
-                className={cn(
-                  'block px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200',
-                  'transform',
-                  location.pathname === link.href
-                    ? 'text-foreground bg-muted'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
-                  isMenuOpen 
-                    ? 'translate-x-0 opacity-100' 
-                    : '-translate-x-4 opacity-0'
-                )}
-                style={{
-                  transitionDelay: isMenuOpen ? `${index * 50}ms` : '0ms'
-                }}
-              >
-                {link.name}
-              </Link>
-            ))}
-            
-            {/* Auth Buttons - Mobile */}
-            <div 
-              className={cn(
-                'pt-4 space-y-2 border-t border-border/50 mt-4 transition-all duration-200',
-                isMenuOpen 
-                  ? 'translate-y-0 opacity-100' 
-                  : 'translate-y-2 opacity-0'
-              )}
-              style={{
-                transitionDelay: isMenuOpen ? `${navLinks.length * 50 + 50}ms` : '0ms'
-              }}
-            >
-              {user ? (
-                <>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => {
-                      navigate('/dashboard');
-                      setIsMenuOpen(false);
-                    }}
-                  >
-                    Dashboard
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => {
-                      handleSignOut();
-                      setIsMenuOpen(false);
-                    }}
-                  >
-                    Sign Out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => {
-                      navigate('/login');
-                      setIsMenuOpen(false);
-                    }}
-                  >
-                    Log In
-                  </Button>
-                  <Button
-                    className="w-full gradient-primary"
-                    onClick={() => {
-                      navigate('/signup');
-                      setIsMenuOpen(false);
-                    }}
-                  >
-                    Get Started Free
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
         </div>
       </div>
     </nav>
