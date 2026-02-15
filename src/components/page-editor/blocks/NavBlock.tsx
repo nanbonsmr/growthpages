@@ -7,10 +7,11 @@ interface NavBlockProps {
   block: Block;
   isSelected: boolean;
   isPreview?: boolean;
+  viewMode?: 'desktop' | 'tablet' | 'mobile';
   onUpdate?: (updates: Partial<Block>) => void;
 }
 
-export function NavBlock({ block, isSelected, isPreview, onUpdate }: NavBlockProps) {
+export function NavBlock({ block, isSelected, isPreview, viewMode, onUpdate }: NavBlockProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
@@ -61,6 +62,7 @@ export function NavBlock({ block, isSelected, isPreview, onUpdate }: NavBlockPro
     }
   };
 
+  const isMobileView = viewMode === 'mobile' || viewMode === 'tablet';
   const isSticky = isPreview && props.sticky;
   const navScrolled = isSticky && scrolled;
 
@@ -110,38 +112,40 @@ export function NavBlock({ block, isSelected, isPreview, onUpdate }: NavBlockPro
           </div>
 
           {/* Desktop Menu */}
-          <div className={cn(
-            'hidden md:flex items-center gap-6',
-            props.alignment === 'spread' && 'flex-1 justify-center'
-          )}>
-            {props.menuItems?.map((item) => (
-              <a
-                key={item.id}
-                href={item.url || '#'}
-                className="text-sm font-medium opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
-                onClick={(e) => handleNavigation(item.url, e)}
-              >
-                <span
-                  contentEditable={!isPreview}
-                  suppressContentEditableWarning
-                  onBlur={(e) => {
-                    if (!isPreview && onUpdate) {
-                      const newItems = props.menuItems.map(i => 
-                        i.id === item.id ? { ...i, label: e.currentTarget.textContent || '' } : i
-                      );
-                      onUpdate({ props: { ...props, menuItems: newItems } });
-                    }
-                  }}
+          {!isMobileView && (
+            <div className={cn(
+              'flex items-center gap-6',
+              props.alignment === 'spread' && 'flex-1 justify-center'
+            )}>
+              {props.menuItems?.map((item) => (
+                <a
+                  key={item.id}
+                  href={item.url || '#'}
+                  className="text-sm font-medium opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
+                  onClick={(e) => handleNavigation(item.url, e)}
                 >
-                  {item.label}
-                </span>
-              </a>
-            ))}
-          </div>
+                  <span
+                    contentEditable={!isPreview}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      if (!isPreview && onUpdate) {
+                        const newItems = props.menuItems.map(i => 
+                          i.id === item.id ? { ...i, label: e.currentTarget.textContent || '' } : i
+                        );
+                        onUpdate({ props: { ...props, menuItems: newItems } });
+                      }
+                    }}
+                  >
+                    {item.label}
+                  </span>
+                </a>
+              ))}
+            </div>
+          )}
 
           {/* CTA Button - Desktop */}
-          {props.ctaButton?.enabled && (
-            <div className="hidden md:block">
+          {props.ctaButton?.enabled && !isMobileView && (
+            <div>
               <a
                 href={props.ctaButton.url || '#'}
                 className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
@@ -168,37 +172,40 @@ export function NavBlock({ block, isSelected, isPreview, onUpdate }: NavBlockPro
           )}
 
           {/* Mobile Menu Button - Hamburger */}
-          <button
-            className={cn(
-              'md:hidden p-2 rounded-lg transition-all duration-200',
-              'hover:bg-muted/50 active:scale-95',
-              mobileMenuOpen && 'bg-muted/30'
-            )}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={mobileMenuOpen}
-          >
-            <div className="relative w-5 h-5">
-              <Menu 
-                className={cn(
-                  'h-5 w-5 absolute inset-0 transition-all duration-300',
-                  mobileMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'
-                )} 
-              />
-              <X 
-                className={cn(
-                  'h-5 w-5 absolute inset-0 transition-all duration-300',
-                  mobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'
-                )} 
-              />
-            </div>
-          </button>
+          {isMobileView && (
+            <button
+              className={cn(
+                'p-2 rounded-lg transition-all duration-200',
+                'hover:bg-muted/50 active:scale-95',
+                mobileMenuOpen && 'bg-muted/30'
+              )}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
+            >
+              <div className="relative w-5 h-5">
+                <Menu 
+                  className={cn(
+                    'h-5 w-5 absolute inset-0 transition-all duration-300',
+                    mobileMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'
+                  )} 
+                />
+                <X 
+                  className={cn(
+                    'h-5 w-5 absolute inset-0 transition-all duration-300',
+                    mobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'
+                  )} 
+                />
+              </div>
+            </button>
+          )}
         </div>
 
         {/* Mobile Menu - Animated Slide Down */}
+        {isMobileView && (
         <div
           className={cn(
-            'md:hidden overflow-hidden transition-all duration-300 ease-in-out',
+            'overflow-hidden transition-all duration-300 ease-in-out',
             mobileMenuOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'
           )}
         >
@@ -248,6 +255,7 @@ export function NavBlock({ block, isSelected, isPreview, onUpdate }: NavBlockPro
             )}
           </div>
         </div>
+        )}
       </div>
     </nav>
   );

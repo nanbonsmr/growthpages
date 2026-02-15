@@ -31,9 +31,10 @@ interface BlockRendererProps {
   isPreview?: boolean;
   onUpdate?: (props: Record<string, any>) => void;
   pageId?: string;
+  viewMode?: 'desktop' | 'tablet' | 'mobile';
 }
 
-export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate, pageId }: BlockRendererProps) {
+export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate, pageId, viewMode }: BlockRendererProps) {
   const commonProps = {
     isSelected,
     isPreview,
@@ -72,7 +73,7 @@ export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate, 
     case 'hero':
       return <HeroBlock block={block} isSelected={isSelected} isPreview={isPreview} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
     case 'nav':
-      return <NavBlock block={block} isSelected={isSelected} isPreview={isPreview} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
+      return <NavBlock block={block} isSelected={isSelected} isPreview={isPreview} viewMode={viewMode} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
     case 'footer':
       return <FooterBlock props={block.props as any} {...commonProps} />;
     case 'contact-form':
