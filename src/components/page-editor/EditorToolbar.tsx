@@ -21,12 +21,15 @@ import {
   Share2,
   Copy,
   ExternalLink,
+  LayoutGrid,
+  Settings,
 } from 'lucide-react';
 import { PageTemplate } from './templates';
 import { TemplatesDialog } from './TemplatesDialog';
 import { cn } from '@/lib/utils';
 import { getPublicPageUrl } from '@/lib/config';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface EditorToolbarProps {
   slug: string;
@@ -43,6 +46,8 @@ interface EditorToolbarProps {
   onUndo: () => void;
   onRedo: () => void;
   onLoadTemplate: (template: PageTemplate) => void;
+  onToggleElements?: () => void;
+  onToggleSettings?: () => void;
 }
 
 export function EditorToolbar({
@@ -60,9 +65,12 @@ export function EditorToolbar({
   onUndo,
   onRedo,
   onLoadTemplate,
+  onToggleElements,
+  onToggleSettings,
 }: EditorToolbarProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handleCopyLink = () => {
     const url = getPublicPageUrl(slug);
@@ -77,11 +85,69 @@ export function EditorToolbar({
     window.open(getPublicPageUrl(slug), '_blank');
   };
 
+  if (isMobile) {
+    return (
+      <div className="border-b border-border bg-background">
+        {/* Top row: back, title, save/publish */}
+        <div className="h-12 flex items-center justify-between px-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/dashboard/pages')}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo}>
+              <Undo2 className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo}>
+              <Redo2 className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Button variant="outline" size="icon" onClick={onSave} disabled={isSaving}>
+              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            </Button>
+            <Button size="icon" onClick={onPublish} disabled={isSaving}>
+              <Upload className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Bottom row: elements, templates, preview, settings */}
+        <div className="h-10 flex items-center justify-between px-3 border-t border-border/50">
+          <div className="flex items-center gap-1">
+            {onToggleElements && (
+              <Button variant="ghost" size="sm" onClick={onToggleElements} className="gap-1.5 text-xs h-8">
+                <LayoutGrid className="h-3.5 w-3.5" />
+                Elements
+              </Button>
+            )}
+            <TemplatesDialog templates={templates} onLoadTemplate={onLoadTemplate} />
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={onPreview} className="h-8 w-8">
+              <Eye className="h-3.5 w-3.5" />
+            </Button>
+            {onToggleSettings && (
+              <Button variant="ghost" size="icon" onClick={onToggleSettings} className="h-8 w-8">
+                <Settings className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-14 border-b border-border bg-background flex items-center justify-between px-4">
       {/* Left Section */}
       <div className="flex items-center gap-4">
-        {/* Back Button */}
         <Button
           variant="ghost"
           size="sm"
@@ -94,36 +160,21 @@ export function EditorToolbar({
 
         <div className="h-6 w-px bg-border" />
 
-        {/* Undo/Redo */}
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onUndo}
-            disabled={!canUndo}
-            title="Undo"
-          >
+          <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo} title="Undo">
             <Undo2 className="h-4 w-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onRedo}
-            disabled={!canRedo}
-            title="Redo"
-          >
+          <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo} title="Redo">
             <Redo2 className="h-4 w-4" />
           </Button>
         </div>
 
         <div className="h-6 w-px bg-border" />
 
-        {/* Templates Dialog */}
         <TemplatesDialog templates={templates} onLoadTemplate={onLoadTemplate} />
 
         <div className="h-6 w-px bg-border" />
 
-        {/* Slug Editor */}
         <div className="flex items-center gap-2 text-sm">
           <span className="text-muted-foreground">/p/</span>
           <Input
@@ -135,9 +186,8 @@ export function EditorToolbar({
         </div>
       </div>
 
-      {/* Center Section - View Mode & Layout Mode */}
+      {/* Center Section */}
       <div className="flex items-center gap-4">
-        {/* View Mode Toggle */}
         <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
           <Button
             variant={viewMode === 'desktop' ? 'default' : 'ghost'}
@@ -176,7 +226,6 @@ export function EditorToolbar({
           Preview
         </Button>
         
-        {/* Share Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="gap-2">
@@ -197,11 +246,7 @@ export function EditorToolbar({
         </DropdownMenu>
         
         <Button variant="outline" size="sm" onClick={onSave} disabled={isSaving} className="gap-2">
-          {isSaving ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="h-4 w-4" />
-          )}
+          {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           Save Draft
         </Button>
         <Button size="sm" onClick={onPublish} disabled={isSaving} className="gap-2">
