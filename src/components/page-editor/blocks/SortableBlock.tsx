@@ -12,6 +12,7 @@ interface SortableBlockProps {
   isSelected: boolean;
   isFirst: boolean;
   isLast: boolean;
+  viewMode?: 'desktop' | 'tablet' | 'mobile';
   onSelect: () => void;
   onDelete: () => void;
   onUpdate: (props: Record<string, any>) => void;
@@ -26,6 +27,7 @@ export function SortableBlock({
   isSelected,
   isFirst,
   isLast,
+  viewMode,
   onSelect,
   onDelete,
   onUpdate,
@@ -245,6 +247,7 @@ export function SortableBlock({
             isSelected={isSelected}
             onUpdate={onUpdate}
             pageId={pageId}
+            viewMode={viewMode}
           />
         </div>
 

@@ -102,6 +102,7 @@ export function EditorCanvas({
                       isSelected={selectedBlockId === block.id}
                       isFirst={index === 0}
                       isLast={index === blocks.length - 1}
+                      viewMode={viewMode}
                       onSelect={() => onSelectBlock(block.id)}
                       onDelete={() => onDeleteBlock(block.id)}
                       onUpdate={(props) => onUpdateBlock(block.id, props)}
