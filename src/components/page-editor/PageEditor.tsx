@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -19,6 +19,8 @@ import { SettingsPanel } from './SettingsPanel';
 import { EditorToolbar } from './EditorToolbar';
 import { BlockRenderer } from './blocks/BlockRenderer';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 interface PageEditorProps {
   initialData?: PageData;
@@ -31,6 +33,7 @@ const generateId = () => Math.random().toString(36).substr(2, 9);
 
 export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEditorProps) {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [blocks, setBlocks] = useState<Block[]>(initialData?.blocks || []);
   const [settings, setSettings] = useState<PageSettings>(
     initialData?.settings || { ...DEFAULT_PAGE_SETTINGS }
@@ -39,6 +42,8 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
   const [viewMode, setViewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [elementsOpen, setElementsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   
   // History for undo/redo
   const [history, setHistory] = useState<Block[][]>([blocks]);
@@ -61,7 +66,7 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
     setHistory((prev) => {
       const newHistory = prev.slice(0, historyIndex + 1);
       newHistory.push(newBlocks);
-      return newHistory.slice(-50); // Keep last 50 states
+      return newHistory.slice(-50);
     });
     setHistoryIndex((prev) => Math.min(prev + 1, 49));
   }, [historyIndex]);
@@ -92,7 +97,6 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
 
     if (!over) return;
 
-    // Check if dragging a new block from the elements panel
     const activeData = active.data.current;
     if (activeData?.type === 'new-block') {
       const newBlock: Block = {
@@ -101,7 +105,6 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
         props: { ...activeData.defaultProps },
       };
 
-      // Add to the end if dropped on canvas, or at specific position
       const overIndex = blocks.findIndex((b) => b.id === over.id);
       const newBlocks = [...blocks];
       
@@ -114,10 +117,10 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
       setBlocks(newBlocks);
       pushHistory(newBlocks);
       setSelectedBlockId(newBlock.id);
+      if (isMobile) setElementsOpen(false);
       return;
     }
 
-    // Reordering existing blocks
     if (active.id !== over.id) {
       const oldIndex = blocks.findIndex((b) => b.id === active.id);
       const newIndex = blocks.findIndex((b) => b.id === over.id);
@@ -156,7 +159,6 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
       b.id === id ? { ...b, props: { ...b.props, ...props } } : b
     );
     setBlocks(newBlocks);
-    // Don't push to history for every keystroke, only on blur
   };
 
   const handleUpdateBlockPosition = (id: string, position: BlockPosition) => {
@@ -171,7 +173,6 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
   };
 
   const handleLoadTemplate = (template: PageTemplate) => {
-    // Generate new IDs for template blocks
     const newBlocks = template.blocks.map((b) => ({
       ...b,
       id: generateId(),
@@ -190,10 +191,7 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
     setIsSaving(true);
     try {
       await onSave({ blocks, settings });
-      toast({
-        title: 'Saved',
-        description: 'Your changes have been saved.',
-      });
+      toast({ title: 'Saved', description: 'Your changes have been saved.' });
     } catch (error: any) {
       console.error('Save error:', error);
       const errorMessage = error?.message || error?.code || 'Failed to save changes.';
@@ -213,10 +211,7 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
     setIsSaving(true);
     try {
       await onPublish({ blocks, settings });
-      toast({
-        title: 'Published',
-        description: 'Your page is now live!',
-      });
+      toast({ title: 'Published', description: 'Your page is now live!' });
     } catch (error: any) {
       console.error('Publish error:', error);
       const errorMessage = error?.message || error?.code || 'Failed to publish page.';
@@ -236,7 +231,13 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
     window.open(`/p/${settings.slug}`, '_blank');
   };
 
-  // Get active block for drag overlay
+  const handleSelectBlock = (id: string | null) => {
+    setSelectedBlockId(id);
+    if (id && isMobile) {
+      setSettingsOpen(true);
+    }
+  };
+
   const activeBlock = activeId
     ? blocks.find((b) => b.id === activeId) ||
       (activeId.startsWith('new-')
@@ -247,6 +248,24 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
           }
         : null)
     : null;
+
+  const elementsPanelContent = (
+    <ElementsPanel />
+  );
+
+  const settingsPanelContent = (
+    <SettingsPanel
+      selectedBlock={selectedBlock}
+      blocks={blocks}
+      settings={settings}
+      onUpdateBlock={(props) => {
+        if (selectedBlockId) {
+          handleUpdateBlock(selectedBlockId, props);
+        }
+      }}
+      onUpdateSettings={handleUpdateSettings}
+    />
+  );
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -265,6 +284,8 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
         onUndo={handleUndo}
         onRedo={handleRedo}
         onLoadTemplate={handleLoadTemplate}
+        onToggleElements={() => setElementsOpen(true)}
+        onToggleSettings={() => setSettingsOpen(true)}
       />
 
       <div className="flex-1 flex overflow-hidden">
@@ -274,14 +295,14 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <ElementsPanel />
+          {!isMobile && elementsPanelContent}
 
           <EditorCanvas
             blocks={blocks}
             settings={settings}
             selectedBlockId={selectedBlockId}
-            viewMode={viewMode}
-            onSelectBlock={setSelectedBlockId}
+            viewMode={isMobile ? 'mobile' : viewMode}
+            onSelectBlock={handleSelectBlock}
             onDeleteBlock={handleDeleteBlock}
             onUpdateBlock={handleUpdateBlock}
             onMoveBlock={handleMoveBlock}
@@ -302,17 +323,33 @@ export function PageEditor({ initialData, pageId, onSave, onPublish }: PageEdito
           </DragOverlay>
         </DndContext>
 
-        <SettingsPanel
-          selectedBlock={selectedBlock}
-          blocks={blocks}
-          settings={settings}
-          onUpdateBlock={(props) => {
-            if (selectedBlockId) {
-              handleUpdateBlock(selectedBlockId, props);
-            }
-          }}
-          onUpdateSettings={handleUpdateSettings}
-        />
+        {!isMobile && settingsPanelContent}
+
+        {isMobile && (
+          <Sheet open={elementsOpen} onOpenChange={setElementsOpen}>
+            <SheetContent side="left" className="w-[280px] p-0">
+              <SheetHeader className="p-4 border-b border-border">
+                <SheetTitle>Elements</SheetTitle>
+              </SheetHeader>
+              <div className="h-[calc(100vh-60px)] overflow-hidden">
+                {elementsPanelContent}
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
+
+        {isMobile && (
+          <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
+            <SheetContent side="right" className="w-[300px] p-0">
+              <SheetHeader className="p-4 border-b border-border">
+                <SheetTitle>Settings</SheetTitle>
+              </SheetHeader>
+              <div className="h-[calc(100vh-60px)] overflow-hidden">
+                {settingsPanelContent}
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
       </div>
     </div>
   );

@@ -108,7 +108,7 @@ export function ElementsPanel() {
   const categories = ['basic', 'layout', 'forms', 'marketing'] as BlockCategory[];
 
   return (
-    <div className="w-64 border-r border-border bg-background flex flex-col h-full">
+    <div className="w-full md:w-64 border-r border-border bg-background flex flex-col h-full">
       <div className="p-4 border-b border-border">
         <h2 className="font-semibold text-foreground">Elements</h2>
         <p className="text-xs text-muted-foreground mt-1">Drag blocks to the canvas</p>
