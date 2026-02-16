@@ -25,19 +25,24 @@ interface PricingBlockProps {
   props: PricingProps;
   isSelected: boolean;
   isPreview?: boolean;
+  viewMode?: 'desktop' | 'tablet' | 'mobile';
   onUpdate?: (props: Partial<PricingProps>) => void;
 }
 
-export function PricingBlock({ props, isSelected, isPreview }: PricingBlockProps) {
-  const gridCols = props.columns === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3';
+export function PricingBlock({ props, isSelected, isPreview, viewMode }: PricingBlockProps) {
+  const isMobile = viewMode === 'mobile';
+  const gridCols = isMobile
+    ? 'grid-cols-1'
+    : props.columns === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3';
 
   return (
-    <div className={cn('w-full grid grid-cols-1 gap-4 sm:gap-6', gridCols)}>
+    <div className={cn('w-full grid grid-cols-1 gap-4', isMobile ? 'gap-3' : 'sm:gap-6', gridCols)}>
       {props.tiers.map((tier) => (
         <div
           key={tier.id}
           className={cn(
-            'relative rounded-xl p-6 flex flex-col',
+            'relative rounded-xl flex flex-col',
+            isMobile ? 'p-4' : 'p-6',
             props.style === 'cards' && 'border bg-card shadow-sm',
             props.style === 'minimal' && 'border-2',
             props.style === 'gradient' && 'bg-gradient-to-br from-background to-muted border',
@@ -56,27 +61,27 @@ export function PricingBlock({ props, isSelected, isPreview }: PricingBlockProps
             </div>
           )}
           
-          <div className="text-center mb-6">
-            <h3 className="text-lg font-semibold mb-2">{tier.name}</h3>
+          <div className={cn('text-center', isMobile ? 'mb-4' : 'mb-6')}>
+            <h3 className={cn('font-semibold mb-2', isMobile ? 'text-base' : 'text-lg')}>{tier.name}</h3>
             <div className="flex items-baseline justify-center gap-1">
-              <span className="text-3xl sm:text-4xl font-bold">{tier.price}</span>
+              <span className={cn('font-bold', isMobile ? 'text-2xl' : 'text-3xl sm:text-4xl')}>{tier.price}</span>
               {tier.period && (
-                <span className="text-muted-foreground">/{tier.period}</span>
+                <span className="text-muted-foreground text-sm">/{tier.period}</span>
               )}
             </div>
             {tier.description && (
-              <p className="text-sm text-muted-foreground mt-2">{tier.description}</p>
+              <p className={cn('text-muted-foreground mt-2', isMobile ? 'text-xs' : 'text-sm')}>{tier.description}</p>
             )}
           </div>
 
-          <ul className="space-y-3 flex-1 mb-6">
+          <ul className={cn('flex-1', isMobile ? 'space-y-2 mb-4' : 'space-y-3 mb-6')}>
             {tier.features.map((feature, idx) => (
-              <li key={idx} className="flex items-start gap-3">
+              <li key={idx} className="flex items-start gap-2">
                 <Check 
-                  className="w-5 h-5 shrink-0 mt-0.5" 
+                  className={cn('shrink-0 mt-0.5', isMobile ? 'w-4 h-4' : 'w-5 h-5')}
                   style={{ color: props.highlightColor }}
                 />
-                <span className="text-sm">{feature}</span>
+                <span className={cn(isMobile ? 'text-xs' : 'text-sm')}>{feature}</span>
               </li>
             ))}
           </ul>
@@ -87,6 +92,7 @@ export function PricingBlock({ props, isSelected, isPreview }: PricingBlockProps
               tier.highlighted && 'text-white'
             )}
             variant={tier.highlighted ? 'default' : 'outline'}
+            size={isMobile ? 'sm' : 'default'}
             style={tier.highlighted ? { backgroundColor: props.highlightColor } : undefined}
             onClick={(e) => {
               if (isPreview || !tier.buttonUrl) {
