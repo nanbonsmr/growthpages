@@ -262,7 +262,20 @@ export default function PublicSignupPage() {
       >
       <div className={`mx-auto px-4 sm:px-6 py-8 ${maxWidthClasses[settings?.maxWidth || 'lg']} scroll-smooth`}>
           {blocks.map((block, index) => (
-            <div key={block.id} id={`section-${block.type}-${index}`} className="scroll-mt-20">
+            <div
+              key={block.id}
+              id={`section-${block.type}-${index}`}
+              className="scroll-mt-20"
+              style={{
+                ...(block.props._bgColor ? { backgroundColor: block.props._bgColor } : {}),
+                ...(block.props._padding !== undefined ? { padding: `${block.props._padding}px` } : {}),
+                ...(block.props._borderRadius ? { borderRadius: `${block.props._borderRadius}px` } : {}),
+                ...(block.props._opacity !== undefined && block.props._opacity !== 1 ? { opacity: block.props._opacity } : {}),
+                ...(block.props._borderStyle && block.props._borderStyle !== 'none' ? {
+                  border: `1px ${block.props._borderStyle} ${block.props._borderColor || '#e5e7eb'}`,
+                } : {}),
+              }}
+            >
             <BlockRenderer
               block={block}
               formData={formData}
