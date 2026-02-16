@@ -41,6 +41,10 @@ const TEMPLATE_ICONS: Record<string, React.ReactNode> = {
   agency_portfolio: <Palette className="h-5 w-5" />,
   webinar: <Video className="h-5 w-5" />,
   personal_brand: <User className="h-5 w-5" />,
+  portfolio: <Palette className="h-5 w-5" />,
+  cv_resume: <User className="h-5 w-5" />,
+  coaching: <User className="h-5 w-5" />,
+  restaurant: <Globe className="h-5 w-5" />,
 };
 
 const TEMPLATE_COLORS: Record<string, string> = {
@@ -53,12 +57,18 @@ const TEMPLATE_COLORS: Record<string, string> = {
   agency_portfolio: 'from-pink-500 to-rose-600',
   webinar: 'from-indigo-500 to-blue-600',
   personal_brand: 'from-amber-400 to-orange-500',
+  portfolio: 'from-cyan-400 to-teal-600',
+  cv_resume: 'from-blue-400 to-blue-700',
+  coaching: 'from-purple-400 to-violet-600',
+  restaurant: 'from-amber-500 to-yellow-700',
 };
 
 const TEMPLATE_BADGES: Record<string, string> = {
   saas_landing: 'Popular',
   webinar: 'New',
   agency_portfolio: 'Pro',
+  portfolio: 'New',
+  cv_resume: 'Popular',
 };
 
 export function TemplatesDialog({ templates, onLoadTemplate }: TemplatesDialogProps) {
@@ -80,15 +90,15 @@ export function TemplatesDialog({ templates, onLoadTemplate }: TemplatesDialogPr
           <ChevronDown className="h-3 w-3" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[85vh] p-0 overflow-hidden">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
-          <DialogTitle className="text-xl font-semibold">Choose a Template</DialogTitle>
-          <p className="text-sm text-muted-foreground mt-1">
+      <DialogContent className="max-w-4xl max-h-[85vh] p-0 overflow-hidden w-[95vw] sm:w-auto">
+        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 border-b border-border">
+          <DialogTitle className="text-lg sm:text-xl font-semibold">Choose a Template</DialogTitle>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Start with a professionally designed template and customize it to match your brand.
           </p>
         </DialogHeader>
-        <ScrollArea className="h-[60vh]">
-          <div className="grid grid-cols-3 gap-4 p-6">
+        <ScrollArea className="h-[55vh] sm:h-[60vh]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 p-4 sm:p-6">
             {templates.map((template) => {
               const isSelected = selectedId === template.id;
               const icon = TEMPLATE_ICONS[template.id] || <LayoutTemplate className="h-5 w-5" />;
@@ -152,14 +162,14 @@ export function TemplatesDialog({ templates, onLoadTemplate }: TemplatesDialogPr
         </ScrollArea>
         
         {/* Footer Actions */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/50">
-          <p className="text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-4 sm:px-6 py-3 sm:py-4 border-t border-border bg-muted/50">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {selectedId
               ? `Selected: ${templates.find((t) => t.id === selectedId)?.name}`
-              : 'Double-click or select and click "Apply Template"'}
+              : 'Tap to select, then apply'}
           </p>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setOpen(false)}>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={() => setOpen(false)} className="flex-1 sm:flex-none">
               Cancel
             </Button>
             <Button
@@ -168,6 +178,7 @@ export function TemplatesDialog({ templates, onLoadTemplate }: TemplatesDialogPr
                 if (template) handleSelectTemplate(template);
               }}
               disabled={!selectedId}
+              className="flex-1 sm:flex-none"
             >
               Apply Template
             </Button>
