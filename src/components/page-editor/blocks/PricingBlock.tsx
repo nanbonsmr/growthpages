@@ -29,10 +29,10 @@ interface PricingBlockProps {
 }
 
 export function PricingBlock({ props, isSelected, isPreview }: PricingBlockProps) {
-  const gridCols = props.columns === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3';
+  const gridCols = props.columns === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3';
 
   return (
-    <div className={cn('w-full grid gap-6', gridCols)}>
+    <div className={cn('w-full grid grid-cols-1 gap-4 sm:gap-6', gridCols)}>
       {props.tiers.map((tier) => (
         <div
           key={tier.id}
@@ -59,7 +59,7 @@ export function PricingBlock({ props, isSelected, isPreview }: PricingBlockProps
           <div className="text-center mb-6">
             <h3 className="text-lg font-semibold mb-2">{tier.name}</h3>
             <div className="flex items-baseline justify-center gap-1">
-              <span className="text-4xl font-bold">{tier.price}</span>
+              <span className="text-3xl sm:text-4xl font-bold">{tier.price}</span>
               {tier.period && (
                 <span className="text-muted-foreground">/{tier.period}</span>
               )}

@@ -22,9 +22,9 @@ export function HeroBlock({ block, isSelected, isPreview, onUpdate }: HeroBlockP
   };
 
   const heightClasses = {
-    small: 'min-h-[300px]',
-    medium: 'min-h-[450px]',
-    large: 'min-h-[600px]',
+    small: 'min-h-[200px] sm:min-h-[300px]',
+    medium: 'min-h-[300px] sm:min-h-[450px]',
+    large: 'min-h-[400px] sm:min-h-[600px]',
     full: 'min-h-screen',
   };
 
@@ -45,7 +45,7 @@ export function HeroBlock({ block, isSelected, isPreview, onUpdate }: HeroBlockP
   return (
     <div
       className={cn(
-        'relative w-full flex flex-col justify-center px-8 py-16 overflow-hidden rounded-lg',
+        'relative w-full flex flex-col justify-center px-4 sm:px-8 py-8 sm:py-16 overflow-hidden rounded-lg',
         heightClasses[props.height || 'medium'],
         alignmentClasses[props.alignment || 'center'],
         isSelected && !isPreview && 'ring-2 ring-primary ring-offset-2'

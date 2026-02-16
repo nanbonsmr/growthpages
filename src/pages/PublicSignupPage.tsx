@@ -436,11 +436,13 @@ function BlockRenderer({
       );
     }
 
-    case 'text':
+    case 'text': {
+      const textSize = props.fontSize || 16;
+      const mobileTextSize = Math.max(Math.round(textSize * 0.85), 14);
       return (
         <p
           style={{
-            fontSize: `${props.fontSize || 16}px`,
+            fontSize: `clamp(${mobileTextSize}px, 2.5vw, ${textSize}px)`,
             textAlign: props.alignment || 'center',
             color: props.color || '#666666',
           }}
@@ -449,6 +451,7 @@ function BlockRenderer({
           {props.text}
         </p>
       );
+    }
 
     case 'image':
       if (!props.src) return null;
@@ -805,11 +808,13 @@ function BlockRenderer({
 
     case 'hero': {
       const heightClasses: Record<string, string> = {
-        small: 'min-h-[300px]',
-        medium: 'min-h-[450px]',
-        large: 'min-h-[600px]',
+        small: 'min-h-[200px] sm:min-h-[300px]',
+        medium: 'min-h-[300px] sm:min-h-[450px]',
+        large: 'min-h-[400px] sm:min-h-[600px]',
         full: 'min-h-screen',
       };
+
+      const textColorValue = props.textColor === 'dark' ? '#000' : '#fff';
 
       return (
         <div
@@ -820,23 +825,42 @@ function BlockRenderer({
             backgroundPosition: 'center',
           }}
         >
+          {/* Background overlay when image exists */}
           {props.backgroundImage && (
             <div
-              className="absolute inset-0"
-              style={{ backgroundColor: `rgba(0,0,0,${(props.backgroundOverlay || 30) / 100})` }}
+              className="absolute inset-0 bg-black"
+              style={{ opacity: (props.backgroundOverlay || 50) / 100 }}
             />
           )}
+
+          {/* Fallback gradient when no image */}
+          {!props.backgroundImage && (
+            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${primaryColor}ee, ${primaryColor}99)` }} />
+          )}
+
           <div
-            className={`relative z-10 px-4 sm:px-6 py-8 sm:py-12 w-full ${props.alignment === 'left' ? 'text-left' : props.alignment === 'right' ? 'text-right' : 'text-center'}`}
-            style={{ color: props.textColor === 'light' ? '#fff' : '#000' }}
+            className={`relative z-10 px-4 sm:px-8 py-8 sm:py-16 w-full max-w-3xl mx-auto ${props.alignment === 'left' ? 'text-left' : props.alignment === 'right' ? 'text-right' : 'text-center'}`}
           >
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">{props.headline}</h1>
-            <p className="text-base sm:text-lg md:text-xl opacity-90 mb-4 sm:mb-6 max-w-2xl mx-auto">{props.subheadline}</p>
+            <h1
+              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-3 sm:mb-4"
+              style={{ color: textColorValue }}
+            >
+              {props.headline || 'Your Powerful Headline'}
+            </h1>
+            <p
+              className="text-sm sm:text-lg md:text-xl lg:text-2xl mb-4 sm:mb-6 max-w-2xl mx-auto"
+              style={{ color: textColorValue, opacity: 0.85 }}
+            >
+              {props.subheadline || 'Add a compelling subheadline that supports your main message.'}
+            </p>
             {props.buttonText && (
               <a
                 href={props.buttonLink || '#'}
-                className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-medium text-white text-sm sm:text-base transition-opacity hover:opacity-90"
-                style={{ backgroundColor: primaryColor }}
+                className="inline-block px-5 sm:px-8 py-2.5 sm:py-4 rounded-lg font-semibold text-sm sm:text-lg shadow-lg transition-all hover:scale-105 hover:opacity-90"
+                style={{
+                  backgroundColor: props.textColor === 'dark' ? primaryColor : '#fff',
+                  color: props.textColor === 'dark' ? '#fff' : primaryColor,
+                }}
               >
                 {props.buttonText}
               </a>
@@ -847,10 +871,10 @@ function BlockRenderer({
     }
 
     case 'nav': {
-      const styleClasses: Record<string, string> = {
+      const navStyleClasses: Record<string, string> = {
         transparent: 'bg-transparent',
-        solid: 'bg-background shadow-sm',
-        glass: 'bg-background/80 backdrop-blur-md border-b border-border/50',
+        solid: 'shadow-sm',
+        glass: 'backdrop-blur-md border-b border-border/50',
       };
 
       const isSticky = !!props.sticky;
@@ -860,13 +884,13 @@ function BlockRenderer({
         <nav
           className={`w-full px-4 sm:px-6 py-3 sm:py-4 mb-4 rounded-lg transition-all duration-300 ${
             navScrolled
-              ? 'bg-background/95 backdrop-blur-md shadow-md border-b border-border/30'
-              : styleClasses[props.style || 'solid']
+              ? 'backdrop-blur-md shadow-md border-b border-border/30'
+              : navStyleClasses[props.style || 'solid']
           } ${isSticky ? 'sticky top-0 z-50' : ''}`}
           style={{
             backgroundColor: navScrolled
-              ? undefined
-              : props.style === 'solid' ? props.backgroundColor : undefined,
+              ? (props.backgroundColor ? `${props.backgroundColor}f2` : undefined)
+              : (props.backgroundColor || undefined),
             color: props.textColor,
           }}
         >
@@ -903,8 +927,8 @@ function BlockRenderer({
                 {props.ctaButton?.enabled && (
                   <a
                     href={props.ctaButton.url || '#'}
-                    className="px-4 py-2 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
-                    style={{ backgroundColor: primaryColor }}
+                    className="px-4 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: primaryColor, color: '#fff' }}
                     onClick={props.ctaButton.url?.startsWith('#') ? (e: React.MouseEvent) => {
                       e.preventDefault();
                       const target = document.querySelector(props.ctaButton.url);
@@ -989,7 +1013,7 @@ function BlockRenderer({
     }
 
     case 'footer': {
-      const socialIcons: Record<string, string> = {
+      const footerSocialIcons: Record<string, string> = {
         twitter: '𝕏',
         facebook: 'f',
         instagram: '📷',
@@ -1000,7 +1024,7 @@ function BlockRenderer({
 
       return (
         <footer
-          className="w-full px-4 sm:px-6 py-6 sm:py-8 mt-8 rounded-lg"
+          className="w-full px-4 sm:px-8 py-8 sm:py-12 mt-8 rounded-lg"
           style={{
             backgroundColor: props.backgroundColor || '#111827',
             color: props.textColor || '#9ca3af',
@@ -1053,7 +1077,7 @@ function BlockRenderer({
             {/* Socials */}
             {props.showSocials && props.socials?.filter((s: any) => s.enabled).length > 0 && (
               <div className={`flex gap-4 ${props.style === 'centered' ? 'justify-center' : ''} mb-4`}>
-                {props.socials?.filter((s: any) => s.enabled).map((social: any) => (
+              {props.socials?.filter((s: any) => s.enabled).map((social: any) => (
                   <a
                     key={social.platform}
                     href={social.url || '#'}
@@ -1061,7 +1085,7 @@ function BlockRenderer({
                     rel="noopener noreferrer"
                     className="hover:text-white transition-colors"
                   >
-                    {socialIcons[social.platform] || social.platform[0].toUpperCase()}
+                    {footerSocialIcons[social.platform] || social.platform[0].toUpperCase()}
                   </a>
                 ))}
               </div>

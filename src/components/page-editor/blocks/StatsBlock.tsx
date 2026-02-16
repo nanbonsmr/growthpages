@@ -10,7 +10,7 @@ interface StatsBlockProps {
 
 export function StatsBlock({ props }: StatsBlockProps) {
   const cols = props.columns || 4;
-  const gridCols = cols === 2 ? 'grid-cols-2' : cols === 3 ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-4';
+  const gridCols = cols === 2 ? 'grid-cols-2' : cols === 3 ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-4';
 
   return (
     <div className={cn('grid gap-6', gridCols)}>
@@ -26,7 +26,7 @@ export function StatsBlock({ props }: StatsBlockProps) {
         >
           <div
             className="font-bold leading-none"
-            style={{ fontSize: props.valueSize || 36, color: props.valueColor || '#7c3aed' }}
+            style={{ fontSize: `clamp(24px, 4vw, ${props.valueSize || 36}px)`, color: props.valueColor || '#7c3aed' }}
           >
             {stat.prefix}{stat.value}{stat.suffix}
           </div>
