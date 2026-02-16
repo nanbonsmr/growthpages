@@ -5,10 +5,12 @@ interface HeroBlockProps {
   block: Block;
   isSelected: boolean;
   isPreview?: boolean;
+  viewMode?: 'desktop' | 'tablet' | 'mobile';
   onUpdate?: (updates: Partial<Block>) => void;
 }
 
-export function HeroBlock({ block, isSelected, isPreview, onUpdate }: HeroBlockProps) {
+export function HeroBlock({ block, isSelected, isPreview, viewMode, onUpdate }: HeroBlockProps) {
+  const isMobile = viewMode === 'mobile';
   const props = block.props as {
     headline: string;
     subheadline: string;
@@ -45,8 +47,9 @@ export function HeroBlock({ block, isSelected, isPreview, onUpdate }: HeroBlockP
   return (
     <div
       className={cn(
-        'relative w-full flex flex-col justify-center px-4 sm:px-8 py-8 sm:py-16 overflow-hidden rounded-lg',
-        heightClasses[props.height || 'medium'],
+        'relative w-full flex flex-col justify-center overflow-hidden rounded-lg',
+        isMobile ? 'px-4 py-6' : 'px-4 sm:px-8 py-8 sm:py-16',
+        isMobile ? 'min-h-[180px]' : heightClasses[props.height || 'medium'],
         alignmentClasses[props.alignment || 'center'],
         isSelected && !isPreview && 'ring-2 ring-primary ring-offset-2'
       )}
@@ -80,7 +83,8 @@ export function HeroBlock({ block, isSelected, isPreview, onUpdate }: HeroBlockP
           suppressContentEditableWarning
           onBlur={(e) => handleTextEdit('headline', e.currentTarget.textContent || '')}
           className={cn(
-            'text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight outline-none',
+            'font-bold tracking-tight outline-none',
+            isMobile ? 'text-xl' : 'text-4xl md:text-5xl lg:text-6xl',
             props.textColor === 'dark' ? 'text-foreground' : 'text-white',
             !isPreview && 'hover:ring-1 hover:ring-white/30 rounded px-1'
           )}
@@ -94,7 +98,8 @@ export function HeroBlock({ block, isSelected, isPreview, onUpdate }: HeroBlockP
           suppressContentEditableWarning
           onBlur={(e) => handleTextEdit('subheadline', e.currentTarget.textContent || '')}
           className={cn(
-            'text-lg md:text-xl lg:text-2xl max-w-2xl outline-none',
+            'max-w-2xl outline-none',
+            isMobile ? 'text-sm' : 'text-lg md:text-xl lg:text-2xl',
             props.textColor === 'dark' ? 'text-muted-foreground' : 'text-white/80',
             !isPreview && 'hover:ring-1 hover:ring-white/30 rounded px-1'
           )}
@@ -105,7 +110,8 @@ export function HeroBlock({ block, isSelected, isPreview, onUpdate }: HeroBlockP
         {/* CTA Button */}
         <button
           className={cn(
-            'mt-4 px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 shadow-lg',
+            'mt-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg',
+            isMobile ? 'px-5 py-2.5 text-sm' : 'px-8 py-4 text-lg',
             props.textColor === 'dark'
               ? 'bg-primary text-primary-foreground hover:bg-primary/90'
               : 'bg-white text-primary hover:bg-white/90'

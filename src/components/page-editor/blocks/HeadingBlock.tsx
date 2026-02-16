@@ -5,14 +5,20 @@ interface HeadingBlockProps {
   props: HeadingProps;
   isSelected: boolean;
   isPreview?: boolean;
+  viewMode?: 'desktop' | 'tablet' | 'mobile';
   onUpdate?: (props: Partial<HeadingProps>) => void;
 }
 
-export function HeadingBlock({ props, isSelected, isPreview, onUpdate }: HeadingBlockProps) {
+export function HeadingBlock({ props, isSelected, isPreview, viewMode, onUpdate }: HeadingBlockProps) {
   const ref = useRef<HTMLHeadingElement>(null);
 
+  const isMobile = viewMode === 'mobile';
+  const isTablet = viewMode === 'tablet';
+  const fontSize = props.fontSize || 36;
+  const responsiveFontSize = isMobile ? Math.max(Math.round(fontSize * 0.6), 16) : isTablet ? Math.max(Math.round(fontSize * 0.8), 18) : fontSize;
+
   const style = {
-    fontSize: `${props.fontSize}px`,
+    fontSize: `${responsiveFontSize}px`,
     fontWeight: props.fontWeight === 'normal' ? 400 : props.fontWeight === 'medium' ? 500 : props.fontWeight === 'semibold' ? 600 : 700,
     textAlign: props.alignment as any,
     color: props.color,

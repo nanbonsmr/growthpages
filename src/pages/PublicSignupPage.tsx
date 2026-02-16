@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CheckCircle, Zap, Twitter, Facebook, Instagram, Linkedin, Youtube, Quote } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { z } from 'zod';
 
 interface Block {
@@ -773,33 +774,36 @@ function BlockRenderer({
     }
 
     case 'feature-grid': {
-      const iconMap: Record<string, string> = {
-        star: '⭐',
-        check: '✓',
-        heart: '❤️',
-        bolt: '⚡',
-        shield: '🛡️',
-        rocket: '🚀',
-        globe: '🌐',
-        users: '👥',
-        chart: '📊',
-        lock: '🔒',
+      const renderIcon = (iconName: string) => {
+        const IconComp = (LucideIcons as any)[iconName] || LucideIcons.Star;
+        return <IconComp className="w-6 h-6 sm:w-7 sm:h-7" style={{ color: props.iconColor || primaryColor }} />;
       };
 
       return (
-        <div className={`mb-4 grid gap-4 sm:gap-6 grid-cols-1 ${props.columns === 2 ? 'sm:grid-cols-2' : props.columns === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3'} max-w-5xl mx-auto`}>
+        <div className={`mb-4 grid gap-3 sm:gap-6 grid-cols-1 ${props.columns === 2 ? 'sm:grid-cols-2' : props.columns === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3'} max-w-5xl mx-auto`}>
           {props.features?.map((feature: any) => (
-            <div key={feature.id} className={`p-4 ${props.style === 'cards' ? 'border rounded-lg' : ''}`}>
+            <div
+              key={feature.id}
+              className={`flex gap-3 ${
+                props.style === 'cards' ? 'flex-col items-center text-center p-4 sm:p-6 border rounded-xl bg-white/50' :
+                props.style === 'minimal' ? 'flex-col items-center text-center p-3 sm:p-4' :
+                'items-start'
+              }`}
+            >
               {props.showIcons && (
                 <div
-                  className="text-2xl mb-3"
-                  style={{ color: props.iconColor || primaryColor }}
+                  className={`shrink-0 rounded-lg flex items-center justify-center ${
+                    props.style === 'icons-left' ? 'w-10 h-10' : 'w-12 h-12 sm:w-14 sm:h-14'
+                  }`}
+                  style={{ backgroundColor: `${props.iconColor || primaryColor}15` }}
                 >
-                  {iconMap[feature.icon] || '✨'}
+                  {renderIcon(feature.icon)}
                 </div>
               )}
-              <h4 className="font-semibold mb-2">{feature.title}</h4>
-              <p className="text-sm text-muted-foreground">{feature.description}</p>
+              <div>
+                <h4 className="font-semibold mb-1 text-sm sm:text-base">{feature.title}</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">{feature.description}</p>
+              </div>
             </div>
           ))}
         </div>

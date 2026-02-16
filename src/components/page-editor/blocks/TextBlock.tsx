@@ -5,14 +5,19 @@ interface TextBlockProps {
   props: TextProps;
   isSelected: boolean;
   isPreview?: boolean;
+  viewMode?: 'desktop' | 'tablet' | 'mobile';
   onUpdate?: (props: Partial<TextProps>) => void;
 }
 
-export function TextBlock({ props, isSelected, isPreview, onUpdate }: TextBlockProps) {
+export function TextBlock({ props, isSelected, isPreview, viewMode, onUpdate }: TextBlockProps) {
   const ref = useRef<HTMLParagraphElement>(null);
 
+  const isMobile = viewMode === 'mobile';
+  const fontSize = props.fontSize || 16;
+  const responsiveFontSize = isMobile ? Math.max(Math.round(fontSize * 0.85), 13) : fontSize;
+
   const style = {
-    fontSize: `${props.fontSize}px`,
+    fontSize: `${responsiveFontSize}px`,
     textAlign: props.alignment as any,
     color: props.color,
   };

@@ -39,13 +39,14 @@ export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate, 
     isSelected,
     isPreview,
     onUpdate,
+    viewMode,
   };
 
   switch (block.type) {
     case 'heading':
-      return <HeadingBlock props={block.props as any} {...commonProps} />;
+      return <HeadingBlock props={block.props as any} {...commonProps} viewMode={viewMode} />;
     case 'text':
-      return <TextBlock props={block.props as any} {...commonProps} />;
+      return <TextBlock props={block.props as any} {...commonProps} viewMode={viewMode} />;
     case 'image':
       return <ImageBlock props={block.props as any} {...commonProps} />;
     case 'button':
@@ -67,11 +68,11 @@ export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate, 
     case 'accordion':
       return <AccordionBlock props={block.props as any} {...commonProps} />;
     case 'pricing':
-      return <PricingBlock props={block.props as any} {...commonProps} />;
+      return <PricingBlock props={block.props as any} {...commonProps} viewMode={viewMode} />;
     case 'feature-grid':
-      return <FeatureGridBlock props={block.props as any} {...commonProps} />;
+      return <FeatureGridBlock props={block.props as any} {...commonProps} viewMode={viewMode} />;
     case 'hero':
-      return <HeroBlock block={block} isSelected={isSelected} isPreview={isPreview} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
+      return <HeroBlock block={block} isSelected={isSelected} isPreview={isPreview} viewMode={viewMode} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
     case 'nav':
       return <NavBlock block={block} isSelected={isSelected} isPreview={isPreview} viewMode={viewMode} onUpdate={(updates) => onUpdate?.(updates.props || {})} />;
     case 'footer':
@@ -85,7 +86,7 @@ export function BlockRenderer({ block, isSelected, isPreview = false, onUpdate, 
     case 'map':
       return <MapBlock props={block.props as any} {...commonProps} />;
     case 'stats':
-      return <StatsBlock props={block.props as any} {...commonProps} />;
+      return <StatsBlock props={block.props as any} {...commonProps} viewMode={viewMode} />;
     case 'logo-cloud':
       return <LogoCloudBlock props={block.props as any} {...commonProps} />;
     case 'alert-banner':
