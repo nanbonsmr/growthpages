@@ -7,6 +7,7 @@ export interface PageTemplate {
   thumbnail: string;
   blocks: Block[];
   settings: Partial<PageSettings>;
+  requiredPlan?: 'free' | 'pro' | 'business'; // undefined or 'free' = available to all
 }
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -96,6 +97,23 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
           buttonColor: '#8b5cf6',
           successMessage: 'Welcome aboard! Check your inbox.',
           layout: 'inline',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 40 },
+      },
+      {
+        id: generateId(),
+        type: 'image',
+        props: {
+          src: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=400&fit=crop',
+          alt: 'Newsletter preview - replace with your own image',
+          width: 600,
+          height: 300,
+          alignment: 'center',
+          borderRadius: 12,
         },
       },
       {
@@ -307,12 +325,19 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
       {
         id: generateId(),
         type: 'spacer',
-        props: { height: 60 },
+        props: { height: 30 },
       },
       {
         id: generateId(),
-        type: 'divider',
-        props: { style: 'solid', color: '#1e293b', width: 100 },
+        type: 'image',
+        props: {
+          src: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop',
+          alt: 'Product mockup - replace with your own screenshot',
+          width: 700,
+          height: 400,
+          alignment: 'center',
+          borderRadius: 16,
+        },
       },
       {
         id: generateId(),
@@ -621,6 +646,18 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
           height: 'large',
           alignment: 'center',
           textColor: 'light',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'image',
+        props: {
+          src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop',
+          alt: 'Product screenshot - replace with your own',
+          width: 700,
+          height: 400,
+          alignment: 'center',
+          borderRadius: 16,
         },
       },
       {
@@ -976,6 +1013,18 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
       },
       {
         id: generateId(),
+        type: 'image',
+        props: {
+          src: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&h=450&fit=crop',
+          alt: 'Dashboard preview - replace with your product screenshot',
+          width: 700,
+          height: 400,
+          alignment: 'center',
+          borderRadius: 16,
+        },
+      },
+      {
+        id: generateId(),
         type: 'spacer',
         props: { height: 60 },
       },
@@ -1206,6 +1255,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
     name: 'Agency Portfolio',
     description: 'Minimalist agency showcase with contact form and case studies',
     thumbnail: '/placeholder.svg',
+    requiredPlan: 'pro',
     settings: {
       backgroundType: 'solid',
       backgroundColor: '#fafafa',
@@ -1267,6 +1317,18 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
           fontSize: 20,
           alignment: 'center',
           color: '#71717a',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'image',
+        props: {
+          src: 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=800&h=400&fit=crop',
+          alt: 'Agency showcase - replace with your work',
+          width: 700,
+          height: 350,
+          alignment: 'center',
+          borderRadius: 12,
         },
       },
       {
@@ -1420,6 +1482,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
     name: 'Webinar Registration',
     description: 'Professional webinar page with speakers, agenda, and countdown',
     thumbnail: '/placeholder.svg',
+    requiredPlan: 'pro',
     settings: {
       backgroundType: 'gradient',
       gradientFrom: '#0f172a',
@@ -1824,6 +1887,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
     name: 'Portfolio',
     description: 'Showcase your best work with a clean, visual portfolio layout',
     thumbnail: '/placeholder.svg',
+    requiredPlan: 'pro',
     settings: {
       backgroundType: 'solid',
       backgroundColor: '#111111',
@@ -2357,6 +2421,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
     name: 'Coaching / Consulting',
     description: 'Professional coaching page with services, testimonials, and booking',
     thumbnail: '/placeholder.svg',
+    requiredPlan: 'business',
     settings: {
       backgroundType: 'solid',
       backgroundColor: '#fdf4ff',
@@ -2570,6 +2635,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
     name: 'Restaurant / Café',
     description: 'Elegant restaurant page with menu highlights and reservations',
     thumbnail: '/placeholder.svg',
+    requiredPlan: 'business',
     settings: {
       backgroundType: 'solid',
       backgroundColor: '#1a1205',
@@ -2609,6 +2675,18 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
           height: 'large',
           alignment: 'center',
           textColor: 'light',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'image',
+        props: {
+          src: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=400&fit=crop',
+          alt: 'Restaurant interior - replace with your photo',
+          width: 700,
+          height: 350,
+          alignment: 'center',
+          borderRadius: 12,
         },
       },
       {
