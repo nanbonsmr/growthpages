@@ -18,7 +18,7 @@ export function ListBlock({ props, isPreview }: ListBlockProps) {
           {props.style === 'bullet' && <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-current shrink-0" />}
           {props.style === 'numbered' && <span className="font-semibold shrink-0">{index + 1}.</span>}
           {props.style === 'check' && <Check className="h-5 w-5 shrink-0 mt-0.5 text-green-500" />}
-          <span>{item}</span>
+          <span>{typeof item === 'string' ? item : (item as any)?.text || ''}</span>
         </div>
       ))}
     </div>
