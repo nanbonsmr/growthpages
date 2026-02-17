@@ -1,12 +1,14 @@
 import { SocialProps } from '../types';
-import { Twitter, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
+import { Twitter, Facebook, Instagram, Linkedin, Youtube, Github, Globe } from 'lucide-react';
 
-const iconMap = {
+const iconMap: Record<string, React.ComponentType<any>> = {
   twitter: Twitter,
   facebook: Facebook,
   instagram: Instagram,
   linkedin: Linkedin,
   youtube: Youtube,
+  github: Github,
+  dribbble: Globe, // fallback for dribbble
 };
 
 interface SocialBlockProps {
@@ -33,7 +35,8 @@ export function SocialBlock({ props }: SocialBlockProps) {
       }}
     >
       {enabledPlatforms.map((platform) => {
-        const Icon = iconMap[platform.name];
+        const Icon = iconMap[platform.name] || Globe;
+        if (!Icon) return null;
         return (
           <a
             key={platform.name}
