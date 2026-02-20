@@ -30,6 +30,10 @@ import portfolioThumb from '@/assets/templates/portfolio.png';
 import cvResumeThumb from '@/assets/templates/cv-resume.png';
 import coachingThumb from '@/assets/templates/coaching.png';
 import restaurantThumb from '@/assets/templates/restaurant.png';
+import fitnessGymThumb from '@/assets/templates/fitness-gym.png';
+import photographyThumb from '@/assets/templates/photography.png';
+import realEstateThumb from '@/assets/templates/real-estate.png';
+import educationThumb from '@/assets/templates/education.png';
 
 interface TemplatesDialogProps {
   templates: PageTemplate[];
@@ -50,12 +54,18 @@ const TEMPLATE_THUMBNAILS: Record<string, string> = {
   cv_resume: cvResumeThumb,
   coaching: coachingThumb,
   restaurant: restaurantThumb,
+  fitness_gym: fitnessGymThumb,
+  photography: photographyThumb,
+  real_estate: realEstateThumb,
+  education: educationThumb,
 };
 
 const TEMPLATE_BADGES: Record<string, string> = {
   saas_landing: 'Popular',
   webinar: 'New',
   cv_resume: 'Popular',
+  fitness_gym: 'New',
+  education: 'New',
 };
 
 const PLAN_HIERARCHY: Record<string, number> = {
