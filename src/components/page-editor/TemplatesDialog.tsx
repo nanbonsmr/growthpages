@@ -104,6 +104,30 @@ const TEMPLATE_CATEGORIES: Record<string, CategoryKey> = {
   education: 'industry',
 };
 
+const CATEGORY_LABELS: Record<CategoryKey, string> = {
+  all: 'All',
+  marketing: 'Marketing',
+  business: 'Business',
+  creative: 'Creative',
+  industry: 'Industry',
+};
+
+function getBlockSummary(template: PageTemplate): string[] {
+  const types = new Set(template.blocks.map(b => b.type));
+  const tags: string[] = [];
+  if (types.has('hero')) tags.push('Hero');
+  if (types.has('form') || types.has('contact-form')) tags.push('Form');
+  if (types.has('testimonial')) tags.push('Testimonial');
+  if (types.has('pricing')) tags.push('Pricing');
+  if (types.has('accordion')) tags.push('FAQ');
+  if (types.has('feature-grid')) tags.push('Features');
+  if (types.has('stats')) tags.push('Stats');
+  if (types.has('countdown')) tags.push('Countdown');
+  if (types.has('social')) tags.push('Social');
+  if (types.has('map')) tags.push('Map');
+  return tags;
+}
+
 const PLAN_HIERARCHY: Record<string, number> = { free: 0, pro: 1, business: 2 };
 
 function canAccessTemplate(template: PageTemplate, currentPlan: string): boolean {
@@ -312,12 +336,32 @@ export function TemplatesDialog({ templates, onLoadTemplate }: TemplatesDialogPr
 
                   {/* Info */}
                   <div className="p-3.5 sm:p-4">
-                    <h3 className="font-semibold text-sm text-foreground leading-tight mb-1 group-hover:text-primary transition-colors duration-200">
-                      {template.name}
-                    </h3>
-                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="font-semibold text-sm text-foreground leading-tight group-hover:text-primary transition-colors duration-200">
+                        {template.name}
+                      </h3>
+                      <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-md font-medium">
+                        {template.blocks.filter(b => b.type !== 'spacer').length} blocks
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground line-clamp-1 leading-relaxed mb-2">
                       {template.description}
                     </p>
+                    <div className="flex flex-wrap gap-1">
+                      {getBlockSummary(template).slice(0, 4).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[9px] font-medium px-1.5 py-0.5 rounded-md bg-primary/5 text-primary/70 border border-primary/10"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {TEMPLATE_CATEGORIES[template.id] && (
+                        <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground">
+                          {CATEGORY_LABELS[TEMPLATE_CATEGORIES[template.id]]}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
