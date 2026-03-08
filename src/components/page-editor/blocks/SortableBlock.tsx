@@ -66,38 +66,48 @@ export function SortableBlock({
     ...(customHeight > 0 ? { height: `${customHeight}px`, overflow: 'hidden' } : {}),
   };
 
-  const handleMoveStart = useCallback((e: React.MouseEvent) => {
+  const getClientPos = (e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent) => {
+    if ('touches' in e) {
+      const touch = e.touches[0] || (e as TouchEvent).changedTouches[0];
+      return { x: touch.clientX, y: touch.clientY };
+    }
+    return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY };
+  };
+
+  const handleMoveStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    const pos = getClientPos(e);
     setIsMoving(true);
-    setMoveStart({ x: e.clientX - offsetX, y: e.clientY - offsetY });
+    setMoveStart({ x: pos.x - offsetX, y: pos.y - offsetY });
     onSelect();
   }, [offsetX, offsetY, onSelect]);
 
-  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+  const handleResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    const pos = getClientPos(e);
     setIsResizing(true);
-    const blockEl = e.currentTarget.closest('.group') as HTMLElement;
+    const blockEl = (e.target as HTMLElement).closest('.group') as HTMLElement;
     const currentHeightPx = blockEl?.getBoundingClientRect().height || 100;
-    setResizeStart({ x: e.clientX, y: e.clientY, width: customWidth, height: customHeight || currentHeightPx });
+    setResizeStart({ x: pos.x, y: pos.y, width: customWidth, height: customHeight || currentHeightPx });
     onSelect();
   }, [customWidth, customHeight, onSelect]);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
+  const handlePointerMove = useCallback((e: MouseEvent | TouchEvent) => {
+    const pos = getClientPos(e);
+
     if (isMoving && onPositionChange) {
-      const newX = e.clientX - moveStart.x;
-      const newY = e.clientY - moveStart.y;
       onPositionChange({
         ...position,
-        x: newX,
-        y: newY,
+        x: pos.x - moveStart.x,
+        y: pos.y - moveStart.y,
       });
     }
 
     if (isResizing && onPositionChange) {
-      const deltaX = e.clientX - resizeStart.x;
-      const deltaY = e.clientY - resizeStart.y;
+      const deltaX = pos.x - resizeStart.x;
+      const deltaY = pos.y - resizeStart.y;
       const containerWidth = (e.target as HTMLElement)?.closest('.min-h-\\[600px\\]')?.clientWidth || 800;
       const deltaPercent = (deltaX / containerWidth) * 100;
       const newWidth = Math.max(20, Math.min(100, resizeStart.width + deltaPercent));
@@ -110,21 +120,25 @@ export function SortableBlock({
     }
   }, [isMoving, isResizing, moveStart, resizeStart, position, onPositionChange]);
 
-  const handleMouseUp = useCallback(() => {
+  const handlePointerUp = useCallback(() => {
     setIsMoving(false);
     setIsResizing(false);
   }, []);
 
   useEffect(() => {
     if (isMoving || isResizing) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('mousemove', handlePointerMove);
+      window.addEventListener('mouseup', handlePointerUp);
+      window.addEventListener('touchmove', handlePointerMove, { passive: false });
+      window.addEventListener('touchend', handlePointerUp);
       return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('mousemove', handlePointerMove);
+        window.removeEventListener('mouseup', handlePointerUp);
+        window.removeEventListener('touchmove', handlePointerMove);
+        window.removeEventListener('touchend', handlePointerUp);
       };
     }
-  }, [isMoving, isResizing, handleMouseMove, handleMouseUp]);
+  }, [isMoving, isResizing, handlePointerMove, handlePointerUp]);
 
   return (
     <div
@@ -174,6 +188,7 @@ export function SortableBlock({
           {/* Free Move Handle */}
           <div
             onMouseDown={handleMoveStart}
+            onTouchStart={handleMoveStart}
             className={cn(
               'p-1 rounded cursor-move',
               'hover:bg-muted transition-colors',
@@ -255,6 +270,7 @@ export function SortableBlock({
         {isSelected && (
           <div
             onMouseDown={handleResizeStart}
+            onTouchStart={handleResizeStart}
             className={cn(
               'absolute bottom-1 right-1 w-5 h-5 cursor-nwse-resize',
               'bg-primary/80 hover:bg-primary rounded-bl rounded-tr',
