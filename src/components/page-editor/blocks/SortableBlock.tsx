@@ -270,6 +270,7 @@ export function SortableBlock({
         {isSelected && (
           <div
             onMouseDown={handleResizeStart}
+            onTouchStart={handleResizeStart}
             className={cn(
               'absolute bottom-1 right-1 w-5 h-5 cursor-nwse-resize',
               'bg-primary/80 hover:bg-primary rounded-bl rounded-tr',
