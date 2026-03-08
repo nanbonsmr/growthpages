@@ -1038,14 +1038,16 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'saas_landing',
     name: 'SaaS Landing',
-    description: 'Full-featured SaaS landing page with pricing and social proof',
+    description: 'Premium startup landing page — Hero, Features, About, Testimonials, Pricing, FAQ, CTA & Footer',
     thumbnail: '/placeholder.svg',
     settings: {
       backgroundType: 'solid',
       backgroundColor: '#ffffff',
       primaryColor: '#4f46e5',
+      fontFamily: 'Inter, system-ui, sans-serif',
     },
     blocks: [
+      // ─── NAVIGATION ───────────────────────────────────────────
       {
         id: generateId(),
         type: 'nav',
@@ -1055,45 +1057,87 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
           logoImage: '',
           menuItems: [
             { id: '1', label: 'Features', url: '#features' },
-            { id: '2', label: 'Pricing', url: '#pricing' },
-            { id: '3', label: 'Testimonials', url: '#testimonials' },
-            { id: '4', label: 'FAQ', url: '#faq' },
+            { id: '2', label: 'About', url: '#about' },
+            { id: '3', label: 'Pricing', url: '#pricing' },
+            { id: '4', label: 'Testimonials', url: '#testimonials' },
+            { id: '5', label: 'FAQ', url: '#faq' },
           ],
-          ctaButton: { enabled: true, text: 'Start Free →', url: '#signup' },
-          style: 'solid',
+          ctaButton: { enabled: true, text: 'Get Started Free →', url: '#signup' },
+          style: 'glass',
           alignment: 'spread',
           sticky: true,
-          backgroundColor: '#ffffff',
+          backgroundColor: 'rgba(255,255,255,0.85)',
           textColor: '#1e293b',
         },
       },
+
+      // ─── HERO SECTION ─────────────────────────────────────────
       {
         id: generateId(),
         type: 'hero',
         props: {
-          headline: 'Ship products 10x faster with AI workflows',
-          subheadline: 'Flowbase combines project management, design, and development into one AI-powered platform. Trusted by 5,000+ teams worldwide.',
-          buttonText: 'Start Free — No Credit Card',
+          headline: 'Build, launch, and scale your product — 10x faster',
+          subheadline: 'Flowbase is the all-in-one platform that replaces your entire tool stack. Design, develop, and deploy with AI-powered workflows trusted by 12,000+ teams.',
+          buttonText: 'Start Free — No Credit Card Needed',
           buttonLink: '#signup',
-          backgroundImage: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop',
-          backgroundOverlay: 0.65,
+          backgroundImage: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=1400&h=700&fit=crop',
+          backgroundOverlay: 0.7,
           height: 'large',
           alignment: 'center',
-          textColor: 'dark',
+          textColor: 'light',
         },
       },
+
+      // ─── PRODUCT SCREENSHOT ────────────────────────────────────
       {
         id: generateId(),
         type: 'image',
         props: {
-          src: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&h=450&fit=crop',
-          alt: 'Dashboard preview - replace with your product screenshot',
-          width: 700,
-          height: 400,
+          src: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=900&h=500&fit=crop',
+          alt: 'Flowbase dashboard — replace with your product screenshot',
+          width: 800,
+          height: 450,
           alignment: 'center',
           borderRadius: 16,
+          _bgColor: 'transparent',
+          _padding: 0,
         },
       },
+
+      // ─── SOCIAL PROOF — LOGO CLOUD ────────────────────────────
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 50 },
+      },
+      {
+        id: generateId(),
+        type: 'text',
+        props: {
+          text: 'TRUSTED BY INNOVATIVE TEAMS WORLDWIDE',
+          fontSize: 12,
+          alignment: 'center',
+          color: '#94a3b8',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'stats',
+        props: {
+          stats: [
+            { id: '1', value: '12,000', label: 'Teams', prefix: '', suffix: '+' },
+            { id: '2', value: '99.9', label: 'Uptime', prefix: '', suffix: '%' },
+            { id: '3', value: '4.9', label: 'Rating', prefix: '', suffix: '/5' },
+            { id: '4', value: '150', label: 'Countries', prefix: '', suffix: '+' },
+          ],
+          columns: 4,
+          style: 'simple',
+          valueColor: '#4f46e5',
+          valueSize: 36,
+        },
+      },
+
+      // ─── FEATURES SECTION ─────────────────────────────────────
       {
         id: generateId(),
         type: 'spacer',
@@ -1101,11 +1145,21 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
       },
       {
         id: generateId(),
+        type: 'text',
+        props: {
+          text: '✦ FEATURES',
+          fontSize: 13,
+          alignment: 'center',
+          color: '#4f46e5',
+        },
+      },
+      {
+        id: generateId(),
         type: 'heading',
         props: {
           text: 'Everything you need to build faster',
           level: 'h2',
-          fontSize: 36,
+          fontSize: 42,
           fontWeight: 'bold',
           alignment: 'center',
           color: '#0f172a',
@@ -1115,8 +1169,8 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
         id: generateId(),
         type: 'text',
         props: {
-          text: 'One platform to replace your entire stack. No more tool fatigue.',
-          fontSize: 18,
+          text: 'One platform to replace your entire stack. Stop juggling tools and start shipping.',
+          fontSize: 19,
           alignment: 'center',
           color: '#64748b',
         },
@@ -1131,12 +1185,12 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
         type: 'feature-grid',
         props: {
           features: [
-            { id: '1', icon: 'Wand2', title: 'AI Copilot', description: 'Generate specs, code, and designs from plain English prompts' },
-            { id: '2', icon: 'GitBranch', title: 'Version Control', description: 'Built-in branching and merge workflows for every project' },
-            { id: '3', icon: 'BarChart3', title: 'Real-time Analytics', description: 'Track velocity, blockers, and team performance live' },
-            { id: '4', icon: 'Plug', title: '100+ Integrations', description: 'Connect with Figma, GitHub, Slack, Jira, and more' },
-            { id: '5', icon: 'Shield', title: 'Enterprise Security', description: 'SOC 2, GDPR, SSO, and role-based access controls' },
-            { id: '6', icon: 'Headphones', title: '24/7 Support', description: 'Dedicated success managers and <2h response time' },
+            { id: '1', icon: 'Wand2', title: 'AI Copilot', description: 'Generate specs, designs, and code from natural language. Your AI pair programmer that actually understands context.' },
+            { id: '2', icon: 'Zap', title: 'Instant Deploy', description: 'Push to production in seconds with zero-downtime deployments. Preview branches before you merge.' },
+            { id: '3', icon: 'BarChart3', title: 'Real-time Analytics', description: 'Track velocity, blockers, and performance with beautiful dashboards that update in real time.' },
+            { id: '4', icon: 'Plug', title: '100+ Integrations', description: 'Connect with Figma, GitHub, Slack, Linear, Notion, and your entire workflow seamlessly.' },
+            { id: '5', icon: 'Shield', title: 'Enterprise Security', description: 'SOC 2 Type II, GDPR compliant, SSO, RBAC, and audit logs. Your data is safe with us.' },
+            { id: '6', icon: 'Users', title: 'Team Collaboration', description: 'Real-time multiplayer editing, comments, and async updates. Work together, even when apart.' },
           ],
           columns: 3,
           style: 'cards',
@@ -1144,28 +1198,40 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
           showIcons: true,
         },
       },
+
+      // ─── ABOUT / PRODUCT SECTION ──────────────────────────────
       {
         id: generateId(),
         type: 'spacer',
-        props: { height: 60 },
+        props: { height: 70 },
       },
       {
         id: generateId(),
         type: 'divider',
-        props: { style: 'solid', color: '#e2e8f0', width: 100 },
+        props: { style: 'solid', color: '#e2e8f0', thickness: 1, width: 40 },
       },
       {
         id: generateId(),
         type: 'spacer',
-        props: { height: 60 },
+        props: { height: 70 },
+      },
+      {
+        id: generateId(),
+        type: 'text',
+        props: {
+          text: '✦ WHY FLOWBASE',
+          fontSize: 13,
+          alignment: 'center',
+          color: '#4f46e5',
+        },
       },
       {
         id: generateId(),
         type: 'heading',
         props: {
-          text: 'Simple, transparent pricing',
+          text: 'Built for teams that move fast and ship often',
           level: 'h2',
-          fontSize: 36,
+          fontSize: 40,
           fontWeight: 'bold',
           alignment: 'center',
           color: '#0f172a',
@@ -1175,7 +1241,191 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
         id: generateId(),
         type: 'text',
         props: {
-          text: 'Start free, scale as you grow. No hidden fees.',
+          text: 'We built Flowbase because we were tired of stitching together a dozen tools just to ship a feature. Our platform unifies planning, design, development, and analytics into a single, AI-powered workspace — so your team can focus on what matters: building great products.',
+          fontSize: 18,
+          alignment: 'center',
+          color: '#64748b',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 30 },
+      },
+      {
+        id: generateId(),
+        type: 'image',
+        props: {
+          src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop',
+          alt: 'Product workflow visualization — replace with your screenshot',
+          width: 750,
+          height: 380,
+          alignment: 'center',
+          borderRadius: 12,
+        },
+      },
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 40 },
+      },
+      {
+        id: generateId(),
+        type: 'list',
+        props: {
+          items: [
+            { text: 'Replace 5+ tools with a single platform and save $3,000+/month' },
+            { text: 'Ship features 10x faster with AI-assisted workflows' },
+            { text: 'Onboard new team members in hours, not weeks' },
+            { text: 'SOC 2 Type II certified — enterprise-grade from day one' },
+          ],
+          style: 'check',
+          fontSize: 17,
+          color: '#334155',
+          spacing: 'relaxed',
+        },
+      },
+
+      // ─── TESTIMONIALS SECTION ─────────────────────────────────
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 70 },
+      },
+      {
+        id: generateId(),
+        type: 'divider',
+        props: { style: 'solid', color: '#e2e8f0', thickness: 1, width: 40 },
+      },
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 70 },
+      },
+      {
+        id: generateId(),
+        type: 'text',
+        props: {
+          text: '✦ TESTIMONIALS',
+          fontSize: 13,
+          alignment: 'center',
+          color: '#4f46e5',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'heading',
+        props: {
+          text: 'Loved by teams everywhere',
+          level: 'h2',
+          fontSize: 40,
+          fontWeight: 'bold',
+          alignment: 'center',
+          color: '#0f172a',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'text',
+        props: {
+          text: 'Don\'t just take our word for it. Here\'s what our customers have to say.',
+          fontSize: 18,
+          alignment: 'center',
+          color: '#64748b',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 30 },
+      },
+      {
+        id: generateId(),
+        type: 'testimonial',
+        props: {
+          quote: '"Flowbase replaced 4 tools for us and saved $2,000/month. Our engineering team ships twice as fast now. It\'s the best investment we\'ve made this year."',
+          author: 'Elena Torres',
+          role: 'VP Engineering, ScaleUp',
+          avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face',
+          backgroundColor: '#f8fafc',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 16 },
+      },
+      {
+        id: generateId(),
+        type: 'testimonial',
+        props: {
+          quote: '"The AI copilot is genuinely incredible. It understands our codebase context and generates production-ready code. We\'ve cut our sprint cycles in half."',
+          author: 'Marcus Chen',
+          role: 'CTO, NovaTech',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face',
+          backgroundColor: '#f8fafc',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 16 },
+      },
+      {
+        id: generateId(),
+        type: 'testimonial',
+        props: {
+          quote: '"We evaluated 15 platforms before choosing Flowbase. The combination of AI, real-time collaboration, and enterprise security is unmatched in the market."',
+          author: 'Sarah Kim',
+          role: 'Head of Product, Meridian',
+          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face',
+          backgroundColor: '#f8fafc',
+        },
+      },
+
+      // ─── PRICING SECTION ──────────────────────────────────────
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 70 },
+      },
+      {
+        id: generateId(),
+        type: 'divider',
+        props: { style: 'solid', color: '#e2e8f0', thickness: 1, width: 40 },
+      },
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 70 },
+      },
+      {
+        id: generateId(),
+        type: 'text',
+        props: {
+          text: '✦ PRICING',
+          fontSize: 13,
+          alignment: 'center',
+          color: '#4f46e5',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'heading',
+        props: {
+          text: 'Simple, transparent pricing',
+          level: 'h2',
+          fontSize: 40,
+          fontWeight: 'bold',
+          alignment: 'center',
+          color: '#0f172a',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'text',
+        props: {
+          text: 'Start free, scale as you grow. No hidden fees. Cancel anytime.',
           fontSize: 18,
           alignment: 'center',
           color: '#64748b',
@@ -1191,30 +1441,143 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
         type: 'pricing',
         props: {
           tiers: [
-            { id: '1', name: 'Starter', price: '$0', period: 'month', description: 'For side projects', features: ['2 projects', 'Basic AI (50 prompts/mo)', 'Community support', '1 GB storage'], buttonText: 'Get Started', buttonUrl: '#', highlighted: false },
-            { id: '2', name: 'Pro', price: '$29', period: 'month', description: 'For growing teams', features: ['Unlimited projects', 'Unlimited AI', 'Priority support', '100 GB storage', 'Advanced analytics', 'API access'], buttonText: 'Start Free Trial', buttonUrl: '#', highlighted: true },
-            { id: '3', name: 'Enterprise', price: 'Custom', period: '', description: 'For large organizations', features: ['Everything in Pro', 'SSO & SCIM', 'Dedicated CSM', 'Custom SLA', 'On-premise option', 'Audit logs'], buttonText: 'Talk to Sales', buttonUrl: '#', highlighted: false },
+            {
+              id: '1',
+              name: 'Starter',
+              price: '$0',
+              period: 'forever',
+              description: 'For individuals & side projects',
+              features: ['2 projects', 'Basic AI — 50 prompts/mo', 'Community support', '1 GB storage', 'Public sharing'],
+              buttonText: 'Get Started Free',
+              buttonUrl: '#signup',
+              highlighted: false,
+            },
+            {
+              id: '2',
+              name: 'Pro',
+              price: '$29',
+              period: 'per month',
+              description: 'For growing teams & startups',
+              features: ['Unlimited projects', 'Unlimited AI prompts', 'Priority support (< 2h)', '100 GB storage', 'Advanced analytics', 'API access', 'Custom domains', 'Team collaboration'],
+              buttonText: 'Start 14-Day Free Trial',
+              buttonUrl: '#signup',
+              highlighted: true,
+            },
+            {
+              id: '3',
+              name: 'Enterprise',
+              price: 'Custom',
+              period: '',
+              description: 'For large organizations',
+              features: ['Everything in Pro', 'SSO & SCIM provisioning', 'Dedicated success manager', 'Custom SLA (99.99%)', 'On-premise deployment', 'Audit logs & compliance', 'Priority phone support', 'Volume discounts'],
+              buttonText: 'Talk to Sales',
+              buttonUrl: '#contact',
+              highlighted: false,
+            },
           ],
           columns: 3,
           style: 'cards',
           highlightColor: '#4f46e5',
         },
       },
+
+      // ─── FAQ SECTION ──────────────────────────────────────────
       {
         id: generateId(),
         type: 'spacer',
-        props: { height: 60 },
+        props: { height: 70 },
+      },
+      {
+        id: generateId(),
+        type: 'divider',
+        props: { style: 'solid', color: '#e2e8f0', thickness: 1, width: 40 },
+      },
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 70 },
+      },
+      {
+        id: generateId(),
+        type: 'text',
+        props: {
+          text: '✦ FAQ',
+          fontSize: 13,
+          alignment: 'center',
+          color: '#4f46e5',
+        },
       },
       {
         id: generateId(),
         type: 'heading',
         props: {
-          text: 'Loved by teams everywhere',
+          text: 'Frequently asked questions',
           level: 'h2',
-          fontSize: 32,
+          fontSize: 40,
           fontWeight: 'bold',
           alignment: 'center',
           color: '#0f172a',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'text',
+        props: {
+          text: 'Everything you need to know about Flowbase. Can\'t find your answer? Chat with our team.',
+          fontSize: 18,
+          alignment: 'center',
+          color: '#64748b',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 30 },
+      },
+      {
+        id: generateId(),
+        type: 'accordion',
+        props: {
+          items: [
+            { id: '1', question: 'How does the free plan work?', answer: 'The Starter plan is free forever and includes 2 projects with basic AI features. No credit card required. You can upgrade or downgrade at any time.' },
+            { id: '2', question: 'Can I cancel my subscription anytime?', answer: 'Absolutely. Cancel with one click from your dashboard — no lock-in contracts, no cancellation fees. Your data remains exportable for 30 days after cancellation.' },
+            { id: '3', question: 'Do you offer a free trial for Pro?', answer: 'Yes! The Pro plan comes with a full-featured 14-day free trial. No credit card required to start. You\'ll get a reminder before the trial ends.' },
+            { id: '4', question: 'What integrations do you support?', answer: 'We integrate with 100+ tools including Figma, GitHub, GitLab, Slack, Jira, Linear, Notion, Zapier, and more. Custom webhooks and API access are available on Pro plans.' },
+            { id: '5', question: 'Is my data secure?', answer: 'Security is our top priority. We\'re SOC 2 Type II certified, GDPR compliant, and offer features like SSO, RBAC, and audit logs on Enterprise plans. All data is encrypted at rest and in transit.' },
+            { id: '6', question: 'Can I migrate from another tool?', answer: 'Yes! We offer free migration assistance and import tools for Jira, Asana, Monday, Notion, and Trello. Our team will help you get set up in under an hour.' },
+          ],
+          allowMultiple: false,
+          style: 'separated',
+          iconPosition: 'right',
+        },
+      },
+
+      // ─── FINAL CTA SECTION ────────────────────────────────────
+      {
+        id: generateId(),
+        type: 'spacer',
+        props: { height: 70 },
+      },
+      {
+        id: generateId(),
+        type: 'heading',
+        props: {
+          text: 'Ready to build the future?',
+          level: 'h2',
+          fontSize: 44,
+          fontWeight: 'bold',
+          alignment: 'center',
+          color: '#0f172a',
+        },
+      },
+      {
+        id: generateId(),
+        type: 'text',
+        props: {
+          text: 'Join 12,000+ teams already shipping faster with Flowbase. Start free today — no credit card required.',
+          fontSize: 19,
+          alignment: 'center',
+          color: '#64748b',
         },
       },
       {
@@ -1224,50 +1587,16 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
       },
       {
         id: generateId(),
-        type: 'testimonial',
+        type: 'form',
         props: {
-          quote: '"Flowbase replaced 4 tools for us and saved $2,000/month. Our team ships twice as fast now."',
-          author: 'Elena Torres',
-          role: 'VP Engineering, ScaleUp',
-          avatar: '',
-          backgroundColor: '#f8fafc',
-        },
-      },
-      {
-        id: generateId(),
-        type: 'spacer',
-        props: { height: 40 },
-      },
-      {
-        id: generateId(),
-        type: 'accordion',
-        props: {
-          items: [
-            { id: '1', question: 'How does the free plan work?', answer: 'The free plan includes 2 projects with basic AI features. No credit card required. Upgrade anytime.' },
-            { id: '2', question: 'Can I cancel my subscription?', answer: 'Yes, cancel anytime with one click. No lock-in contracts. Your data is always exportable.' },
-            { id: '3', question: 'Do you offer a free trial?', answer: 'Yes! Pro plan comes with a 14-day free trial with full features. No credit card needed to start.' },
-            { id: '4', question: 'What integrations do you support?', answer: 'We integrate with 100+ tools including Figma, GitHub, Slack, Jira, Linear, Notion, and more. Custom webhooks available on Pro.' },
-          ],
-          allowMultiple: true,
-          style: 'bordered',
-          iconPosition: 'right',
-        },
-      },
-      {
-        id: generateId(),
-        type: 'spacer',
-        props: { height: 60 },
-      },
-      {
-        id: generateId(),
-        type: 'heading',
-        props: {
-          text: 'Ready to build faster?',
-          level: 'h2',
-          fontSize: 36,
-          fontWeight: 'bold',
-          alignment: 'center',
-          color: '#0f172a',
+          showName: false,
+          showEmail: true,
+          showPhone: false,
+          emailPlaceholder: 'Enter your work email',
+          buttonText: 'Start Free — No Credit Card',
+          buttonColor: '#4f46e5',
+          successMessage: '🎉 Welcome aboard! Check your email to get started.',
+          layout: 'inline',
         },
       },
       {
@@ -1277,22 +1606,20 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
       },
       {
         id: generateId(),
-        type: 'form',
+        type: 'text',
         props: {
-          showName: false,
-          showEmail: true,
-          showPhone: false,
-          emailPlaceholder: 'Work email',
-          buttonText: 'Start Free — No Credit Card',
-          buttonColor: '#4f46e5',
-          successMessage: 'Welcome! Check your email to get started.',
-          layout: 'inline',
+          text: '✓ Free forever plan  ·  ✓ No credit card  ·  ✓ Setup in 2 minutes',
+          fontSize: 14,
+          alignment: 'center',
+          color: '#94a3b8',
         },
       },
+
+      // ─── FOOTER ───────────────────────────────────────────────
       {
         id: generateId(),
         type: 'spacer',
-        props: { height: 40 },
+        props: { height: 60 },
       },
       {
         id: generateId(),
@@ -1301,16 +1628,57 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
           logoType: 'text',
           logoText: 'Flowbase',
           logoImage: '',
-          tagline: 'Ship products 10x faster.',
+          tagline: 'Ship products 10x faster with AI-powered workflows.',
           columns: [
-            { id: '1', title: 'Product', links: [{ id: 'a', label: 'Features', url: '#' }, { id: 'b', label: 'Pricing', url: '#' }, { id: 'c', label: 'Integrations', url: '#' }, { id: 'd', label: 'Changelog', url: '#' }] },
-            { id: '2', title: 'Company', links: [{ id: 'e', label: 'About', url: '#' }, { id: 'f', label: 'Blog', url: '#' }, { id: 'g', label: 'Careers', url: '#' }, { id: 'h', label: 'Press', url: '#' }] },
-            { id: '3', title: 'Resources', links: [{ id: 'i', label: 'Documentation', url: '#' }, { id: 'j', label: 'Help Center', url: '#' }, { id: 'k', label: 'Community', url: '#' }, { id: 'l', label: 'Status', url: '#' }] },
+            {
+              id: '1',
+              title: 'Product',
+              links: [
+                { id: 'a', label: 'Features', url: '#features' },
+                { id: 'b', label: 'Pricing', url: '#pricing' },
+                { id: 'c', label: 'Integrations', url: '#' },
+                { id: 'd', label: 'Changelog', url: '#' },
+                { id: 'e', label: 'Roadmap', url: '#' },
+              ],
+            },
+            {
+              id: '2',
+              title: 'Company',
+              links: [
+                { id: 'f', label: 'About Us', url: '#about' },
+                { id: 'g', label: 'Blog', url: '#' },
+                { id: 'h', label: 'Careers', url: '#' },
+                { id: 'i', label: 'Press Kit', url: '#' },
+                { id: 'j', label: 'Contact', url: '#' },
+              ],
+            },
+            {
+              id: '3',
+              title: 'Resources',
+              links: [
+                { id: 'k', label: 'Documentation', url: '#' },
+                { id: 'l', label: 'Help Center', url: '#' },
+                { id: 'm', label: 'Community', url: '#' },
+                { id: 'n', label: 'API Reference', url: '#' },
+                { id: 'o', label: 'Status Page', url: '#' },
+              ],
+            },
+            {
+              id: '4',
+              title: 'Legal',
+              links: [
+                { id: 'p', label: 'Privacy Policy', url: '#' },
+                { id: 'q', label: 'Terms of Service', url: '#' },
+                { id: 'r', label: 'Cookie Policy', url: '#' },
+                { id: 's', label: 'Security', url: '#' },
+              ],
+            },
           ],
           socials: [
             { platform: 'twitter', url: '#', enabled: true },
             { platform: 'linkedin', url: '#', enabled: true },
             { platform: 'github', url: '#', enabled: true },
+            { platform: 'youtube', url: '#', enabled: true },
           ],
           copyrightText: '© 2025 Flowbase Inc. All rights reserved.',
           style: 'columns',
