@@ -188,6 +188,7 @@ export function SortableBlock({
           {/* Free Move Handle */}
           <div
             onMouseDown={handleMoveStart}
+            onTouchStart={handleMoveStart}
             className={cn(
               'p-1 rounded cursor-move',
               'hover:bg-muted transition-colors',
