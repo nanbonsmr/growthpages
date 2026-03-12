@@ -1168,7 +1168,7 @@ function BlockRenderer({
             <div
               key={stat.id}
               className={`text-center p-4 ${
-                props.style === 'cards' ? 'bg-white/80 rounded-xl shadow-sm border' :
+                props.style === 'cards' ? 'bg-card/80 backdrop-blur-sm rounded-xl shadow-sm border' :
                 props.style === 'bordered' ? 'border-l-2 pl-4 text-left' : ''
               }`}
               style={props.style === 'bordered' ? { borderColor: props.valueColor || primaryColor } : {}}
