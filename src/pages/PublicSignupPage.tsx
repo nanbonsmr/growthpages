@@ -259,6 +259,7 @@ export default function PublicSignupPage() {
         style={{
           ...getBackgroundStyle(settings),
           fontFamily: settings?.fontFamily || 'Inter',
+          color: getTextColorForBackground(settings?.backgroundColor || '#ffffff'),
         }}
       >
       <div className={`mx-auto px-4 sm:px-6 py-8 ${maxWidthClasses[settings?.maxWidth || 'lg']} scroll-smooth`}>
