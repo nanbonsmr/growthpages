@@ -785,7 +785,7 @@ function BlockRenderer({
             <div
               key={feature.id}
               className={`flex gap-3 ${
-                props.style === 'cards' ? 'flex-col items-center text-center p-4 sm:p-6 border rounded-xl bg-white/50' :
+                props.style === 'cards' ? 'flex-col items-center text-center p-4 sm:p-6 border rounded-xl bg-card/50 backdrop-blur-sm' :
                 props.style === 'minimal' ? 'flex-col items-center text-center p-3 sm:p-4' :
                 'items-start'
               }`}
