@@ -31,7 +31,7 @@ export function BlockquoteBlock({ props }: BlockquoteBlockProps) {
         paddingLeft: props.style === 'bordered' ? '1.5rem' : '0',
       }}
     >
-      <p className="italic leading-relaxed" style={{ fontSize: props.fontSize || 20, color: props.color || '#333' }}>
+      <p className="italic leading-relaxed" style={{ fontSize: props.fontSize || 20, color: props.color || 'inherit' }}>
         "{props.text}"
       </p>
       {props.author && (
