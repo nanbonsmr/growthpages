@@ -17,11 +17,11 @@ export function HeadingBlock({ props, isSelected, isPreview, viewMode, onUpdate 
   const fontSize = props.fontSize || 36;
   const responsiveFontSize = isMobile ? Math.max(Math.round(fontSize * 0.6), 16) : isTablet ? Math.max(Math.round(fontSize * 0.8), 18) : fontSize;
 
-  const style = {
+  const style: React.CSSProperties = {
     fontSize: `${responsiveFontSize}px`,
     fontWeight: props.fontWeight === 'normal' ? 400 : props.fontWeight === 'medium' ? 500 : props.fontWeight === 'semibold' ? 600 : 700,
     textAlign: props.alignment as any,
-    color: props.color,
+    color: props.color || 'inherit',
   };
 
   const handleBlur = () => {

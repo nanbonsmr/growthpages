@@ -192,6 +192,19 @@ export default function PublicSignupPage() {
     }
   };
 
+  // Determine if a background color is dark to set appropriate text color
+  const getTextColorForBackground = (bgColor: string): string => {
+    if (!bgColor || bgColor === 'transparent') return '#1a1a2e';
+    const hex = bgColor.replace('#', '');
+    if (hex.length !== 6) return '#1a1a2e';
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    // Relative luminance formula
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5 ? '#1a1a2e' : '#f0f0f5';
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -259,6 +272,9 @@ export default function PublicSignupPage() {
         style={{
           ...getBackgroundStyle(settings),
           fontFamily: settings?.fontFamily || 'Inter',
+          color: settings?.backgroundType === 'gradient' 
+            ? getTextColorForBackground(settings?.gradientFrom || '#7c3aed')
+            : getTextColorForBackground(settings?.backgroundColor || '#ffffff'),
         }}
       >
       <div className={`mx-auto px-4 sm:px-6 py-8 ${maxWidthClasses[settings?.maxWidth || 'lg']} scroll-smooth`}>
@@ -428,7 +444,7 @@ function BlockRenderer({
             fontSize: `clamp(${mobileFontSize}px, 5vw, ${props.fontSize || 36}px)`,
             fontWeight: props.fontWeight === 'normal' ? 400 : props.fontWeight === 'medium' ? 500 : props.fontWeight === 'semibold' ? 600 : 700,
             textAlign: props.alignment || 'center',
-            color: props.color || '#000000',
+            color: props.color || 'inherit',
           }}
           className="mb-4"
         >
@@ -445,7 +461,7 @@ function BlockRenderer({
           style={{
             fontSize: `clamp(${mobileTextSize}px, 2.5vw, ${textSize}px)`,
             textAlign: props.alignment || 'center',
-            color: props.color || '#666666',
+            color: props.color || 'inherit',
           }}
           className="mb-4 leading-relaxed"
         >
@@ -785,7 +801,7 @@ function BlockRenderer({
             <div
               key={feature.id}
               className={`flex gap-3 ${
-                props.style === 'cards' ? 'flex-col items-center text-center p-4 sm:p-6 border rounded-xl bg-white/50' :
+                props.style === 'cards' ? 'flex-col items-center text-center p-4 sm:p-6 border rounded-xl bg-card/50 backdrop-blur-sm' :
                 props.style === 'minimal' ? 'flex-col items-center text-center p-3 sm:p-4' :
                 'items-start'
               }`}
@@ -1109,7 +1125,7 @@ function BlockRenderer({
       return (
         <div className={`mb-4 ${spacingClass}`}>
           {(props.items || []).map((item: string, i: number) => (
-            <div key={i} className="flex items-start gap-2" style={{ fontSize: props.fontSize || 16, color: props.color || '#333' }}>
+            <div key={i} className="flex items-start gap-2" style={{ fontSize: props.fontSize || 16, color: props.color || 'inherit' }}>
               {props.style === 'bullet' && <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-current shrink-0" />}
               {props.style === 'numbered' && <span className="font-semibold shrink-0">{i + 1}.</span>}
               {props.style === 'check' && <CheckCircle className="h-5 w-5 shrink-0 mt-0.5 text-green-500" />}
@@ -1132,7 +1148,7 @@ function BlockRenderer({
             padding: props.style === 'highlighted' ? '1.5rem' : undefined,
           }}
         >
-          <p className="italic leading-relaxed" style={{ fontSize: props.fontSize || 20, color: props.color || '#333' }}>
+          <p className="italic leading-relaxed" style={{ fontSize: props.fontSize || 20, color: props.color || 'inherit' }}>
             "{props.text}"
           </p>
           {props.author && (
@@ -1168,7 +1184,7 @@ function BlockRenderer({
             <div
               key={stat.id}
               className={`text-center p-4 ${
-                props.style === 'cards' ? 'bg-white/80 rounded-xl shadow-sm border' :
+                props.style === 'cards' ? 'bg-card/80 backdrop-blur-sm rounded-xl shadow-sm border' :
                 props.style === 'bordered' ? 'border-l-2 pl-4 text-left' : ''
               }`}
               style={props.style === 'bordered' ? { borderColor: props.valueColor || primaryColor } : {}}
