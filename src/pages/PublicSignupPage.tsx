@@ -1109,7 +1109,7 @@ function BlockRenderer({
       return (
         <div className={`mb-4 ${spacingClass}`}>
           {(props.items || []).map((item: string, i: number) => (
-            <div key={i} className="flex items-start gap-2" style={{ fontSize: props.fontSize || 16, color: props.color || '#333' }}>
+            <div key={i} className="flex items-start gap-2" style={{ fontSize: props.fontSize || 16, color: props.color || 'inherit' }}>
               {props.style === 'bullet' && <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-current shrink-0" />}
               {props.style === 'numbered' && <span className="font-semibold shrink-0">{i + 1}.</span>}
               {props.style === 'check' && <CheckCircle className="h-5 w-5 shrink-0 mt-0.5 text-green-500" />}
