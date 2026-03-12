@@ -633,8 +633,8 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       style: 'glass',
       alignment: 'spread',
       sticky: true,
-      backgroundColor: '#ffffff',
-      textColor: '#000000',
+      backgroundColor: '',
+      textColor: '',
     } as NavProps,
   },
   {
