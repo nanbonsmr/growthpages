@@ -428,7 +428,7 @@ function BlockRenderer({
             fontSize: `clamp(${mobileFontSize}px, 5vw, ${props.fontSize || 36}px)`,
             fontWeight: props.fontWeight === 'normal' ? 400 : props.fontWeight === 'medium' ? 500 : props.fontWeight === 'semibold' ? 600 : 700,
             textAlign: props.alignment || 'center',
-            color: props.color || '#000000',
+            color: props.color || 'inherit',
           }}
           className="mb-4"
         >
