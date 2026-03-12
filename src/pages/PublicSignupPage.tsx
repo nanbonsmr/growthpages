@@ -445,7 +445,7 @@ function BlockRenderer({
           style={{
             fontSize: `clamp(${mobileTextSize}px, 2.5vw, ${textSize}px)`,
             textAlign: props.alignment || 'center',
-            color: props.color || '#666666',
+            color: props.color || 'inherit',
           }}
           className="mb-4 leading-relaxed"
         >
