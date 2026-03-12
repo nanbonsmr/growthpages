@@ -387,7 +387,7 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       text: 'Add your text here. Click to edit.',
       fontSize: 16,
       alignment: 'center',
-      color: '#666666',
+      color: '',
     } as TextProps,
   },
   {
