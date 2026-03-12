@@ -17,7 +17,7 @@ export function BlockquoteBlock({ props }: BlockquoteBlockProps) {
           "{props.text}"
         </p>
         {props.author && (
-          <p className="mt-3 text-sm font-medium opacity-70" style={{ color: props.color }}>— {props.author}</p>
+          <p className="mt-3 text-sm font-medium opacity-70" style={{ color: props.color || 'inherit' }}>— {props.author}</p>
         )}
       </div>
     );
