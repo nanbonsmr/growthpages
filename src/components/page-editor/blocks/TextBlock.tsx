@@ -16,10 +16,10 @@ export function TextBlock({ props, isSelected, isPreview, viewMode, onUpdate }: 
   const fontSize = props.fontSize || 16;
   const responsiveFontSize = isMobile ? Math.max(Math.round(fontSize * 0.85), 13) : fontSize;
 
-  const style = {
+  const style: React.CSSProperties = {
     fontSize: `${responsiveFontSize}px`,
     textAlign: props.alignment as any,
-    color: props.color,
+    color: props.color || 'inherit',
   };
 
   const handleBlur = () => {
