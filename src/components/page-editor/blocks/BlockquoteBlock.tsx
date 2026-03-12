@@ -13,7 +13,7 @@ export function BlockquoteBlock({ props }: BlockquoteBlockProps) {
   if (props.style === 'highlighted') {
     return (
       <div className="rounded-lg p-6" style={{ backgroundColor: `${accentColor}10` }}>
-        <p className="italic leading-relaxed" style={{ fontSize: props.fontSize || 20, color: props.color || '#333' }}>
+        <p className="italic leading-relaxed" style={{ fontSize: props.fontSize || 20, color: props.color || 'inherit' }}>
           "{props.text}"
         </p>
         {props.author && (
