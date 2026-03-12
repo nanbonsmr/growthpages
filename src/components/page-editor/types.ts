@@ -725,7 +725,7 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       items: ['First item in the list', 'Second item in the list', 'Third item in the list'],
       style: 'bullet',
       fontSize: 16,
-      color: '#333333',
+      color: '',
       spacing: 'normal',
     } as ListProps,
   },
