@@ -739,7 +739,7 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       author: 'Steve Jobs',
       style: 'bordered',
       fontSize: 20,
-      color: '#333333',
+      color: '',
       accentColor: '#7c3aed',
     } as BlockquoteProps,
   },
