@@ -1132,7 +1132,7 @@ function BlockRenderer({
             padding: props.style === 'highlighted' ? '1.5rem' : undefined,
           }}
         >
-          <p className="italic leading-relaxed" style={{ fontSize: props.fontSize || 20, color: props.color || '#333' }}>
+          <p className="italic leading-relaxed" style={{ fontSize: props.fontSize || 20, color: props.color || 'inherit' }}>
             "{props.text}"
           </p>
           {props.author && (
