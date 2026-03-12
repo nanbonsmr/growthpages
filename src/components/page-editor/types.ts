@@ -375,7 +375,7 @@ export const BLOCK_DEFINITIONS: BlockDefinition[] = [
       fontSize: 36,
       fontWeight: 'bold',
       alignment: 'center',
-      color: '#000000',
+      color: '',
     } as HeadingProps,
   },
   {
