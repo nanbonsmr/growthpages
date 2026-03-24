@@ -2221,9 +2221,132 @@ interface PageSettingsFormProps {
   onUpdate: (settings: Partial<PageSettings>) => void;
 }
 
+const THEME_PRESETS = [
+  {
+    id: 'light',
+    name: 'Light',
+    colors: ['#ffffff', '#f8fafc', '#1a1a2e'],
+    settings: {
+      backgroundType: 'solid' as const,
+      backgroundColor: '#ffffff',
+      primaryColor: '#7c3aed',
+      gradientFrom: '#7c3aed',
+      gradientTo: '#a78bfa',
+    },
+  },
+  {
+    id: 'dark',
+    name: 'Dark',
+    colors: ['#0f172a', '#1e293b', '#f8fafc'],
+    settings: {
+      backgroundType: 'solid' as const,
+      backgroundColor: '#0f172a',
+      primaryColor: '#818cf8',
+      gradientFrom: '#312e81',
+      gradientTo: '#1e1b4b',
+    },
+  },
+  {
+    id: 'midnight',
+    name: 'Midnight',
+    colors: ['#1a1a2e', '#16213e', '#e94560'],
+    settings: {
+      backgroundType: 'gradient' as const,
+      backgroundColor: '#1a1a2e',
+      primaryColor: '#e94560',
+      gradientFrom: '#1a1a2e',
+      gradientTo: '#16213e',
+    },
+  },
+  {
+    id: 'ocean',
+    name: 'Ocean',
+    colors: ['#0ea5e9', '#0284c7', '#f0f9ff'],
+    settings: {
+      backgroundType: 'gradient' as const,
+      backgroundColor: '#0ea5e9',
+      primaryColor: '#0ea5e9',
+      gradientFrom: '#0c4a6e',
+      gradientTo: '#082f49',
+    },
+  },
+  {
+    id: 'sunset',
+    name: 'Sunset',
+    colors: ['#f97316', '#ec4899', '#fef3c7'],
+    settings: {
+      backgroundType: 'gradient' as const,
+      backgroundColor: '#f97316',
+      primaryColor: '#f97316',
+      gradientFrom: '#7c2d12',
+      gradientTo: '#831843',
+    },
+  },
+  {
+    id: 'forest',
+    name: 'Forest',
+    colors: ['#16a34a', '#15803d', '#f0fdf4'],
+    settings: {
+      backgroundType: 'gradient' as const,
+      backgroundColor: '#16a34a',
+      primaryColor: '#16a34a',
+      gradientFrom: '#14532d',
+      gradientTo: '#052e16',
+    },
+  },
+  {
+    id: 'warm',
+    name: 'Warm',
+    colors: ['#fef3c7', '#fde68a', '#92400e'],
+    settings: {
+      backgroundType: 'solid' as const,
+      backgroundColor: '#fffbeb',
+      primaryColor: '#d97706',
+      gradientFrom: '#fef3c7',
+      gradientTo: '#fde68a',
+    },
+  },
+  {
+    id: 'minimal',
+    name: 'Minimal',
+    colors: ['#fafafa', '#e5e5e5', '#171717'],
+    settings: {
+      backgroundType: 'solid' as const,
+      backgroundColor: '#fafafa',
+      primaryColor: '#171717',
+      gradientFrom: '#fafafa',
+      gradientTo: '#e5e5e5',
+    },
+  },
+];
+
 function PageSettingsForm({ settings, onUpdate }: PageSettingsFormProps) {
   return (
     <div className="space-y-6">
+      {/* Theme Presets */}
+      <div>
+        <h3 className="font-semibold text-foreground mb-4">Color Theme</h3>
+        <div className="grid grid-cols-4 gap-2">
+          {THEME_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              onClick={() => onUpdate(preset.settings)}
+              className="group flex flex-col items-center gap-1.5 p-2 rounded-lg border border-border hover:border-primary hover:bg-accent/50 transition-all"
+              title={preset.name}
+            >
+              <div className="flex w-full h-6 rounded overflow-hidden">
+                {preset.colors.map((color, i) => (
+                  <div key={i} className="flex-1" style={{ backgroundColor: color }} />
+                ))}
+              </div>
+              <span className="text-[10px] font-medium text-muted-foreground group-hover:text-foreground truncate w-full text-center">
+                {preset.name}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div>
         <h3 className="font-semibold text-foreground mb-4">Page Settings</h3>
         <div className="space-y-4">
