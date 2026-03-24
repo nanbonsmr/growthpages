@@ -355,7 +355,7 @@ export interface PageSettings {
   backgroundImage: string;
   primaryColor: string;
   fontFamily: string;
-  maxWidth: 'sm' | 'md' | 'lg' | 'xl';
+  maxWidth: 'sm' | 'md' | 'lg' | 'xl' | 'full';
 }
 
 export interface PageData {
@@ -830,5 +830,5 @@ export const DEFAULT_PAGE_SETTINGS: PageSettings = {
   backgroundImage: '',
   primaryColor: '#7c3aed',
   fontFamily: 'Inter',
-  maxWidth: 'md',
+  maxWidth: 'full',
 };

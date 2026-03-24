@@ -260,15 +260,16 @@ export default function PublicSignupPage() {
   // Block-based page rendering
   if (hasBlocks) {
     const maxWidthClasses: Record<string, string> = {
-      sm: 'max-w-sm',
-      md: 'max-w-2xl',
-      lg: 'max-w-4xl',
-      xl: 'max-w-6xl',
+      sm: 'max-w-screen-sm',
+      md: 'max-w-screen-md',
+      lg: 'max-w-screen-lg',
+      xl: 'max-w-screen-xl',
+      full: 'max-w-full',
     };
 
     return (
       <div
-        className="min-h-screen scroll-smooth"
+        className="min-h-screen scroll-smooth w-full"
         style={{
           ...getBackgroundStyle(settings),
           fontFamily: settings?.fontFamily || 'Inter',
@@ -277,7 +278,7 @@ export default function PublicSignupPage() {
             : getTextColorForBackground(settings?.backgroundColor || '#ffffff'),
         }}
       >
-      <div className={`mx-auto px-4 sm:px-6 py-8 ${maxWidthClasses[settings?.maxWidth || 'lg']} scroll-smooth`}>
+      <div className={`mx-auto px-4 sm:px-6 lg:px-8 ${maxWidthClasses[settings?.maxWidth || 'full']} scroll-smooth`}>
           {blocks.map((block, index) => (
             <div
               key={block.id}

@@ -61,7 +61,7 @@ export function EditorCanvas({
         <div
           className={cn(
             'transition-all duration-300',
-            viewMode === 'mobile' ? 'w-[375px]' : viewMode === 'tablet' ? 'w-[768px]' : 'w-full max-w-4xl'
+            viewMode === 'mobile' ? 'w-[375px]' : viewMode === 'tablet' ? 'w-[768px]' : 'w-full max-w-full'
           )}
         >
           {/* Canvas Container */}
