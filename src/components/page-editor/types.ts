@@ -355,7 +355,7 @@ export interface PageSettings {
   backgroundImage: string;
   primaryColor: string;
   fontFamily: string;
-  maxWidth: 'sm' | 'md' | 'lg' | 'xl';
+  maxWidth: 'sm' | 'md' | 'lg' | 'xl' | 'full';
 }
 
 export interface PageData {

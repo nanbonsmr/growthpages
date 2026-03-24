@@ -2487,10 +2487,11 @@ function PageSettingsForm({ settings, onUpdate }: PageSettingsFormProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="sm">Small (384px)</SelectItem>
-              <SelectItem value="md">Medium (448px)</SelectItem>
-              <SelectItem value="lg">Large (512px)</SelectItem>
-              <SelectItem value="xl">Extra Large (576px)</SelectItem>
+              <SelectItem value="sm">Small (640px)</SelectItem>
+              <SelectItem value="md">Medium (768px)</SelectItem>
+              <SelectItem value="lg">Large (1024px)</SelectItem>
+              <SelectItem value="xl">Extra Large (1280px)</SelectItem>
+              <SelectItem value="full">Full Width</SelectItem>
             </SelectContent>
           </Select>
         </div>
